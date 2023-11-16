@@ -1,0 +1,35 @@
+version: '3'
+
+networks:
+  mynetwork:  # Define your custom network
+
+services:
+  mongodb:
+    image: mongo  # Use the official MongoDB image
+    ports:
+      - '27017:27017'
+    networks:
+      - mynetwork  # Use the same custom network
+
+  server:
+    build:
+      context: /mnt/c/Users/aishv/OneDrive/Desktop/d3.js_docker  # If obtained from GitHub, this is the path where the folder is located in the local system
+      dockerfile: /mnt/c/Users/aishv/OneDrive/Desktop/d3.js_docker/Dockerfile #Path to the dockerfile of server
+    ports:
+      - '3000:3000' # Port mapping - All requests to port 3000 of host machine will be forwarded to port 3000 of the container
+    depends_on:
+      - mongodb
+    networks:
+      - mynetwork  # Define a custom network
+  
+  nginx:
+    build:
+      context: /mnt/c/Users/aishv/OneDrive/Desktop/d3.js_docker/client-docker  # Update this to the path where your NGINX Dockerfile (client dockerfile) is located
+    ports:
+      - '80:80'  # Map container's port 80 to host's port 80
+    depends_on:
+      - server
+    networks:
+      - mynetwork 
+
+
