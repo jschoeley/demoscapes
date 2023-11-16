@@ -3,7 +3,7 @@ const fs = require('fs');
 const Data = require('./models'); // Import the Data model
 
 // Input CSV file path
-const csvFilePath = 'C:/Users/aishv/OneDrive/Desktop/D3.js MongoDB/mortality.csv';
+const csvFilePath = 'mortality.csv';
 
 // To store unique regions
 const uniqueRegions = new Set(); 
@@ -40,6 +40,7 @@ csv()
     // Convert the Set of unique regions to an array
     const uniqueRegionsArray = Array.from(uniqueRegions);
     console.log('Unique Regions:', uniqueRegionsArray);
+    process.exit(0);
   })
   .catch((error) => {
     console.error('Error inserting data:', error);

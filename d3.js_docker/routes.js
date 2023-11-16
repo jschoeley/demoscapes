@@ -12,8 +12,8 @@ router.get('/', async (req, res) => {
     const data = await Data.find({ Region: Region});
 
     //const data = await Data.find(req.query); // You can filter data based on query parameters
-    //console.log(data)
-    //console.log(req.query)
+    console.log(data)
+    console.log(req.query)
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });

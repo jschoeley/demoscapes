@@ -117,7 +117,7 @@
       // create a country selector dropdown menu
       let dropdown = d3.select("#country-dropdown");
       
-      d3.json("/api/unique-regions").then(function (regions) {
+      d3.json("http://127.0.0.1:3000/api/unique-regions").then(function (regions) {
         // Append unique regions to the dropdown
         dropdown
         .selectAll("option")
@@ -453,7 +453,7 @@
       }
       async function fetchData1(Region) {
         try {
-          const data_updated = await d3.json(`/api/data?Region=${Region}`, function (d) {
+          const data_updated = await d3.json(`http://127.0.0.1:3000/api/data?Region=${Region}`, function (d) {
             return {
               Region: d.Region,
               Year: +d.Year,
@@ -482,7 +482,7 @@
       const Region ='AUS';
 
       async function fetchData() {
-        const inputData = await d3.json(`/api/data?Region=${Region}`, function (d) {
+        const inputData = await d3.json(`http://127.0.0.1:3000/api/data?Region=${Region}`, function (d) {
           return {
             Region: d.Region,
             Year: +d.Year,
