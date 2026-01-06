@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=Arvo&display=swap"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
+    <script src="js/api.js" defer></script>
+    <script src="js/heatmap.js" defer></script>
+  </head>
+
+  <body>
+    <div class="page">
+      <header class="title-section">
+        <h1 id="plot-title">Mortality sex ratio</h1>
+        <p class="subtitle">Heatmap by age and year with selectable country</p>
+      </header>
+
+      <section class="controls-section">
+        <div class="controls-group">
+          <div class="button current" data-val="rr">Rate ratio</div>
+          <div class="button" data-val="rd">Rate difference</div>
+        </div>
+        <label class="control-label" for="country-dropdown">Country</label>
+        <select id="country-dropdown"></select>
+      </section>
+
+      <section class="viz-section">
+        <div class="card heatmap-section">
+          <div class="section-title">Heatmap</div>
+          <div id="plot-container"></div>
+        </div>
+      </section>
+
+      <footer class="caption-section">
+        <p class="caption">
+          Data source: `app/backend/data/mortality.csv` served by the backend API.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
