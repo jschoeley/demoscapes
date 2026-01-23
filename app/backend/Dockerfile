@@ -7,8 +7,8 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Copy the CSV file to the working directory so that the import.js script can transfer the data from the CSV to the MongoDB container
-COPY ./data/mortality.csv ./
+# Copy data files to the working directory so that import.js can load CSV and metadata
+COPY ./data ./data
 
 # Install app dependencies
 RUN npm install

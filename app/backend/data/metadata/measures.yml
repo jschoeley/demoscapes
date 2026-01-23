@@ -1,0 +1,137 @@
+measures:
+  - key: deathratesexratio
+    name: Deathrate sex ratio (male/female)
+    unit: Male deaths per 100 female deaths
+    statType: ratio
+    description: Male deaths per 100 female deaths.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: ratio_diverging
+      colorDomain:
+        - 0
+        - 0.5
+        - 0.5714285714
+        - 0.6666666667
+        - 0.8
+        - 0.99009901
+        - 1.01
+        - 1.25
+        - 1.5
+        - 1.75
+        - 2
+        - 100
+      colorRange:
+        - "#67001F"
+        - "#B2182B"
+        - "#D6604D"
+        - "#F4A582"
+        - "#FDDBC7"
+        - "#F7F7F7"
+        - "#D1E5F0"
+        - "#92C5DE"
+        - "#4393C3"
+        - "#2166AC"
+        - "#053061"
+      labelmultiplier: 100
+      labelprecision: 0
+      legend:
+        left: Excess female mortality
+        right: Excess male mortality
+      tooltip:
+        suffix: " male deaths per 100 female deaths"
+        precision: 0
+  - key: deathcountsexdifference
+    name: Death count sex difference (male - female)
+    unit: deaths
+    statType: count
+    description: Male deaths in excess of female deaths.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: difference_diverging
+      colorDomain:
+        - -1000
+        - -500
+        - -250
+        - -100
+        - -50
+        - -10
+        - 10
+        - 50
+        - 100
+        - 250
+        - 500
+        - 1000
+      colorRange:
+        - "#67001F"
+        - "#B2182B"
+        - "#D6604D"
+        - "#F4A582"
+        - "#FDDBC7"
+        - "#F7F7F7"
+        - "#D1E5F0"
+        - "#92C5DE"
+        - "#4393C3"
+        - "#2166AC"
+        - "#053061"
+      labelmultiplier: 1
+      labelprecision: 0
+      legend:
+        left: Female excess deaths
+        right: Male excess deaths
+      tooltip:
+        suffix: " deaths (male - female)"
+  - key: deathrate
+    name: Death rate
+    unit: Deaths per 10,000 person-years
+    statType: rate
+    description: Deaths per 10,000 person-years.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 0.0001
+        - 0.0005
+        - 0.001
+        - 0.005
+        - 0.01
+        - 0.05
+        - 0.1
+        - 0.5
+        - 1
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 10000
+      labelprecision: 0
+      legend:
+        left: ""
+        right: "Deaths per 10,000 person-years"
+      tooltip:
+        suffix: " deaths per 10,000 person-years"
+        precision: 0

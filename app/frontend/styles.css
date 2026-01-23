@@ -50,12 +50,27 @@ body {
   font-weight: bold;
 }
 
-#country-dropdown {
+#measure-dropdown,
+#series-dropdown,
+.stratum-select {
   min-width: 180px;
   padding: 6px 8px;
   font-size: 0.95em;
   border: 1px solid #1f1f1f;
   background: #ffffff;
+}
+
+.strata-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: center;
+}
+
+.stratum-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .viz-section {

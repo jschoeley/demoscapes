@@ -1,0 +1,6 @@
+- key: "subpopulation"
+  label: "Subpopulation"
+  description: "Generic subpopulations"
+  valuesFromData: true
+  codebook:
+

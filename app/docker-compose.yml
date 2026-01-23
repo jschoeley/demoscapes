@@ -12,8 +12,8 @@ services:
 
   backend:
     build:
-      context: /home/jon/st/sci/2026-01-demoscapes/app/backend
-      dockerfile: /home/jon/st/sci/2026-01-demoscapes/app/backend/Dockerfile
+      context: /home/jon/st/sharemobile/2026-01-demoscapes/app/backend
+      dockerfile: /home/jon/st/sharemobile/2026-01-demoscapes/app/backend/Dockerfile
     ports:
       - '3000:3000'
     depends_on:
@@ -23,8 +23,8 @@ services:
   
   frontend:
     build:
-      context: /home/jon/st/sci/2026-01-demoscapes/app/frontend
-      dockerfile: /home/jon/st/sci/2026-01-demoscapes/app/frontend/Dockerfile
+      context: /home/jon/st/sharemobile/2026-01-demoscapes/app/frontend
+      dockerfile: /home/jon/st/sharemobile/2026-01-demoscapes/app/frontend/Dockerfile
     ports:
       - '80:80'
     depends_on:

@@ -1,0 +1,9 @@
+- key: "sex"
+  label: "Sex"
+  description: "Sex of population"
+  valuesFromData: false
+  codebook:
+    - key: "Female"
+      name: "Female"
+    - key: "Male"
+      name: "Male"
