@@ -1,0 +1,50 @@
+name,hmdcode,iso3,subpopulation
+Australia,AUS,AU,Total Population
+Austria,AUT,AT,Total Population
+Belarus,BLR,BY,Total Population
+Belgium,BEL,BE,Total Population
+Bulgaria,BGR,BG,Total Population
+Canada,CAN,CA,Total Population
+Chile,CHL,CL,Total Population
+Croatia,HRV,HR,Total Population
+Czechia,CZE,CZ,Total Population
+Denmark,DNK,DK,Total Population
+Estonia,EST,EE,Total Population
+Finland,FIN,FI,Total Population
+France,FRATNP,FR,Total Population
+Germany,DEUTNP,DE,Total Population
+Greece,GRC,GR,Total Population
+Hong Kong,HKG,HK,Total Population
+Hungary,HUN,HU,Total Population
+Iceland,ISL,IS,Total Population
+Ireland,IRL,IE,Total Population
+Israel,ISR,IL,Total Population
+Italy,ITA,IT,Total Population
+Japan,JPN,JP,Total Population
+Latvia,LVA,LV,Total Population
+Lithuania,LTU,LT,Total Population
+Luxembourg,LUX,LU,Total Population
+Netherlands,NLD,NL,Total Population
+New Zealand,NZL_NP,NZ,Total Population
+Norway,NOR,NO,Total Population
+Poland,POL,PL,Total Population
+Portugal,PRT,PT,Total Population
+Republic of Korea,KOR,KR,Total Population
+Russia,RUS,RU,Total Population
+Slovakia,SVK,SK,Total Population
+Slovenia,SVN,SI,Total Population
+Spain,ESP,ES,Total Population
+Sweden,SWE,SE,Total Population
+Switzerland,CHE,CH,Total Population
+Taiwan,TWN,TW,Total Population
+U.K.,GBR_NP,GB,Total Population
+U.S.A.,USA,US,Total Population
+Ukraine,UKR,UA,Total Population
+England and Wales (Total Population),GBRTENW,UK-EAW,Total Population
+England and Wales (Civilian Population),GBRCENW,UK-EAW,Civilian Population
+Scotland,GBR_SCO,UK-SCT,Total Population
+Northern Ireland,GBR_NIR,UK-NIR,Total Population
+New Zealand Maori,NZL_MA,NZ,Maori Population
+New Zealand Non-Maori,NZL_NM,NZ,Non-Maori Population
+East Germany,DEUTE,DE-E,Total Population
+West Germany,DEUTW,DE-W,Total Population
