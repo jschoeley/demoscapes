@@ -20,12 +20,11 @@
       </header>
 
       <section class="controls-section">
-        <div class="controls-group">
-          <div class="button current" data-val="rr">Rate ratio</div>
-          <div class="button" data-val="rd">Rate difference</div>
-        </div>
-        <label class="control-label" for="country-dropdown">Country</label>
-        <select id="country-dropdown"></select>
+        <label class="control-label" for="measure-dropdown">Measure</label>
+        <select id="measure-dropdown"></select>
+        <label class="control-label" for="series-dropdown">Series</label>
+        <select id="series-dropdown"></select>
+        <div id="strata-controls" class="strata-controls"></div>
       </section>
 
       <section class="viz-section">
@@ -36,9 +35,7 @@
       </section>
 
       <footer class="caption-section">
-        <p class="caption">
-          Data source: `app/backend/data/mortality.csv` served by the backend API.
-        </p>
+        <p class="caption"></p>
       </footer>
     </div>
   </body>

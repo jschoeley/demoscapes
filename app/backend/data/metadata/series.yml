@@ -1,0 +1,26 @@
+series:
+  - key: "deathratesexratio_by_region_subpopulation"
+    label: "by region and subpopulation"
+    measureKey: "deathratesexratio"
+    sourceKeys:
+      - "hmd"
+    strataKeys:
+      - "region"
+      - "subpopulation"
+  - key: "deathcountsexdifference_by_region_subpopulation"
+    label: "by region and subpopulation"
+    measureKey: "deathcountsexdifference"
+    sourceKeys:
+      - "hmd"
+    strataKeys:
+      - "region"
+      - "subpopulation"
+  - key: "deathrate_by_region_sex_subpopulation"
+    label: "by region, sex, and subpopulation"
+    measureKey: "deathrate"
+    sourceKeys:
+      - "hmd"
+    strataKeys:
+      - "region"
+      - "sex"
+      - "subpopulation"

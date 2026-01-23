@@ -1,232 +1,244 @@
 // Constants -------------------------------------------------------------
 
-// definition of plot dimensions and margins
-// see D3 margin convention https://bl.ocks.org/mbostock/3019563
-// <width> and <height> relate to the dimensions of actual plot
-// which has margins defined in <margins>
 const container_dimensions = { width: 800, height: 0.92 * 800 };
-const margin = { top: 10, right: 10, bottom: 100, left: 50 };
+const margin = { top: 10, right: 10, bottom: 120, left: 60 };
 const width = container_dimensions.width - margin.left - margin.right;
 const height = container_dimensions.height - margin.top - margin.bottom;
 
-// initial button value
-let selected_metric = "rr";
+// State -----------------------------------------------------------------
 
-// selected region
-let selected_region = "AUT";
-
-let variable_for_fill;
-let variable_for_tooltip_text = "rate_ratio";
-let tooltip_static_text = " Male deaths per 100 female deaths";
-let tooltip_scaler = 100;
+let measures = [];
+let seriesList = [];
+let currentMeasure = null;
+let currentSeries = null;
+let strataDefinitions = {};
+let currentStrataSelections = {};
+let currentStrataCombos = [];
+let sourcesByKey = {};
 
 // UI --------------------------------------------------------------------
 
-// create a country selector dropdown menu
-let dropdown = d3.select("#country-dropdown");
-
-fetchRegions().then(function (regions) {
-  // Append unique regions to the dropdown
-  dropdown
-    .selectAll("option")
-    .data(regions)
-    .enter()
-    .append("option")
-    .text((d) => {
-      return d;
-    })
-    .attr("value", (d) => {
-      return d;
-    });
-});
+const measureDropdown = d3.select("#measure-dropdown");
+const seriesDropdown = d3.select("#series-dropdown");
+const strataControls = d3.select("#strata-controls");
+const caption = d3.select(".caption");
 
 // Scales ----------------------------------------------------------------
 
-// x-y and color scales for the heatmap based on the data
-function DefineHeatmapScales(data, color_scale_type) {
-  // scale limits
-  let x_min = d3.min(data, (d) => {
-      return d.Year;
-    }),
-    x_max = d3.max(data, (d) => {
-      return d.Year;
-    }),
-    y_min = d3.min(data, (d) => {
-      return d.Age;
-    }),
-    y_max = d3.max(data, (d) => {
-      return d.Age;
-    });
+function DefineHeatmapScales(data, measure) {
+  let x_min = d3.min(data, (d) => d.x),
+    x_max = d3.max(data, (d) => d.x),
+    y_min = d3.min(data, (d) => d.y),
+    y_max = d3.max(data, (d) => d.y);
 
-  // x scale for year
   let scale_x = d3.scaleLinear().domain([x_min, x_max]).range([0, width]);
-
-  // y scale for age
   let scale_y = d3.scaleLinear().domain([y_min, y_max]).range([height, 0]);
 
-  // color scale for sex ratio
-  function Col(scale) {
-    let domain_and_range;
-    if (scale == "rr") {
-      domain_and_range = {
-        domain: [
-          0,
-          1 / 2,
-          100 / 175,
-          100 / 150,
-          100 / 125,
-          100 / 101,
-          101 / 100,
-          125 / 100,
-          150 / 100,
-          175 / 100,
-          2 / 1,
-          100,
-        ],
-        range: [
-          "#67001F",
-          "#B2182B",
-          "#D6604D",
-          "#F4A582",
-          "#FDDBC7",
-          "#F7F7F7",
-          "#D1E5F0",
-          "#92C5DE",
-          "#4393C3",
-          "#2166AC",
-          "#053061",
-        ],
-      };
-    }
-    if (scale == "rd") {
-      domain_and_range = {
-        domain: [-1000, -500, -250, -100, -50, -10, 10, 50, 100, 250, 500, 1000],
-        range: [
-          "#67001F",
-          "#B2182B",
-          "#D6604D",
-          "#F4A582",
-          "#FDDBC7",
-          "#F7F7F7",
-          "#D1E5F0",
-          "#92C5DE",
-          "#4393C3",
-          "#2166AC",
-          "#053061",
-        ],
-      };
-    }
-    return domain_and_range;
-  }
+  const display = measure && measure.display ? measure.display : {};
+  const colorScale = buildColorScale(display);
 
-  let scale_fill = d3
-    .scaleThreshold()
-    .domain(Col(color_scale_type).domain)
-    .range(Col(color_scale_type).range);
-
-  function MapColor(data) {
-    if (data === null) {
+  function MapColor(value) {
+    if (value === null || value === undefined || Number.isNaN(value)) {
       return "white";
     }
-    return scale_fill(data);
+    return colorScale.fill(value);
   }
 
-  let scales = {
+  return {
     x: scale_x,
     y: scale_y,
-    fill_legend: scale_fill,
+    legend: colorScale.legend,
     fill: MapColor,
   };
+}
 
-  return scales;
+function parseDomainValue(value) {
+  if (typeof value === "number") {
+    return value;
+  }
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed === "-Inf" || trimmed === "-Infinity") {
+      return -Infinity;
+    }
+    if (trimmed === "Inf" || trimmed === "+Inf" || trimmed === "Infinity") {
+      return Infinity;
+    }
+  }
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? value : parsed;
+}
+
+function buildColorScale(display) {
+  const rawDomain = display.colorDomain || [];
+  const colors = display.colorRange || ["#f7f7f7"];
+  const edges = rawDomain.map(parseDomainValue);
+
+  if (edges.length === colors.length + 1) {
+    const fill = (value) => {
+      if (value === null || value === undefined || Number.isNaN(value)) {
+        return "white";
+      }
+      for (let i = 0; i < edges.length - 1; i++) {
+        const lower = edges[i];
+        const upper = edges[i + 1];
+        const lowerOk = value >= lower || lower === -Infinity;
+        const upperOk = value < upper || upper === Infinity;
+        if (lowerOk && upperOk) {
+          return colors[i];
+        }
+      }
+      return value < edges[0] ? colors[0] : colors[colors.length - 1];
+    };
+    return {
+      fill,
+      legend: { colors, edges },
+    };
+  }
+
+  const scale = d3.scaleThreshold().domain(edges).range(colors);
+  return {
+    fill: (value) => scale(value),
+    legend: { colors, edges },
+  };
 }
 
 // Heatmap drawing functions ---------------------------------------------
 
-function DrawHeatmap(data, scales, selected_metric) {
-  // dimensions of heatmap rectangles
+function DrawHeatmap(data, scales) {
   let rect_width = width / (scales.x.domain()[1] - scales.x.domain()[0]),
     rect_height = height / (scales.y.domain()[1] - scales.y.domain()[0]);
-
-  if (selected_metric == "rr") {
-    variable_for_fill = "rate_ratio";
-  }
-  if (selected_metric == "rd") {
-    variable_for_fill = "count_diff";
-  }
 
   plot
     .append("g")
     .attr("class", "heatmap")
     .selectAll()
-    .data(data, (d) => d.Year + ":" + d.Age)
+    .data(data, (d) => d.x + ":" + d.y)
     .enter()
     .append("rect")
     .attr("class", "heatmapcell")
-    .attr("x", (d) => scales.x(d.Year))
-    .attr("y", (d) => scales.y(d.Age) - rect_height)
+    .attr("x", (d) => scales.x(d.x))
+    .attr("y", (d) => scales.y(d.y) - rect_height)
     .attr("width", rect_width)
     .attr("height", rect_height)
-    .style("fill", (d) => scales.fill(d[variable_for_fill]))
-    .style("stroke", (d) => scales.fill(d[variable_for_fill]))
+    .style("fill", (d) => scales.fill(d.value))
+    .style("stroke", (d) => scales.fill(d.value))
     .style("stroke-width", 1);
-} //@end DrawHeatmap()
+}
 
 function AddAxesToHeatmap(scales) {
-  plot // x
+  plot
     .append("g")
     .attr("class", "axis")
     .attr("transform", "translate(0," + (height + 5) + ")")
     .call(d3.axisBottom(scales.x).tickFormat(d3.format("d")));
 
-  plot // y
+  plot
     .append("g")
     .attr("class", "axis")
     .attr("transform", "translate(" + -5 + ",0)")
     .call(d3.axisLeft(scales.y).tickFormat(d3.format("d")));
 }
 
-function AddColorBarToHeatmap(scales) {
-  const legend = (g) => {
-    const length = scales.fill_legend.range().length;
+function AddAxisLabels(measure) {
+  if (!measure || !measure.axes) {
+    return;
+  }
+
+  const axes = measure.axes;
+  const xLabel = axes.x ? axes.x.name : "x";
+  const yLabel = axes.y ? axes.y.name : "y";
+  const xUnit = axes.x && axes.x.unit ? ` (${axes.x.unit})` : "";
+  const yUnit = axes.y && axes.y.unit ? ` (${axes.y.unit})` : "";
+
+  plot
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("x", width / 2)
+    .attr("y", height + 50)
+    .attr("text-anchor", "middle")
+    .text(`${toTitleCase(xLabel)}${xUnit}`);
+
+  plot
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -45)
+    .attr("text-anchor", "middle")
+    .text(`${toTitleCase(yLabel)}${yUnit}`);
+}
+
+function AddColorBarToHeatmap(scales, measure) {
+  const display = measure && measure.display ? measure.display : {};
+  const legendLabels = display.legend || {};
+  const colorScale = display.colorScale || "";
+  const legend = scales.legend || { colors: [], edges: [] };
+  const colors = legend.colors || [];
+  const edges = legend.edges || [];
+
+  const renderLegend = (g) => {
+    const length = colors.length;
+    if (length === 0) {
+      return;
+    }
 
     const x = d3
       .scaleLinear()
-      .domain([1, length - 1])
-      .rangeRound([width / length, (width * (length - 1)) / length]);
+      .domain([0, length])
+      .rangeRound([0, width]);
 
     g.selectAll("rect")
-      .data(scales.fill_legend.range())
+      .data(colors)
       .join("rect")
       .attr("height", 8)
       .attr("x", (d, i) => x(i))
       .attr("width", (d, i) => x(i + 1) - x(i))
       .attr("fill", (d) => d);
 
+    const labelMultiplier =
+      measure && measure.display && typeof measure.display.labelmultiplier === "number"
+        ? measure.display.labelmultiplier
+        : 1;
+    const labelPrecision =
+      measure && measure.display && typeof measure.display.labelprecision === "number"
+        ? measure.display.labelprecision
+        : 0;
+    const numericFormatter = d3.format(`.${labelPrecision}f`);
+
+    const tickValues = edges.length === colors.length + 1
+      ? d3.range(1, edges.length - 1)
+      : d3.range(1, length);
+
+    const tickFormatter = (i) => {
+      const domainValue =
+        edges.length === colors.length + 1 ? edges[i] : edges[i] || i;
+      if (colorScale === "ratio_diverging") {
+        const base = labelMultiplier;
+        if (domainValue <= 1) {
+          return `${base}:${Math.round(base / domainValue)}`;
+        }
+        return `${Math.round(domainValue * base)}:${base}`;
+      }
+      return numericFormatter(domainValue * labelMultiplier);
+    };
+
     g.call(
       d3
         .axisTop(x)
         .tickSize(-8)
-        .tickValues(d3.range(1, length))
-        .tickFormat((i) => {
-          let ratio = scales.fill_legend.domain()[i];
-          let tick_label;
-          if (ratio <= 1) {
-            tick_label = "100:" + Math.round((1 / ratio) * 1e2).toString();
-          } else {
-            tick_label = Math.round(ratio * 1e2).toString() + ":100";
-          }
-          return tick_label;
-        }),
+        .tickValues(tickValues)
+        .tickFormat(tickFormatter),
     )
       .select(".domain")
       .remove();
   };
+
   plot
     .append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(0,${height + 50})`)
-    .call(legend);
+    .attr("transform", `translate(0,${height + 70})`)
+    .call(renderLegend);
 
   plot
     .select(".legend")
@@ -236,7 +248,7 @@ function AddColorBarToHeatmap(scales) {
     .attr("text-anchor", "start")
     .attr("x", 0)
     .attr("y", 20)
-    .text("Excess female mortality");
+    .text(legendLabels.left || "");
 
   plot
     .select(".legend")
@@ -246,10 +258,11 @@ function AddColorBarToHeatmap(scales) {
     .attr("text-anchor", "end")
     .attr("x", width)
     .attr("y", 20)
-    .text("Excess male mortality");
+    .text(legendLabels.right || "");
 }
 
-function AddMouseHoverToHeatmap() {
+function AddMouseHoverToHeatmap(measure) {
+  d3.selectAll(".heatmaptooltip").remove();
   let tooltip = d3
     .select("body")
     .append("div")
@@ -257,81 +270,38 @@ function AddMouseHoverToHeatmap() {
     .style("position", "absolute")
     .style("visibility", "hidden");
 
+  const tooltipConfig = measure && measure.display ? measure.display.tooltip : null;
+  const suffix = tooltipConfig && tooltipConfig.suffix ? tooltipConfig.suffix : "";
+  const labelMultiplier =
+    measure && measure.display && typeof measure.display.labelmultiplier === "number"
+      ? measure.display.labelmultiplier
+      : 1;
+  const labelPrecision =
+    measure && measure.display && typeof measure.display.labelprecision === "number"
+      ? measure.display.labelprecision
+      : 0;
+  const formatter = d3.format(`.${labelPrecision}f`);
+
   plot
     .selectAll(".heatmapcell")
     .on("mouseover", function () {
       return tooltip.style("visibility", "visible");
     })
-    .on("mousemove", (d) => {
-      let num =
-        Math.round(d[variable_for_tooltip_text] * tooltip_scaler).toString() +
-        tooltip_static_text;
-
+    .on("mousemove", function (d) {
+      const event = d3.event;
+      const value = d.value;
+      let text = "No data";
+      if (value !== null && value !== undefined && !Number.isNaN(value)) {
+        text = formatter(value * labelMultiplier) + suffix;
+      }
       return tooltip
-        .style("left", d3.event.pageX + 10 + "px")
-        .style("top", d3.event.pageY + 10 + "px")
-        .text(num);
+        .style("left", event.pageX + 10 + "px")
+        .style("top", event.pageY + 10 + "px")
+        .text(text);
     })
     .on("mouseout", function () {
       return tooltip.style("visibility", "hidden");
     });
-}
-
-// Updating functions ----------------------------------------------------
-
-function UpdateHeatmapOnButton(scales, selected_metric) {
-  if (selected_metric == "rr") {
-    variable_for_fill = "rate_ratio";
-    variable_for_tooltip_text = "rate_ratio";
-    tooltip_static_text = " Male deaths per 100 female deaths";
-    tooltip_scaler = 100;
-  }
-  if (selected_metric == "rd") {
-    variable_for_fill = "count_diff";
-    variable_for_tooltip_text = "count_diff";
-    tooltip_static_text = " Male deaths in excess of female deaths";
-    tooltip_scaler = 1;
-  }
-
-  plot
-    .selectAll("rect")
-    .style("fill", (d) => scales.fill(d[variable_for_fill]))
-    .style("stroke", (d) => scales.fill(d[variable_for_fill]));
-}
-
-// update the heat map based on change in dropdown
-function UpdateHeatmapOnDropdown(scales, data, selected_metric) {
-  const xScale = scales.x;
-  const yScale = scales.y;
-  // calculate the new width and height of heatmap rectangle
-  // based on new data
-  let rect_width = width / (scales.x.domain()[1] - scales.x.domain()[0]),
-    rect_height = height / (scales.y.domain()[1] - scales.y.domain()[0]);
-  // Update the Heatmap based on new data
-  let heatmapCells = plot
-    .selectAll("rect")
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("class", "heatmapcell")
-    // Calculate x position based on data
-    .attr("x", (d) => xScale(d.Year))
-    // Calculate y position based on data
-    .attr("y", (d) => yScale(d.Age))
-    .attr("width", rect_width)
-    .attr("height", rect_height);
-  //Update the new data based on selection of buttons
-  if (selected_metric == "rr") {
-    variable_for_fill = "rate_ratio";
-  }
-  if (selected_metric == "rd") {
-    variable_for_fill = "count_diff";
-  }
-
-  plot
-    .selectAll("rect")
-    .style("fill", (d) => scales.fill(d[variable_for_fill]))
-    .style("stroke", (d) => scales.fill(d[variable_for_fill]));
 }
 
 // Init plot -------------------------------------------------------------
@@ -344,61 +314,279 @@ let plot = d3
   .append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-// Plot data and update based on UI input --------------------------------
+// Data and rendering -----------------------------------------------------
 
-// draw viz based on data and update based on user input
-// Calling the async function which loads the data
-fetchInitialData().then((inputData) => {
-  // filter to default region
-  let currentData = inputData;
+function toTitleCase(value) {
+  if (!value) {
+    return "";
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
-  console.log(currentData);
+function updateHeader(series, measure) {
+  const title = measure ? measure.name : "Lexis surface";
+  d3.select("#plot-title").text(title);
+  if (measure && measure.axes) {
+    const subtitle = `Heatmap by ${measure.axes.y.name} and ${measure.axes.x.name}`;
+    d3.select(".subtitle").text(subtitle);
+  }
+}
 
-  // x, y and color scales for heatmap based on data
-  let scales = DefineHeatmapScales(currentData, selected_metric);
+function renderSurface(surface, measure) {
+  plot.selectAll("*").remove();
+  if (!surface || !surface.observations || surface.observations.length === 0) {
+    return;
+  }
 
-  // Generate Plot -------------------------------------------------------
-
-  DrawHeatmap(currentData, scales, selected_metric);
+  const scales = DefineHeatmapScales(surface.observations, measure);
+  DrawHeatmap(surface.observations, scales);
   AddAxesToHeatmap(scales);
-  AddColorBarToHeatmap(scales);
-  AddMouseHoverToHeatmap();
+  AddAxisLabels(measure);
+  AddColorBarToHeatmap(scales, measure);
+  AddMouseHoverToHeatmap(measure);
+  updateHeader(surface.series, measure);
+  updateCaption(surface.series);
+}
 
-  // Update Plot ---------------------------------------------------------
+function populateMeasures(measuresList) {
+  measureDropdown
+    .selectAll("option")
+    .data(measuresList)
+    .enter()
+    .append("option")
+    .text((d) => d.name)
+    .attr("value", (d) => d.key);
+}
 
-  // update heatmap based on user-input(button)
-  d3.selectAll(".button").on("click", function () {
-    // buttons for color values
-    selected_metric = d3.select(this).attr("data-val");
-    d3.select(".current").classed("current", false);
-    d3.select(this).classed("current", true);
+function populateSeries(seriesOptions) {
+  seriesDropdown.selectAll("option").remove();
+  seriesDropdown
+    .selectAll("option")
+    .data(seriesOptions)
+    .enter()
+    .append("option")
+    .text((d) => d.label || d.key)
+    .attr("value", (d) => d.key);
+}
 
-    // update scales based on user input(button)
-    scales = DefineHeatmapScales(currentData, selected_metric);
+function formatStrataValue(strataKey, value) {
+  const definition = strataDefinitions[strataKey];
+  if (!definition) {
+    return value;
+  }
+  if (definition.valuesFromData) {
+    return value;
+  }
+  const codebookMap = definition.codebookMap || {};
+  return codebookMap[value] || value;
+}
 
-    // redraw heatmap(based on button selection)
-    UpdateHeatmapOnButton(scales, selected_metric);
+function getStrataLabel(strataKey) {
+  const definition = strataDefinitions[strataKey];
+  return definition && definition.label ? definition.label : toTitleCase(strataKey);
+}
+
+function getAvailableValues(strataKey) {
+  const combos = currentStrataCombos;
+  const values = new Set();
+  combos.forEach((combo) => {
+    const matches = Object.keys(currentStrataSelections).every((key) => {
+      if (key === strataKey) {
+        return true;
+      }
+      const selectedValue = currentStrataSelections[key];
+      return selectedValue ? combo[key] === selectedValue : true;
+    });
+    if (matches) {
+      values.add(combo[strataKey]);
+    }
+  });
+  if (values.size === 0 && currentSeries && currentSeries.strataValues) {
+    const fallback = currentSeries.strataValues[strataKey] || [];
+    fallback.forEach((value) => values.add(value));
+  }
+  return Array.from(values).sort();
+}
+
+function refreshStrataOptions() {
+  if (!currentSeries || !currentSeries.strataKeys) {
+    return;
+  }
+
+  let needsSurfaceReload = false;
+  currentSeries.strataKeys.forEach((key) => {
+    const select = d3.select(`#stratum-${key}`);
+    const availableValues = getAvailableValues(key);
+    const currentValue = currentStrataSelections[key];
+    const nextValue = availableValues.includes(currentValue)
+      ? currentValue
+      : availableValues[0];
+
+    select.selectAll("option").remove();
+    select
+      .selectAll("option")
+      .data(availableValues)
+      .enter()
+      .append("option")
+      .attr("value", (d) => d)
+      .text((d) => formatStrataValue(key, d));
+
+    if (nextValue) {
+      select.property("value", nextValue);
+      if (currentValue !== nextValue) {
+        currentStrataSelections[key] = nextValue;
+        needsSurfaceReload = true;
+      }
+    }
   });
 
-  // update heatmap based on dropdown
-  let dropdown = d3.select("#country-dropdown");
+  if (needsSurfaceReload) {
+    loadSurfaceForSelections();
+  }
+}
 
-  // Attach an event listener to the dropdown
-  // This tracks for any changes made by the user to the dropdown selection
-  // Inside the dropdown change event handler
-  dropdown.on("change", function () {
-    let selectedOption = dropdown.property("value");
-    updateDataBasedOnDropdown(selectedOption)
-      .then((updatedData) => {
-        console.log("Received updated data in the calling function");
-        console.log(updatedData);
-        // define scales for the new data from the selected dropdown
-        scales = DefineHeatmapScales(updatedData, selected_metric);
-        //update heatmap
-        UpdateHeatmapOnDropdown(scales, updatedData, selected_metric);
-      })
-      .catch((error) => {
-        console.error("Error in update:", error);
+function renderStrataControls(series) {
+  strataControls.selectAll("*").remove();
+  currentStrataSelections = {};
+  currentStrataCombos = series && series.strataCombos ? series.strataCombos : [];
+
+  if (!series || !series.strataKeys || series.strataKeys.length === 0) {
+    return;
+  }
+
+  series.strataKeys.forEach((key) => {
+    const control = strataControls.append("div").attr("class", "stratum-control");
+    control
+      .append("label")
+      .attr("class", "control-label")
+      .attr("for", `stratum-${key}`)
+      .text(getStrataLabel(key));
+    control
+      .append("select")
+      .attr("class", "stratum-select")
+      .attr("id", `stratum-${key}`)
+      .on("change", function () {
+        currentStrataSelections[key] = d3.select(this).property("value");
+        refreshStrataOptions();
+        loadSurfaceForSelections();
       });
   });
+
+  const initialCombo = currentStrataCombos.length > 0 ? currentStrataCombos[0] : null;
+  if (initialCombo) {
+    currentStrataSelections = { ...initialCombo };
+  }
+
+  refreshStrataOptions();
+}
+
+async function loadSurfaceForSelections() {
+  if (!currentSeries) {
+    return;
+  }
+  const strataKeys = currentSeries.strataKeys || [];
+  const hasAllSelections =
+    strataKeys.length === 0 ||
+    strataKeys.every((key) => currentStrataSelections[key]);
+  if (!hasAllSelections) {
+    return;
+  }
+  const surface = await fetchSurface(currentSeries.key, currentStrataSelections);
+  renderSurface(surface, currentMeasure);
+}
+
+async function ensureStrataDefinitions(keys) {
+  const missing = keys.filter((key) => !strataDefinitions[key]);
+  if (missing.length === 0) {
+    return;
+  }
+  const fetched = await fetchStrata(missing);
+  Object.keys(fetched || {}).forEach((key) => {
+    const entry = fetched[key];
+    if (entry && entry.codebook && Array.isArray(entry.codebook)) {
+      entry.codebookMap = entry.codebook.reduce((acc, item) => {
+        if (item && item.key !== undefined) {
+          acc[item.key] = item.name || item.key;
+        }
+        return acc;
+      }, {});
+    }
+    strataDefinitions[key] = entry;
+  });
+}
+
+async function ensureSources(keys) {
+  const missing = keys.filter((key) => !sourcesByKey[key]);
+  if (missing.length === 0) {
+    return;
+  }
+  const fetched = await fetchSources(missing);
+  (fetched || []).forEach((source) => {
+    if (source && source.key) {
+      sourcesByKey[source.key] = source;
+    }
+  });
+}
+
+function updateCaption(series) {
+  if (!series || !series.sourceKeys || series.sourceKeys.length === 0) {
+    caption.text("");
+    return;
+  }
+  const parts = series.sourceKeys.map((key) => {
+    const source = sourcesByKey[key];
+    if (!source) {
+      return key;
+    }
+    return source.citation || source.name || key;
+  });
+  caption.text(`Data source: ${parts.join("; ")}`);
+}
+
+async function loadSeriesForMeasure(measureKey) {
+  seriesList = await fetchSeries(measureKey);
+  populateSeries(seriesList);
+  currentSeries = seriesList.length > 0 ? seriesList[0] : null;
+  if (!currentSeries) {
+    return;
+  }
+  seriesDropdown.property("value", currentSeries.key);
+  await ensureStrataDefinitions(currentSeries.strataKeys || []);
+  await ensureSources(currentSeries.sourceKeys || []);
+  renderStrataControls(currentSeries);
+  await loadSurfaceForSelections();
+}
+
+async function initialize() {
+  measures = await fetchMeasures();
+  populateMeasures(measures);
+  if (measures.length === 0) {
+    return;
+  }
+  currentMeasure = measures[0];
+  measureDropdown.property("value", currentMeasure.key);
+  await loadSeriesForMeasure(currentMeasure.key);
+
+  measureDropdown.on("change", async function () {
+    const selectedKey = measureDropdown.property("value");
+    currentMeasure = measures.find((item) => item.key === selectedKey);
+    await loadSeriesForMeasure(selectedKey);
+  });
+
+  seriesDropdown.on("change", async function () {
+    const selectedKey = seriesDropdown.property("value");
+    const selectedSeries = seriesList.find((item) => item.key === selectedKey);
+    currentSeries = selectedSeries || null;
+    if (!currentSeries) {
+      return;
+    }
+    await ensureStrataDefinitions(currentSeries.strataKeys || []);
+    await ensureSources(currentSeries.sourceKeys || []);
+    renderStrataControls(currentSeries);
+    await loadSurfaceForSelections();
+  });
+}
+
+initialize().catch((error) => {
+  console.error("Initialization error:", error);
 });

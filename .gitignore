@@ -1,2 +1,6 @@
 pvt
 node_modules
+.Rproj.user
+*.Rproj
+.Rhistory
+.Rapp.history

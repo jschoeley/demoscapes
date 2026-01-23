@@ -1,0 +1,6 @@
+sources:
+  - key: hmd
+    name: Human Mortality Database
+    url: https://www.mortality.org/
+    citation: Human Mortality Database. University of California, Berkeley (USA), and Max Planck Institute for Demographic Research (Germany).
+    license: Use subject to HMD licensing terms.
