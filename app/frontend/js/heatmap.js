@@ -52,6 +52,23 @@ function DefineHeatmapScales(data, measure) {
   };
 }
 
+function expandSurface(surface) {
+  if (!surface || !surface.xValues || !surface.yValues || !surface.zValues) {
+    return [];
+  }
+  const xValues = surface.xValues;
+  const yValues = surface.yValues;
+  const data = [];
+  let index = 0;
+  yValues.forEach((y) => {
+    xValues.forEach((x) => {
+      data.push({ x, y, value: surface.zValues[index] });
+      index += 1;
+    });
+  });
+  return data;
+}
+
 function parseDomainValue(value) {
   if (typeof value === "number") {
     return value;
@@ -332,20 +349,24 @@ function updateHeader(series, measure) {
   }
 }
 
-function renderSurface(surface, measure) {
+function renderSurface(payload, measure) {
   plot.selectAll("*").remove();
-  if (!surface || !surface.observations || surface.observations.length === 0) {
+  if (!payload || !payload.surface) {
+    return;
+  }
+  const observations = expandSurface(payload.surface);
+  if (observations.length === 0) {
     return;
   }
 
-  const scales = DefineHeatmapScales(surface.observations, measure);
-  DrawHeatmap(surface.observations, scales);
+  const scales = DefineHeatmapScales(observations, measure);
+  DrawHeatmap(observations, scales);
   AddAxesToHeatmap(scales);
   AddAxisLabels(measure);
   AddColorBarToHeatmap(scales, measure);
   AddMouseHoverToHeatmap(measure);
-  updateHeader(surface.series, measure);
-  updateCaption(surface.series);
+  updateHeader(payload.series, measure);
+  updateCaption(payload.series);
 }
 
 function populateMeasures(measuresList) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Series, Observation } = require('./models');
+const { Series, Surface } = require('./models');
 
 router.get('/', async (req, res) => {
   try {
@@ -37,10 +37,8 @@ router.get('/', async (req, res) => {
       }
     }
 
-    const observations = await Observation.find(query)
-      .select('-__v')
-      .sort({ x: 1, y: 1 });
-    res.json({ series, observations });
+    const surface = await Surface.findOne(query).select('-__v');
+    res.json({ series, surface });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }

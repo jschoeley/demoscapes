@@ -2,7 +2,7 @@ const csv = require('csvtojson');
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { Source, Measure, Series, Observation } = require('./models');
+const { Source, Measure, Series, Surface } = require('./models');
 
 const lexisDataDir = path.join(__dirname, 'data', 'lexisdata');
 const metadataDir = path.join(__dirname, 'data', 'metadata');
@@ -39,7 +39,7 @@ async function runImport() {
     Source.deleteMany({}),
     Measure.deleteMany({}),
     Series.deleteMany({}),
-    Observation.deleteMany({}),
+    Surface.deleteMany({}),
   ]);
 
   if (sourcesSeed.length > 0) {
@@ -84,22 +84,11 @@ async function runImport() {
       valuesByKey[key] = new Set();
     });
     const combosSet = new Set();
-
-    const batchSize = 5000;
-    let batch = [];
-
-    const flushBatch = async () => {
-      if (batch.length === 0) {
-        return;
-      }
-      const toInsert = batch;
-      batch = [];
-      await Observation.insertMany(toInsert);
-    };
+    const surfacesByCombo = new Map();
 
     await csv()
       .fromFile(csvPath)
-      .subscribe(async (row) => {
+      .subscribe((row) => {
         const strata = {};
         strataKeys.forEach((key) => {
           const value = row[key];
@@ -117,13 +106,20 @@ async function runImport() {
           throw new Error(`Invalid x/y value in ${definition.key} row: ${JSON.stringify(row)}`);
         }
 
-        batch.push({
-          seriesKey: definition.key,
-          strata,
-          x,
-          y,
-          value: parseValue(row.z),
-        });
+        const comboKey = JSON.stringify(strataKeys.map((key) => strata[key]));
+        if (!surfacesByCombo.has(comboKey)) {
+          surfacesByCombo.set(comboKey, {
+            strata: { ...strata },
+            xSet: new Set(),
+            ySet: new Set(),
+            zMap: new Map(),
+          });
+        }
+
+        const surface = surfacesByCombo.get(comboKey);
+        surface.xSet.add(x);
+        surface.ySet.add(y);
+        surface.zMap.set(`${x}|${y}`, parseValue(row.z));
 
         strataKeys.forEach((key) => {
           valuesByKey[key].add(strata[key]);
@@ -136,13 +132,34 @@ async function runImport() {
           });
           combosSet.add(JSON.stringify(combo));
         }
-
-        if (batch.length >= batchSize) {
-          await flushBatch();
-        }
       });
 
-    await flushBatch();
+    const surfaceDocs = [];
+    for (const surface of surfacesByCombo.values()) {
+      const xValues = Array.from(surface.xSet).sort((a, b) => a - b);
+      const yValues = Array.from(surface.ySet).sort((a, b) => a - b);
+      const zValues = [];
+
+      yValues.forEach((y) => {
+        xValues.forEach((x) => {
+          const value = surface.zMap.get(`${x}|${y}`);
+          zValues.push(value === undefined ? null : value);
+        });
+      });
+
+      surfaceDocs.push({
+        seriesKey: definition.key,
+        strata: surface.strata,
+        xValues,
+        yValues,
+        zValues,
+        zEncoding: 'row-major-y',
+      });
+    }
+
+    if (surfaceDocs.length > 0) {
+      await Surface.insertMany(surfaceDocs);
+    }
 
     const strataValues = {};
     Object.keys(valuesByKey).forEach((key) => {
