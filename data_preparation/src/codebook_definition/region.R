@@ -69,12 +69,12 @@ extra_regions <- list(
   CreateEntry(
     key = "DE-W",
     parentKey = "DE",
-    name = "West Germany"
+    name = "Germany (West)"
   ),
   CreateEntry(
     key = "DE-E",
     parentKey = "DE",
-    name = "East Germany"
+    name = "Germany (East)"
   )
 )
 

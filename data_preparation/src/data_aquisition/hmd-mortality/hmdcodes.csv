@@ -40,10 +40,10 @@ Taiwan,TWN,TW,Total Population
 U.K.,GBR_NP,GB,Total Population
 U.S.A.,USA,US,Total Population
 Ukraine,UKR,UA,Total Population
-England and Wales (Total Population),GBRTENW,UK-EAW,Total Population
-England and Wales (Civilian Population),GBRCENW,UK-EAW,Civilian Population
-Scotland,GBR_SCO,UK-SCT,Total Population
-Northern Ireland,GBR_NIR,UK-NIR,Total Population
+England and Wales (Total Population),GBRTENW,GB-EAW,Total Population
+England and Wales (Civilian Population),GBRCENW,GB-EAW,Civilian Population
+Scotland,GBR_SCO,GB-SCT,Total Population
+Northern Ireland,GBR_NIR,GB-NIR,Total Population
 New Zealand Maori,NZL_MA,NZ,Maori Population
 New Zealand Non-Maori,NZL_NM,NZ,Non-Maori Population
 East Germany,DEUTE,DE-E,Total Population
