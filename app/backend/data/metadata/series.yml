@@ -24,3 +24,10 @@ series:
       - "region"
       - "sex"
       - "subpopulation"
+  - key: "birthcount_by_region"
+    label: "by region"
+    measureKey: "birthcount"
+    sourceKeys:
+      - "hfd"
+    strataKeys:
+      - "region"

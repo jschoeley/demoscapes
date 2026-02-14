@@ -1,6 +1,11 @@
 sources:
   - key: hmd
     name: Human Mortality Database
-    url: https://www.mortality.org/
+    url: https://www.mortality.org
     citation: Human Mortality Database. University of California, Berkeley (USA), and Max Planck Institute for Demographic Research (Germany).
     license: Use subject to HMD licensing terms.
+  - key: hfd
+    name: Human Fertility Database
+    url: https://www.humanfertility.org
+    citation: Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria).
+    license: Use subject to HFD licensing terms.
