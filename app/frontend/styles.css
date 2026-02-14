@@ -1,5 +1,7 @@
 body {
-  font-family: "Arvo", "sans-serif";
+  font-family: "Roboto Condensed", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
   font-size: 18px;
   margin: 0;
   background: #f5f1e7;
@@ -107,6 +109,7 @@ body {
 }
 
 .axis {
+  font-family: "Roboto Condensed", sans-serif;
   font-size: 1em;
 }
 
@@ -136,6 +139,7 @@ body {
 
 .legend {
   font-size: 0.8em;
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 .caption-section {
