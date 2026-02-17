@@ -9,10 +9,10 @@
   },
   "name": "demoscapes",
   "version": "0.0.1",
-  "main": "connection.js",
+  "main": "api/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node import.js && node server.js" 
+    "start": "node database/import.js && node api/server.js" 
   },
   "keywords": [],
   "author": "",

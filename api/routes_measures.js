@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Measure } = require('./models');
+const { Measure } = require('../database/models');
 
 router.get('/', async (req, res) => {
   try {

@@ -4,8 +4,8 @@ const path = require('path');
 const yaml = require('js-yaml');
 const { Source, Measure, Series, Surface } = require('./models');
 
-const lexisDataDir = path.join(__dirname, 'data', 'lexisdata');
-const metadataDir = path.join(__dirname, 'data', 'metadata');
+const lexisDataDir = path.join(__dirname, 'import', 'lexisdata');
+const metadataDir = path.join(__dirname, 'import', 'metadata');
 const sourcesPath = path.join(metadataDir, 'sources.yml');
 const measuresPath = path.join(metadataDir, 'measures.yml');
 const seriesPath = path.join(metadataDir, 'series.yml');

@@ -5,7 +5,7 @@ const yaml = require('js-yaml');
 
 const router = express.Router();
 
-const strataDir = path.join(__dirname, 'data', 'metadata', 'strata');
+const strataDir = path.join(__dirname, '..', 'database', 'import', 'metadata', 'strata');
 let cachedStrata = null;
 
 function loadStrataDefinitions() {

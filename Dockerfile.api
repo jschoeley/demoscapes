@@ -1,0 +1,15 @@
+FROM node:25
+
+WORKDIR /usr/src/app
+
+# Install Node dependencies from top-level package files
+COPY package*.json ./
+RUN npm install
+
+# Copy runtime sources needed by the API process
+COPY api ./api
+COPY database ./database
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

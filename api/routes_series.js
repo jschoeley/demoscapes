@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Series } = require('./models');
+const { Series } = require('../database/models');
 
 router.get('/', async (req, res) => {
   try {

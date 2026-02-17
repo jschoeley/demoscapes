@@ -1,0 +1,34 @@
+networks:
+  mynetwork:
+
+services:
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile.database
+    ports:
+      - '27017:27017'
+    networks:
+      - mynetwork
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - '3000:3000'
+    depends_on:
+      - database
+    networks:
+      - mynetwork
+
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile.website
+    ports:
+      - '80:80'
+    depends_on:
+      - api
+    networks:
+      - mynetwork
