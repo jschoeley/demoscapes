@@ -46,6 +46,16 @@ const seriesSchema = new mongoose.Schema({
 seriesSchema.index({ measureKey: 1 });
 seriesSchema.index({ key: 1 }, { unique: true });
 
+const strataSchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true },
+  label: String,
+  description: String,
+  valuesFromData: { type: Boolean, default: false },
+  codebook: { type: [mongoose.Schema.Types.Mixed], default: [] },
+});
+
+strataSchema.index({ key: 1 }, { unique: true });
+
 const surfaceSchema = new mongoose.Schema({
   seriesKey: { type: String, required: true },
   strata: { type: mongoose.Schema.Types.Mixed, default: {} },
@@ -60,11 +70,13 @@ surfaceSchema.index({ seriesKey: 1 });
 const Source = mongoose.model('Source', sourceSchema);
 const Measure = mongoose.model('Measure', measureSchema);
 const Series = mongoose.model('Series', seriesSchema);
+const Strata = mongoose.model('Strata', strataSchema);
 const Surface = mongoose.model('Surface', surfaceSchema);
 
 module.exports = {
   Source,
   Measure,
   Series,
+  Strata,
   Surface,
 };

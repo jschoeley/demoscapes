@@ -1,54 +1,20 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const yaml = require('js-yaml');
+const { Strata } = require('../database/models');
 
 const router = express.Router();
 
-const strataDir = path.join(__dirname, '..', 'database', 'import', 'metadata', 'strata');
-let cachedStrata = null;
-
-function loadStrataDefinitions() {
-  if (cachedStrata) {
-    return cachedStrata;
-  }
-
-  const files = fs.readdirSync(strataDir).filter((file) => file.endsWith('.yml'));
-  const entries = [];
-
-  files.forEach((file) => {
-    const doc = yaml.load(fs.readFileSync(path.join(strataDir, file), 'utf8'));
-    if (Array.isArray(doc)) {
-      entries.push(...doc);
-    } else if (doc) {
-      entries.push(doc);
-    }
-  });
-
-  cachedStrata = entries.reduce((acc, entry) => {
-    if (entry && entry.key) {
-      acc[entry.key] = entry;
-    }
-    return acc;
-  }, {});
-
-  return cachedStrata;
-}
-
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const keysParam = req.query.keys;
-    const strata = loadStrataDefinitions();
+    const keys = keysParam ? keysParam.split(',').map((key) => key.trim()) : [];
+    const query = keys.length > 0 ? { key: { $in: keys } } : {};
 
-    if (!keysParam) {
-      return res.json(strata);
-    }
+    const entries = await Strata.find(query)
+      .select('-__v -_id')
+      .sort({ key: 1 });
 
-    const keys = keysParam.split(',').map((key) => key.trim());
-    const filtered = keys.reduce((acc, key) => {
-      if (strata[key]) {
-        acc[key] = strata[key];
-      }
+    const filtered = entries.reduce((acc, entry) => {
+      acc[entry.key] = entry;
       return acc;
     }, {});
 

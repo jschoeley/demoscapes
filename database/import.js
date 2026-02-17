@@ -2,13 +2,14 @@ const csv = require('csvtojson');
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { Source, Measure, Series, Surface } = require('./models');
+const { Source, Measure, Series, Strata, Surface } = require('./models');
 
 const lexisDataDir = path.join(__dirname, 'import', 'lexisdata');
 const metadataDir = path.join(__dirname, 'import', 'metadata');
 const sourcesPath = path.join(metadataDir, 'sources.yml');
 const measuresPath = path.join(metadataDir, 'measures.yml');
 const seriesPath = path.join(metadataDir, 'series.yml');
+const strataDir = path.join(metadataDir, 'strata');
 
 function parseValue(value) {
   if (value === '.' || value === undefined || value === null) {
@@ -26,6 +27,36 @@ function requireField(value, label) {
   }
 }
 
+function loadStrataSeed() {
+  if (!fs.existsSync(strataDir)) {
+    return [];
+  }
+
+  const files = fs.readdirSync(strataDir).filter((file) => file.endsWith('.yml'));
+  const entries = [];
+
+  files.forEach((file) => {
+    const doc = yaml.load(fs.readFileSync(path.join(strataDir, file), 'utf8'));
+    if (Array.isArray(doc)) {
+      entries.push(...doc);
+      return;
+    }
+    if (doc) {
+      entries.push(doc);
+    }
+  });
+
+  return entries
+    .filter((entry) => entry && entry.key)
+    .map((entry) => ({
+      key: entry.key,
+      label: entry.label || entry.key,
+      description: entry.description || '',
+      valuesFromData: Boolean(entry.valuesFromData),
+      codebook: Array.isArray(entry.codebook) ? entry.codebook : [],
+    }));
+}
+
 async function runImport() {
   const sourcesDoc = yaml.load(fs.readFileSync(sourcesPath, 'utf8'));
   const measuresDoc = yaml.load(fs.readFileSync(measuresPath, 'utf8'));
@@ -34,11 +65,13 @@ async function runImport() {
   const sourcesSeed = sourcesDoc && sourcesDoc.sources ? sourcesDoc.sources : [];
   const measuresSeed = measuresDoc && measuresDoc.measures ? measuresDoc.measures : [];
   const seriesSeed = seriesDoc && seriesDoc.series ? seriesDoc.series : [];
+  const strataSeed = loadStrataSeed();
 
   await Promise.all([
     Source.deleteMany({}),
     Measure.deleteMany({}),
     Series.deleteMany({}),
+    Strata.deleteMany({}),
     Surface.deleteMany({}),
   ]);
 
@@ -48,6 +81,10 @@ async function runImport() {
 
   if (measuresSeed.length > 0) {
     await Measure.insertMany(measuresSeed);
+  }
+
+  if (strataSeed.length > 0) {
+    await Strata.insertMany(strataSeed);
   }
 
   const seriesDocs = seriesSeed.map((definition) => {
