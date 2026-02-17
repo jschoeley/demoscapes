@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
       return res.status(400).json({ message: 'seriesKey is required' });
     }
 
-    const series = await Series.findOne({ key: seriesKey }).select('-__v');
+    const series = await Series.findOne({ key: seriesKey }).select('strataKeys');
     if (!series) {
       return res.status(404).json({ message: 'Series not found' });
     }
@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
     }
 
     const surface = await Surface.findOne(query).select('-__v');
-    res.json({ series, surface });
+    res.json(surface);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }

@@ -340,7 +340,7 @@ function toTitleCase(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function updateHeader(series, measure) {
+function updateHeader(measure) {
   const title = measure ? measure.name : "Lexis surface";
   d3.select("#plot-title").text(title);
   if (measure && measure.axes) {
@@ -349,12 +349,12 @@ function updateHeader(series, measure) {
   }
 }
 
-function renderSurface(payload, measure) {
+function renderSurface(surface, series, measure) {
   plot.selectAll("*").remove();
-  if (!payload || !payload.surface) {
+  if (!surface) {
     return;
   }
-  const observations = expandSurface(payload.surface);
+  const observations = expandSurface(surface);
   if (observations.length === 0) {
     return;
   }
@@ -365,8 +365,8 @@ function renderSurface(payload, measure) {
   AddAxisLabels(measure);
   AddColorBarToHeatmap(scales, measure);
   AddMouseHoverToHeatmap(measure);
-  updateHeader(payload.series, measure);
-  updateCaption(payload.series);
+  updateHeader(measure);
+  updateCaption(series);
 }
 
 function populateMeasures(measuresList) {
@@ -513,7 +513,7 @@ async function loadSurfaceForSelections() {
     return;
   }
   const surface = await fetchSurface(currentSeries.key, currentStrataSelections);
-  renderSurface(surface, currentMeasure);
+  renderSurface(surface, currentSeries, currentMeasure);
 }
 
 async function ensureStrataDefinitions(keys) {
