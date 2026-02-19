@@ -2,14 +2,23 @@ const csv = require('csvtojson');
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const { Source, Measure, Series, Strata, Surface } = require('./models');
+const {
+  Source,
+  Measure,
+  Collection,
+  Series,
+  Strata,
+  Surface,
+} = require('./models');
 
 const lexisDataDir = path.join(__dirname, 'import', 'lexisdata');
 const metadataDir = path.join(__dirname, 'import', 'metadata');
 const sourcesPath = path.join(metadataDir, 'sources.yml');
 const measuresPath = path.join(metadataDir, 'measures.yml');
+const collectionsPath = path.join(metadataDir, 'collections.yml');
 const seriesPath = path.join(metadataDir, 'series.yml');
 const strataDir = path.join(metadataDir, 'strata');
+const GLOBAL_COLLECTION_KEY = 'global';
 
 function parseValue(value) {
   if (value === '.' || value === undefined || value === null) {
@@ -57,19 +66,62 @@ function loadStrataSeed() {
     }));
 }
 
+function normalizeCollectionKeys(keys) {
+  const set = new Set();
+  if (Array.isArray(keys)) {
+    keys.forEach((key) => {
+      if (typeof key !== 'string') {
+        return;
+      }
+      const trimmed = key.trim();
+      if (trimmed) {
+        set.add(trimmed);
+      }
+    });
+  }
+  set.add(GLOBAL_COLLECTION_KEY);
+  return Array.from(set).sort();
+}
+
 async function runImport() {
   const sourcesDoc = yaml.load(fs.readFileSync(sourcesPath, 'utf8'));
   const measuresDoc = yaml.load(fs.readFileSync(measuresPath, 'utf8'));
+  const collectionsDoc = yaml.load(fs.readFileSync(collectionsPath, 'utf8'));
   const seriesDoc = yaml.load(fs.readFileSync(seriesPath, 'utf8'));
 
   const sourcesSeed = sourcesDoc && sourcesDoc.sources ? sourcesDoc.sources : [];
   const measuresSeed = measuresDoc && measuresDoc.measures ? measuresDoc.measures : [];
+  const collectionsSeed = collectionsDoc && collectionsDoc.collections
+    ? collectionsDoc.collections
+    : [];
   const seriesSeed = seriesDoc && seriesDoc.series ? seriesDoc.series : [];
   const strataSeed = loadStrataSeed();
+
+  const normalizedCollections = collectionsSeed.map((entry) => {
+    requireField(entry && entry.key, 'collections.key');
+    requireField(entry && entry.name, `collections.name for ${entry.key}`);
+    return {
+      key: entry.key,
+      name: entry.name,
+      description: entry.description || '',
+      summary: entry.summary || '',
+      order: entry.order,
+      isPublic: entry.isPublic === undefined ? true : Boolean(entry.isPublic),
+    };
+  });
+
+  const uniqueCollectionKeys = new Set(normalizedCollections.map((entry) => entry.key));
+  if (uniqueCollectionKeys.size !== normalizedCollections.length) {
+    throw new Error('Duplicate collection key found in collections.yml');
+  }
+  if (!uniqueCollectionKeys.has(GLOBAL_COLLECTION_KEY)) {
+    throw new Error(`collections.yml must define '${GLOBAL_COLLECTION_KEY}' collection`);
+  }
 
   await Promise.all([
     Source.deleteMany({}),
     Measure.deleteMany({}),
+    Collection.deleteMany({}),
     Series.deleteMany({}),
     Strata.deleteMany({}),
     Surface.deleteMany({}),
@@ -83,21 +135,36 @@ async function runImport() {
     await Measure.insertMany(measuresSeed);
   }
 
+  if (normalizedCollections.length > 0) {
+    await Collection.insertMany(normalizedCollections);
+  }
+
   if (strataSeed.length > 0) {
     await Strata.insertMany(strataSeed);
   }
 
+  const validCollectionKeys = new Set(normalizedCollections.map((entry) => entry.key));
   const seriesDocs = seriesSeed.map((definition) => {
     requireField(definition.key, 'series.key');
     requireField(definition.measureKey, `series.measureKey for ${definition.key}`);
 
     const strataKeys = Array.isArray(definition.strataKeys) ? definition.strataKeys : [];
 
+    const collectionKeys = normalizeCollectionKeys(definition.collectionKeys);
+    collectionKeys.forEach((collectionKey) => {
+      if (!validCollectionKeys.has(collectionKey)) {
+        throw new Error(
+          `Unknown collectionKey '${collectionKey}' in series '${definition.key}'`,
+        );
+      }
+    });
+
     return {
       key: definition.key,
       label: definition.label || definition.key,
       measureKey: definition.measureKey,
       sourceKeys: Array.isArray(definition.sourceKeys) ? definition.sourceKeys : [],
+      collectionKeys,
       strataKeys,
       strataValues: {},
       strataCombos: [],

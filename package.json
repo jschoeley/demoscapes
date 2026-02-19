@@ -11,6 +11,7 @@
   "version": "0.0.1",
   "main": "api/server.js",
   "scripts": {
+    "build:website": "node website/build/build-site.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node database/import.js && node api/server.js" 
   },

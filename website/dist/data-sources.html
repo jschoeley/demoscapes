@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Sources</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+    <link href="/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="/index.html"><span class="brand-text">demoscapes</span></a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/index.html" class="">Home</a>
+          <a href="/topics.html" class="">Topics</a>
+          <a href="/collections.html" class="">Collections</a>
+          <a href="/data-sources.html" class="is-current">Data Sources</a>
+          <a href="/about.html" class="">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="content-page markdown-content">
+<h1>Data Sources</h1>
+<p>Demoscapes integrates data from demographic repositories and makes source metadata available alongside each visualization.</p>
+</section>
+<section class="source-grid">
+<article class="source-card">
+  <h2>Human Mortality Database</h2>
+  <p class="source-key"><strong>Key:</strong> hmd</p>
+  <p>Human Mortality Database. University of California, Berkeley (USA), and Max Planck Institute for Demographic Research (Germany).</p>
+  <p><strong>License:</strong> Use subject to HMD licensing terms.</p>
+  <p><a href="https://www.mortality.org" target="_blank" rel="noopener noreferrer">https://www.mortality.org</a></p>
+</article>
+<article class="source-card">
+  <h2>Human Fertility Database</h2>
+  <p class="source-key"><strong>Key:</strong> hfd</p>
+  <p>Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria).</p>
+  <p><strong>License:</strong> Use subject to HFD licensing terms.</p>
+  <p><a href="https://www.humanfertility.org" target="_blank" rel="noopener noreferrer">https://www.humanfertility.org</a></p>
+</article>
+</section>
+    </main>
+
+    <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+    <script src="/js/api.js" defer></script>
+    <script src="/js/lexis-surface.js" defer></script>
+    <script src="/js/site.js" defer></script>
+  </body>
+</html>

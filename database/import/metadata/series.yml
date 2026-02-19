@@ -4,6 +4,8 @@ series:
     measureKey: "deathratesexratio"
     sourceKeys:
       - "hmd"
+    collectionKeys:
+      - "hmd"
     strataKeys:
       - "region"
       - "subpopulation"
@@ -11,6 +13,8 @@ series:
     label: "by region and subpopulation"
     measureKey: "deathcountsexdifference"
     sourceKeys:
+      - "hmd"
+    collectionKeys:
       - "hmd"
     strataKeys:
       - "region"
@@ -20,6 +24,8 @@ series:
     measureKey: "deathrate"
     sourceKeys:
       - "hmd"
+    collectionKeys:
+      - "hmd"
     strataKeys:
       - "region"
       - "sex"
@@ -28,6 +34,8 @@ series:
     label: "by region"
     measureKey: "birthcount"
     sourceKeys:
+      - "hfd"
+    collectionKeys:
       - "hfd"
     strataKeys:
       - "region"

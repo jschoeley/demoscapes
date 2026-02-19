@@ -4,12 +4,22 @@ const { Series } = require('../database/models');
 
 router.get('/', async (req, res) => {
   try {
-    const { measureKey } = req.query;
-    if (!measureKey) {
-      return res.status(400).json({ message: 'measureKey is required' });
+    const { measureKey, collectionKey } = req.query;
+    if (!measureKey && !collectionKey) {
+      return res.status(400).json({
+        message: 'At least one query parameter is required: measureKey or collectionKey',
+      });
     }
 
-    const series = await Series.find({ measureKey })
+    const query = {};
+    if (measureKey) {
+      query.measureKey = measureKey;
+    }
+    if (collectionKey) {
+      query.collectionKeys = collectionKey;
+    }
+
+    const series = await Series.find(query)
       .select('-__v')
       .sort({ key: 1 });
     res.json(series);

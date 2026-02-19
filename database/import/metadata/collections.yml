@@ -1,0 +1,19 @@
+collections:
+  - key: "global"
+    name: "Global"
+    description: "All available series in demoscapes."
+    summary: "Complete dataset coverage"
+    order: 0
+    isPublic: true
+  - key: "hmd"
+    name: "Human Mortality Database"
+    description: "Series sourced from the Human Mortality Database."
+    summary: "Mortality-focused collection"
+    order: 10
+    isPublic: true
+  - key: "hfd"
+    name: "Human Fertility Database"
+    description: "Series sourced from the Human Fertility Database."
+    summary: "Fertility-focused collection"
+    order: 20
+    isPublic: true

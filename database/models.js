@@ -33,17 +33,31 @@ const measureSchema = new mongoose.Schema({
   },
 });
 
+const collectionSchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  description: String,
+  summary: String,
+  order: Number,
+  isPublic: { type: Boolean, default: true },
+});
+
+collectionSchema.index({ key: 1 }, { unique: true });
+collectionSchema.index({ order: 1, key: 1 });
+
 const seriesSchema = new mongoose.Schema({
   key: { type: String, required: true },
   label: String,
   measureKey: { type: String, required: true },
   sourceKeys: [String],
+  collectionKeys: { type: [String], default: [] },
   strataKeys: [String],
   strataValues: { type: mongoose.Schema.Types.Mixed, default: {} },
   strataCombos: { type: [mongoose.Schema.Types.Mixed], default: [] },
 });
 
 seriesSchema.index({ measureKey: 1 });
+seriesSchema.index({ collectionKeys: 1 });
 seriesSchema.index({ key: 1 }, { unique: true });
 
 const strataSchema = new mongoose.Schema({
@@ -69,6 +83,7 @@ surfaceSchema.index({ seriesKey: 1 });
 
 const Source = mongoose.model('Source', sourceSchema);
 const Measure = mongoose.model('Measure', measureSchema);
+const Collection = mongoose.model('Collection', collectionSchema);
 const Series = mongoose.model('Series', seriesSchema);
 const Strata = mongoose.model('Strata', strataSchema);
 const Surface = mongoose.model('Surface', surfaceSchema);
@@ -76,6 +91,7 @@ const Surface = mongoose.model('Surface', surfaceSchema);
 module.exports = {
   Source,
   Measure,
+  Collection,
   Series,
   Strata,
   Surface,
