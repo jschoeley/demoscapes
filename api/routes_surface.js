@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { Series, Surface } = require('../database/models');
+const { surfaceRateLimit } = require('./surface-rate-limit');
 
-router.get('/', async (req, res) => {
+router.get('/', surfaceRateLimit, async (req, res) => {
   try {
     const { seriesKey, strata } = req.query;
     if (!seriesKey) {
@@ -38,9 +39,13 @@ router.get('/', async (req, res) => {
     }
 
     const surface = await Surface.findOne(query).select('-__v -_id');
-    res.json(surface);
+    if (!surface) {
+      return res.status(404).json({ message: 'Surface not found' });
+    }
+
+    return res.json(surface);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    return res.status(500).json({ message: 'Server Error' });
   }
 });
 

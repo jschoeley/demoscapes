@@ -266,6 +266,16 @@ a {
   color: var(--ink-muted);
 }
 
+.lexis-widget-notice {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #d7b46a;
+  background: #fff3d6;
+  color: #5e4307;
+  border-radius: 8px;
+  font-size: 0.95em;
+}
+
 @media (max-width: 860px) {
   .site-header-inner,
   .page {

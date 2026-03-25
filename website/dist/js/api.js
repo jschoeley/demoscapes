@@ -1,11 +1,28 @@
 (function (global) {
   const API_BASE = global.DEMOSCAPES_API_BASE || "http://127.0.0.1:3000/api";
 
+  async function fetchJson(url) {
+    const response = await fetch(url);
+    const isJson = (response.headers.get("content-type") || "").includes("application/json");
+    const payload = isJson ? await response.json() : null;
+
+    if (!response.ok) {
+      const error = new Error((payload && payload.message) || `Request failed with status ${response.status}`);
+      error.status = response.status;
+      error.payload = payload;
+      error.warning = payload && payload.warning ? payload.warning : response.headers.get("X-RateLimit-Warning");
+      error.retryAfterSeconds = Number(response.headers.get("Retry-After")) || null;
+      throw error;
+    }
+
+    return payload;
+  }
+
   function fetchMeasures(collectionKey) {
     const query = collectionKey
       ? `?collectionKey=${encodeURIComponent(collectionKey)}`
       : "";
-    return d3.json(`${API_BASE}/measures${query}`);
+    return fetchJson(`${API_BASE}/measures${query}`);
   }
 
   function fetchSeries(params) {
@@ -19,26 +36,26 @@
       query.push(`collectionKey=${encodeURIComponent(options.collectionKey)}`);
     }
 
-    return d3.json(`${API_BASE}/series?${query.join("&")}`);
+    return fetchJson(`${API_BASE}/series?${query.join("&")}`);
   }
 
   function fetchCollections() {
-    return d3.json(`${API_BASE}/collections`);
+    return fetchJson(`${API_BASE}/collections`);
   }
 
   function fetchSurface(seriesKey, strata) {
     const strataParam = encodeURIComponent(JSON.stringify(strata || {}));
-    return d3.json(`${API_BASE}/surface?seriesKey=${encodeURIComponent(seriesKey)}&strata=${strataParam}`);
+    return fetchJson(`${API_BASE}/surface?seriesKey=${encodeURIComponent(seriesKey)}&strata=${strataParam}`);
   }
 
   function fetchStrata(keys) {
     const query = keys && keys.length > 0 ? `?keys=${encodeURIComponent(keys.join(","))}` : "";
-    return d3.json(`${API_BASE}/strata${query}`);
+    return fetchJson(`${API_BASE}/strata${query}`);
   }
 
   function fetchSources(keys) {
     const query = keys && keys.length > 0 ? `?keys=${encodeURIComponent(keys.join(","))}` : "";
-    return d3.json(`${API_BASE}/sources${query}`);
+    return fetchJson(`${API_BASE}/sources${query}`);
   }
 
   global.DemoscapesApi = {

@@ -9,6 +9,10 @@ const strataRoutes = require('./routes_strata');
 const sourcesRoutes = require('./routes_sources');
 const { connectToMongoApi } = require('../database/connection');
 
+if (process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', true);
+}
+
 // Middleware for JSON request body parsing
 app.use(express.json());
 app.use(cors());

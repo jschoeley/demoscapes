@@ -135,6 +135,7 @@
       <section class="lexis-viz-section">
         <div class="card lexis-heatmap-section">
           <div class="lexis-heatmap-title">${options.title || "Lexis surface"}</div>
+          <div class="lexis-widget-notice" hidden></div>
           <div class="lexis-plot-container"></div>
           <p class="lexis-heatmap-caption"></p>
         </div>
@@ -168,6 +169,7 @@
     const strataControls = d3.select(widget).select(".lexis-strata-controls");
     const caption = d3.select(widget).select(".lexis-heatmap-caption");
     const titleNode = d3.select(widget).select(".lexis-heatmap-title");
+    const notice = d3.select(widget).select(".lexis-widget-notice");
     const plotContainer = d3.select(widget).select(".lexis-plot-container");
 
     const state = {
@@ -219,6 +221,14 @@
         .attr("width", dimensions.outerWidth)
         .attr("height", dimensions.outerHeight)
         .attr("viewBox", `0 0 ${dimensions.outerWidth} ${dimensions.outerHeight}`);
+    }
+
+    function clearNotice() {
+      notice.attr("hidden", true).text("");
+    }
+
+    function showNotice(message) {
+      notice.attr("hidden", null).text(message);
     }
 
     function updateHeader(measure) {
@@ -636,8 +646,20 @@
         return;
       }
 
-      const surface = await api.fetchSurface(state.currentSeries.key, state.currentStrataSelections);
-      renderSurface(surface, state.currentSeries, state.currentMeasure);
+      try {
+        const surface = await api.fetchSurface(state.currentSeries.key, state.currentStrataSelections);
+        clearNotice();
+        renderSurface(surface, state.currentSeries, state.currentMeasure);
+      } catch (error) {
+        const isQuotaError = error && error.status === 429;
+        const message = isQuotaError
+          ? (error.warning || "Lexis surface request limit reached. Please wait and try again.")
+          : "Unable to load this Lexis surface right now.";
+
+        showNotice(message);
+        plot.selectAll("*").remove();
+        console.error("Lexis surface request failed", error);
+      }
     }
 
     function refreshStrataOptions() {
@@ -768,6 +790,7 @@
         updateStrataSummary();
         updateHeader(state.currentMeasure);
         updateCaption(null);
+        clearNotice();
         plot.selectAll("*").remove();
         return;
       }
@@ -823,6 +846,7 @@
       if (state.measures.length === 0) {
         updateHeader(null);
         caption.text("");
+        clearNotice();
         return;
       }
 
