@@ -281,10 +281,24 @@ async function runImport() {
   }
 
   console.log('Import complete.');
-  process.exit(0);
 }
 
-runImport().catch((error) => {
-  console.error('Error importing data:', error);
-  process.exit(1);
-});
+module.exports = {
+  runImport,
+};
+
+if (require.main === module) {
+  require('./connection')
+    .connectToMongoInit()
+    .then(() => runImport())
+    .then(() => {
+      return require('./connection').disconnect();
+    })
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('Error importing data:', error);
+      process.exit(1);
+    });
+}

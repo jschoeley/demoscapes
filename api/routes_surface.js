@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
       }
     }
 
-    const surface = await Surface.findOne(query).select('-__v');
+    const surface = await Surface.findOne(query).select('-__v -_id');
     res.json(surface);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });

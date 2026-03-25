@@ -1,12 +1,28 @@
 const mongoose = require('mongoose');
+const { getMongoApiUri, getMongoInitUri } = require('./mongo-uri');
 
-// Here, the second "database" is the name of the service defined in docker-compose.yml file
-mongoose.connect('mongodb://database:27017/mortalityDB1');
+function attachLogging() {
+  if (mongoose.connection.listeners('error').length === 0) {
+    mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
+  }
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-    console.log('Database connected!');
-});
+  if (mongoose.connection.listeners('open').length === 0) {
+    mongoose.connection.once('open', function () {
+      console.log('Database connected!');
+    });
+  }
+}
+
+async function connectToMongoApi() {
+  attachLogging();
+  return mongoose.connect(getMongoApiUri());
+}
+
+async function connectToMongoInit() {
+  attachLogging();
+  return mongoose.connect(getMongoInitUri());
+}
 
 module.exports = mongoose;
+module.exports.connectToMongoApi = connectToMongoApi;
+module.exports.connectToMongoInit = connectToMongoInit;

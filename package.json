@@ -12,8 +12,10 @@
   "main": "api/server.js",
   "scripts": {
     "build:website": "node website/build/build-site.js",
+    "init:database": "node database/init.js",
+    "start:api": "node api/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node database/import.js && node api/server.js" 
+    "start": "npm run start:api"
   },
   "keywords": [],
   "author": "",

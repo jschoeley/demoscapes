@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
     }
 
     const series = await Series.find(query)
-      .select('-__v')
+      .select('-__v -_id')
       .sort({ key: 1 });
     res.json(series);
   } catch (error) {
