@@ -33,16 +33,24 @@ hfd <- qs_read(paths$input$births_period_by_age.qs)
 
 birthcount_by_region <-
   bind_rows(hfd) |>
+  mutate(
+    wx = 1,
+    wy = 1
+  ) |>
   select(
     z = Total,
     x = Year,
     y = Age,
+    wx,
+    wy,
     region = isocode
   ) |>
   mutate(
     z = as.integer(z),
     x = as.integer(x),
-    y = as.integer(y)
+    y = as.integer(y),
+    wx = as.integer(wx),
+    wy = as.integer(wy)
   )
 
 # Export ------------------------------------------------------------------

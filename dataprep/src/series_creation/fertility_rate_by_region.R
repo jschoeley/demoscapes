@@ -33,17 +33,21 @@ hfd <- qs_read(paths$input$fertilityrate_period_by_age.qs)
 
 fertilityrate_by_region <-
   bind_rows(hfd) |>
+  mutate(
+    wx = 1,
+    wy = 1
+  ) |>
   select(
     z = ASFR,
     x = Year,
     y = Age,
+    wx, wy,
     region = isocode
   ) |>
   mutate(
-    z = round(z, 6),
-    x = as.integer(x),
-    y = as.integer(y)
-  )
+    z = round(z, 6)
+  ) |>
+  mutate(across(c(x, y, wx, wy), as.integer))
 
 # Export ------------------------------------------------------------------
 

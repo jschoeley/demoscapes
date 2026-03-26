@@ -35,19 +35,24 @@ numberofkin_by_type_region_period_age.qs <-
 numberofkin_by_kin_region.qs <-
   numberofkin_by_type_region_period_age.qs |>
   filter(!is.na(Alpha_2), Variant == 'Estimate') |>
+  separate(col = year, into = c('year_start', 'year_end'), sep = '-') |>
+  separate(col = age_focal, into = c('age_start', 'age_end'), sep = '-') |>
+  mutate(across(c(year_start, year_end, age_start, age_end), as.integer)) |>
   mutate(
-    year = as.integer(substr(year, 1, 4)),
-    age_focal = as.integer(substr(age_focal, 1, 1)),
-    kin = as.character(factor(kin, levels = DemoKin::demokin_codes$DemoKin, labels = DemoKin::demokin_codes$Labels_2sex))
+    kin = as.character(factor(kin, levels = DemoKin::demokin_codes$DemoKin,
+                              labels = DemoKin::demokin_codes$Labels_2sex)),
+    wx = year_end-year_start,
+    wy = age_end-age_start
   ) |>
-  filter(!is.na(kin)) |>
   select(
     z = value,
-    x = year,
-    y = age_focal,
+    x = year_start,
+    y = age_start,
+    wx, wy,
     kin = kin,
     region = Alpha_2
-  )
+  ) |>
+  filter(!is.na(kin), !is.na(wx), !is.na(wy), !is.na(x), !is.na(y))
 
 # Export ------------------------------------------------------------------
 
