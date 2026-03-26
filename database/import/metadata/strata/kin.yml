@@ -1,0 +1,6 @@
+- key: "kin"
+  label: "Kin"
+  description: "Type of kin"
+  valuesFromData: true
+  codebook:
+

@@ -48,3 +48,13 @@ series:
       - "hfd"
     strataKeys:
       - "region"
+  - key: "numberofkin_by_kin_region"
+    label: "by kin, and region"
+    measureKey: "numberofkin"
+    sourceKeys:
+      - "gutierrezetal2023"
+    collectionKeys:
+      - "gutierrezetal2023"
+    strataKeys:
+      - "kin"
+      - "region"

@@ -221,3 +221,47 @@ measures:
       tooltip:
         suffix: " births per 1,000 female person-years"
         precision: 0
+  - key: numberofkin 
+    name: Number of kin
+    unit: Kin
+    statType: count
+    description: The number of kin a person has.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 1
+      labelprecision: 0
+      legend:
+        left: ""
+        right: "Kin"
+      tooltip:
+        suffix: " kin"
+        precision: 0
+ 

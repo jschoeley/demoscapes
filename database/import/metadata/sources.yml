@@ -9,3 +9,8 @@ sources:
     url: https://www.humanfertility.org
     citation: Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria).
     license: Use subject to HFD licensing terms.
+  - key: gutierrezetal2023
+    name: Replication Data for Projections of human kinship for all countries
+    url: https://doi.org/10.7910/DVN/FKCRHW 
+    citation: D. Alburez-Gutierrez, I. Williams, & H. Caswell, Projections of human kinship for all countries, PNAS (2023).
+    license: CC0.1.0
