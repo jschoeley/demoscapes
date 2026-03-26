@@ -4,7 +4,7 @@
 
 library(yaml)
 library(HMDHFDplus)
-library(qs)
+library(qs2)
 
 # Constants ---------------------------------------------------------------
 
@@ -71,5 +71,5 @@ birthrates_period_by_age <- lapply(cnst$hfdcodes$hfdcode, function(x) {
 # Export ------------------------------------------------------------------
 
 # export results of analysis
-qsave(births_period_by_age, paths$output$births_period_by_age.qs)
-qsave(birthrates_period_by_age, paths$output$birthrates_period_by_age.qs)
+qs_save(births_period_by_age, paths$output$births_period_by_age.qs)
+qs_save(birthrates_period_by_age, paths$output$birthrates_period_by_age.qs)

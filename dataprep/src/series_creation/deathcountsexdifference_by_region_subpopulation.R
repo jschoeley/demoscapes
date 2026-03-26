@@ -3,7 +3,7 @@
 # Init --------------------------------------------------------------------
 
 library(yaml)
-library(qs)
+library(qs2)
 library(dplyr)
 library(tidyr)
 library(readr)
@@ -26,7 +26,7 @@ cnst <- within(list(), {})
 
 # Load HMD data -----------------------------------------------------------
 
-hmd <- qread(paths$input$deaths_period_by_age.qs)
+hmd <- qs_read(paths$input$deaths_period_by_age.qs)
 
 # Create series -----------------------------------------------------------
 
