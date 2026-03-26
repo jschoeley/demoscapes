@@ -1,5 +1,5 @@
 (function (global) {
-  const API_BASE = global.DEMOSCAPES_API_BASE || "http://127.0.0.1:3000/api";
+  const API_BASE = "/api";
 
   async function fetchJson(url) {
     const response = await fetch(url);

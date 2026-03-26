@@ -13,3 +13,4 @@ RUN npm run build:website
 FROM nginx
 
 COPY --from=build /usr/src/app/website/dist/ /usr/share/nginx/html
+COPY website/nginx/default.conf /etc/nginx/conf.d/default.conf
