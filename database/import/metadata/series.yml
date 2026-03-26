@@ -39,3 +39,12 @@ series:
       - "hfd"
     strataKeys:
       - "region"
+  - key: "fertilityrate_by_region"
+    label: "by region"
+    measureKey: "fertilityrate"
+    sourceKeys:
+      - "hfd"
+    collectionKeys:
+      - "hfd"
+    strataKeys:
+      - "region"
