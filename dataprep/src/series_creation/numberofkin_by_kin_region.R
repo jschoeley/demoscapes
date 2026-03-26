@@ -41,8 +41,10 @@ numberofkin_by_kin_region.qs <-
   mutate(
     kin = as.character(factor(kin, levels = DemoKin::demokin_codes$DemoKin,
                               labels = DemoKin::demokin_codes$Labels_2sex)),
+    # year intervals are: from start up to end
     wx = year_end-year_start,
-    wy = age_end-age_start
+    # age intervals are from start up to and including end
+    wy = age_end-age_start+1
   ) |>
   select(
     z = value,

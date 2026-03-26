@@ -75,6 +75,8 @@ const surfaceSchema = new Schema({
   strata: { type: Schema.Types.Mixed, default: {} },
   xValues: [Number],
   yValues: [Number],
+  wxValues: [Number],
+  wyValues: [Number],
   zValues: [Number],
   zEncoding: { type: String, default: 'row-major-y' },
 });
