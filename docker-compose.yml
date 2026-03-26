@@ -28,6 +28,8 @@ services:
       dockerfile: Dockerfile.api
     command: ["npm", "run", "init:database"]
     environment:
+      MONGO_HOST: ${MONGO_HOST:?MONGO_HOST is required}
+      MONGO_PORT: ${MONGO_PORT:?MONGO_PORT is required}
       MONGO_APP_DATABASE: ${MONGO_APP_DATABASE:?MONGO_APP_DATABASE is required}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:?MONGO_INITDB_ROOT_USERNAME is required}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:?MONGO_INITDB_ROOT_PASSWORD is required}
@@ -51,6 +53,8 @@ services:
       db-init:
         condition: service_completed_successfully
     environment:
+      MONGO_HOST: ${MONGO_HOST:?MONGO_HOST is required}
+      MONGO_PORT: ${MONGO_PORT:?MONGO_PORT is required}
       MONGO_APP_DATABASE: ${MONGO_APP_DATABASE:?MONGO_APP_DATABASE is required}
       MONGO_API_USERNAME: ${MONGO_API_USERNAME:?MONGO_API_USERNAME is required}
       MONGO_API_PASSWORD: ${MONGO_API_PASSWORD:?MONGO_API_PASSWORD is required}

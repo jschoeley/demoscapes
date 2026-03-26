@@ -28,11 +28,11 @@ function requireEnv(name) {
 }
 
 function getMongoHost() {
-  return 'database';
+  return requireEnv('MONGO_HOST');
 }
 
 function getMongoPort() {
-  return '27017';
+  return requireEnv('MONGO_PORT');
 }
 
 function getMongoAppDatabase() {
