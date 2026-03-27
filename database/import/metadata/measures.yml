@@ -242,10 +242,10 @@ measures:
         - 3
         - 4
         - 5
-        - 6
-        - 7
-        - 8
-        - 9
+        - 10
+        - 15
+        - 20
+        - 25
       colorRange:
         - "#fff7fb"
         - "#ece2f0"
@@ -257,7 +257,7 @@ measures:
         - "#016c59"
         - "#014636"
       labelmultiplier: 1
-      labelprecision: 0
+      labelprecision: 1 
       legend:
         left: ""
         right: "Kin"
