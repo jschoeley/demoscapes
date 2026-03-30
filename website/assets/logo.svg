@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="lexis-canvas"
+   aria-label="Editable Lexis diagram grid"
+   width="500"
+   height="44.718739"
+   viewBox="-2 -2 500.00001 44.718739"
+   preserveAspectRatio="xMidYMid"
+   version="1.1"
+   sodipodi:docname="logo-wide.svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs198" />
+  <sodipodi:namedview
+     id="namedview198"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="0.47834302"
+     inkscape:cx="198.60225"
+     inkscape:cy="-9.4074749"
+     inkscape:window-width="3440"
+     inkscape:window-height="1372"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="lexis-canvas" />
+  <g
+     aria-hidden="false"
+     id="g198"
+     transform="matrix(0.29184697,0,0,0.29184697,-2.4046945,-2.4046945)">
+    <polygon
+       points="1.3866667,1.3866667 49.226667,1.3866667 1.3866667,49.226667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="0:0:upper"
+       id="polygon1" />
+    <polygon
+       points="50.613333,2.7733333 50.613333,50.613333 2.7733333,50.613333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="0:0:lower"
+       id="polygon2" />
+    <polygon
+       points="53.386667,1.3866667 101.22667,1.3866667 53.386667,49.226667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="0:1:upper"
+       id="polygon3" />
+    <polygon
+       points="102.61333,2.7733333 102.61333,50.613333 54.773333,50.613333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="0:1:lower"
+       id="polygon4" />
+    <polygon
+       points="157.38667,1.3866667 205.22667,1.3866667 157.38667,49.226667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="0:3:upper"
+       id="polygon7" />
+    <polygon
+       points="206.61333,2.7733333 206.61333,50.613333 158.77333,50.613333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="0:3:lower"
+       id="polygon8" />
+    <polygon
+       points="209.38667,1.3866667 257.22667,1.3866667 209.38667,49.226667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="0:4:upper"
+       id="polygon9" />
+    <polygon
+       points="362.61333,2.7733333 362.61333,50.613333 314.77333,50.613333 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="0:6:lower"
+       id="polygon14" />
+    <polygon
+       points="414.61333,2.7733333 414.61333,50.613333 366.77333,50.613333 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="0:7:lower"
+       id="polygon16" />
+    <polygon
+       points="466.61333,2.7733333 466.61333,50.613333 418.77333,50.613333 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="0:8:lower"
+       id="polygon18" />
+    <polygon
+       points="570.61333,2.7733333 570.61333,50.613333 522.77333,50.613333 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="0:10:lower"
+       id="polygon22" />
+    <polygon
+       points="573.38667,1.3866667 621.22667,1.3866667 573.38667,49.226667 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="0:11:upper"
+       id="polygon23" />
+    <polygon
+       points="622.61333,2.7733333 622.61333,50.613333 574.77333,50.613333 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="0:11:lower"
+       id="polygon24" />
+    <polygon
+       points="625.38667,1.3866667 673.22667,1.3866667 625.38667,49.226667 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="0:12:upper"
+       id="polygon25" />
+    <polygon
+       points="674.61333,2.7733333 674.61333,50.613333 626.77333,50.613333 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="0:12:lower"
+       id="polygon26" />
+    <polygon
+       points="729.38667,1.3866667 777.22667,1.3866667 729.38667,49.226667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="0:14:upper"
+       id="polygon29" />
+    <polygon
+       points="778.61333,2.7733333 778.61333,50.613333 730.77333,50.613333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="0:14:lower"
+       id="polygon30" />
+    <polygon
+       points="781.38667,1.3866667 829.22667,1.3866667 781.38667,49.226667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="0:15:upper"
+       id="polygon31" />
+    <polygon
+       points="934.61333,2.7733333 934.61333,50.613333 886.77333,50.613333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="0:17:lower"
+       id="polygon36" />
+    <polygon
+       points="937.38667,1.3866667 985.22667,1.3866667 937.38667,49.226667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="0:18:upper"
+       id="polygon37" />
+    <polygon
+       points="1090.6133,2.7733333 1090.6133,50.613333 1042.7733,50.613333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="0:20:lower"
+       id="polygon42" />
+    <polygon
+       points="1093.3867,1.3866667 1141.2267,1.3866667 1093.3867,49.226667 "
+       fill="#02818a"
+       class="triangle"
+       data-key="0:21:upper"
+       id="polygon43" />
+    <polygon
+       points="1142.6133,2.7733333 1142.6133,50.613333 1094.7733,50.613333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="0:21:lower"
+       id="polygon44" />
+    <polygon
+       points="1145.3867,1.3866667 1193.2267,1.3866667 1145.3867,49.226667 "
+       fill="#02818a"
+       class="triangle"
+       data-key="0:22:upper"
+       id="polygon45" />
+    <polygon
+       points="1194.6133,2.7733333 1194.6133,50.613333 1146.7733,50.613333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="0:22:lower"
+       id="polygon46" />
+    <polygon
+       points="1298.6133,2.7733333 1298.6133,50.613333 1250.7733,50.613333 "
+       fill="#016c59"
+       class="triangle"
+       data-key="0:24:lower"
+       id="polygon50" />
+    <polygon
+       points="1301.3867,1.3866667 1349.2267,1.3866667 1301.3867,49.226667 "
+       fill="#016c59"
+       class="triangle"
+       data-key="0:25:upper"
+       id="polygon51" />
+    <polygon
+       points="1350.6133,2.7733333 1350.6133,50.613333 1302.7733,50.613333 "
+       fill="#016c59"
+       class="triangle"
+       data-key="0:25:lower"
+       id="polygon52" />
+    <polygon
+       points="1353.3867,1.3866667 1401.2267,1.3866667 1353.3867,49.226667 "
+       fill="#016c59"
+       class="triangle"
+       data-key="0:26:upper"
+       id="polygon53" />
+    <polygon
+       points="1402.6133,2.7733333 1402.6133,50.613333 1354.7733,50.613333 "
+       fill="#016c59"
+       class="triangle"
+       data-key="0:26:lower"
+       id="polygon54" />
+    <polygon
+       points="1457.3867,1.3866667 1505.2267,1.3866667 1457.3867,49.226667 "
+       fill="#014636"
+       class="triangle"
+       data-key="0:28:upper"
+       id="polygon57" />
+    <polygon
+       points="1506.6133,2.7733333 1506.6133,50.613333 1458.7733,50.613333 "
+       fill="#014636"
+       class="triangle"
+       data-key="0:28:lower"
+       id="polygon58" />
+    <polygon
+       points="1509.3867,1.3866667 1557.2267,1.3866667 1509.3867,49.226667 "
+       fill="#014636"
+       class="triangle"
+       data-key="0:29:upper"
+       id="polygon59" />
+    <polygon
+       points="1613.3867,1.3866667 1661.2267,1.3866667 1613.3867,49.226667 "
+       fill="#014636"
+       class="triangle"
+       data-key="0:31:upper"
+       id="polygon63" />
+    <polygon
+       points="1662.6133,2.7733333 1662.6133,50.613333 1614.7733,50.613333 "
+       fill="#014636"
+       class="triangle"
+       data-key="0:31:lower"
+       id="polygon64" />
+    <polygon
+       points="1665.3867,1.3866667 1713.2267,1.3866667 1665.3867,49.226667 "
+       fill="#014636"
+       class="triangle"
+       data-key="0:32:upper"
+       id="polygon65" />
+    <polygon
+       points="1.3866667,53.386667 49.226667,53.386667 1.3866667,101.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="1:0:upper"
+       id="polygon67" />
+    <polygon
+       points="53.386667,53.386667 101.22667,53.386667 53.386667,101.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="1:1:upper"
+       id="polygon69" />
+    <polygon
+       points="102.61333,54.773333 102.61333,102.61333 54.773333,102.61333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="1:1:lower"
+       id="polygon70" />
+    <polygon
+       points="157.38667,53.386667 205.22667,53.386667 157.38667,101.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="1:3:upper"
+       id="polygon73" />
+    <polygon
+       points="206.61333,54.773333 206.61333,102.61333 158.77333,102.61333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="1:3:lower"
+       id="polygon74" />
+    <polygon
+       points="209.38667,53.386667 257.22667,53.386667 209.38667,101.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="1:4:upper"
+       id="polygon75" />
+    <polygon
+       points="313.38667,53.386667 361.22667,53.386667 313.38667,101.22667 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="1:6:upper"
+       id="polygon79" />
+    <polygon
+       points="362.61333,54.773333 362.61333,102.61333 314.77333,102.61333 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="1:6:lower"
+       id="polygon80" />
+    <polygon
+       points="417.38667,53.386667 465.22667,53.386667 417.38667,101.22667 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="1:8:upper"
+       id="polygon83" />
+    <polygon
+       points="466.61333,54.773333 466.61333,102.61333 418.77333,102.61333 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="1:8:lower"
+       id="polygon84" />
+    <polygon
+       points="521.38667,53.386667 569.22667,53.386667 521.38667,101.22667 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="1:10:upper"
+       id="polygon87" />
+    <polygon
+       points="570.61333,54.773333 570.61333,102.61333 522.77333,102.61333 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="1:10:lower"
+       id="polygon88" />
+    <polygon
+       points="625.38667,53.386667 673.22667,53.386667 625.38667,101.22667 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="1:12:upper"
+       id="polygon91" />
+    <polygon
+       points="674.61333,54.773333 674.61333,102.61333 626.77333,102.61333 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="1:12:lower"
+       id="polygon92" />
+    <polygon
+       points="729.38667,53.386667 777.22667,53.386667 729.38667,101.22667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="1:14:upper"
+       id="polygon95" />
+    <polygon
+       points="778.61333,54.773333 778.61333,102.61333 730.77333,102.61333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="1:14:lower"
+       id="polygon96" />
+    <polygon
+       points="781.38667,53.386667 829.22667,53.386667 781.38667,101.22667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="1:15:upper"
+       id="polygon97" />
+    <polygon
+       points="830.61333,54.773333 830.61333,102.61333 782.77333,102.61333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="1:15:lower"
+       id="polygon98" />
+    <polygon
+       points="885.38667,53.386667 933.22667,53.386667 885.38667,101.22667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="1:17:upper"
+       id="polygon101" />
+    <polygon
+       points="934.61333,54.773333 934.61333,102.61333 886.77333,102.61333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="1:17:lower"
+       id="polygon102" />
+    <polygon
+       points="1041.3867,53.386667 1089.2267,53.386667 1041.3867,101.22667 "
+       fill="#02818a"
+       class="triangle"
+       data-key="1:20:upper"
+       id="polygon107" />
+    <polygon
+       points="1090.6133,54.773333 1090.6133,102.61333 1042.7733,102.61333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="1:20:lower"
+       id="polygon108" />
+    <polygon
+       points="1142.6133,54.773333 1142.6133,102.61333 1094.7733,102.61333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="1:21:lower"
+       id="polygon110" />
+    <polygon
+       points="1145.3867,53.386667 1193.2267,53.386667 1145.3867,101.22667 "
+       fill="#02818a"
+       class="triangle"
+       data-key="1:22:upper"
+       id="polygon111" />
+    <polygon
+       points="1194.6133,54.773333 1194.6133,102.61333 1146.7733,102.61333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="1:22:lower"
+       id="polygon112" />
+    <polygon
+       points="1249.3867,53.386667 1297.2267,53.386667 1249.3867,101.22667 "
+       fill="#016c59"
+       class="triangle"
+       data-key="1:24:upper"
+       id="polygon115" />
+    <polygon
+       points="1298.6133,54.773333 1298.6133,102.61333 1250.7733,102.61333 "
+       fill="#016c59"
+       class="triangle"
+       data-key="1:24:lower"
+       id="polygon116" />
+    <polygon
+       points="1350.6133,54.773333 1350.6133,102.61333 1302.7733,102.61333 "
+       fill="#016c59"
+       class="triangle"
+       data-key="1:25:lower"
+       id="polygon118" />
+    <polygon
+       points="1353.3867,53.386667 1401.2267,53.386667 1353.3867,101.22667 "
+       fill="#016c59"
+       class="triangle"
+       data-key="1:26:upper"
+       id="polygon119" />
+    <polygon
+       points="1402.6133,54.773333 1402.6133,102.61333 1354.7733,102.61333 "
+       fill="#016c59"
+       class="triangle"
+       data-key="1:26:lower"
+       id="polygon120" />
+    <polygon
+       points="1457.3867,53.386667 1505.2267,53.386667 1457.3867,101.22667 "
+       fill="#014636"
+       class="triangle"
+       data-key="1:28:upper"
+       id="polygon123" />
+    <polygon
+       points="1506.6133,54.773333 1506.6133,102.61333 1458.7733,102.61333 "
+       fill="#014636"
+       class="triangle"
+       data-key="1:28:lower"
+       id="polygon124" />
+    <polygon
+       points="1509.3867,53.386667 1557.2267,53.386667 1509.3867,101.22667 "
+       fill="#014636"
+       class="triangle"
+       data-key="1:29:upper"
+       id="polygon125" />
+    <polygon
+       points="1613.3867,53.386667 1661.2267,53.386667 1613.3867,101.22667 "
+       fill="#014636"
+       class="triangle"
+       data-key="1:31:upper"
+       id="polygon129" />
+    <polygon
+       points="1662.6133,54.773333 1662.6133,102.61333 1614.7733,102.61333 "
+       fill="#014636"
+       class="triangle"
+       data-key="1:31:lower"
+       id="polygon130" />
+    <polygon
+       points="1665.3867,53.386667 1713.2267,53.386667 1665.3867,101.22667 "
+       fill="#014636"
+       class="triangle"
+       data-key="1:32:upper"
+       id="polygon131" />
+    <polygon
+       points="1714.6133,54.773333 1714.6133,102.61333 1666.7733,102.61333 "
+       fill="#014636"
+       class="triangle"
+       data-key="1:32:lower"
+       id="polygon132" />
+    <polygon
+       points="1.3866667,105.38667 49.226667,105.38667 1.3866667,153.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="2:0:upper"
+       id="polygon133" />
+    <polygon
+       points="50.613333,106.77333 50.613333,154.61333 2.7733333,154.61333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="2:0:lower"
+       id="polygon134" />
+    <polygon
+       points="53.386667,105.38667 101.22667,105.38667 53.386667,153.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="2:1:upper"
+       id="polygon135" />
+    <polygon
+       points="157.38667,105.38667 205.22667,105.38667 157.38667,153.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="2:3:upper"
+       id="polygon139" />
+    <polygon
+       points="206.61333,106.77333 206.61333,154.61333 158.77333,154.61333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="2:3:lower"
+       id="polygon140" />
+    <polygon
+       points="209.38667,105.38667 257.22667,105.38667 209.38667,153.22667 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="2:4:upper"
+       id="polygon141" />
+    <polygon
+       points="258.61333,106.77333 258.61333,154.61333 210.77333,154.61333 "
+       fill="#d0d1e6"
+       class="triangle"
+       data-key="2:4:lower"
+       id="polygon142" />
+    <polygon
+       points="313.38667,105.38667 361.22667,105.38667 313.38667,153.22667 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="2:6:upper"
+       id="polygon145" />
+    <polygon
+       points="417.38667,105.38667 465.22667,105.38667 417.38667,153.22667 "
+       fill="#a6bddb"
+       class="triangle"
+       data-key="2:8:upper"
+       id="polygon149" />
+    <polygon
+       points="521.38667,105.38667 569.22667,105.38667 521.38667,153.22667 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="2:10:upper"
+       id="polygon153" />
+    <polygon
+       points="570.61333,106.77333 570.61333,154.61333 522.77333,154.61333 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="2:10:lower"
+       id="polygon154" />
+    <polygon
+       points="573.38667,105.38667 621.22667,105.38667 573.38667,153.22667 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="2:11:upper"
+       id="polygon155" />
+    <polygon
+       points="622.61333,106.77333 622.61333,154.61333 574.77333,154.61333 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="2:11:lower"
+       id="polygon156" />
+    <polygon
+       points="625.38667,105.38667 673.22667,105.38667 625.38667,153.22667 "
+       fill="#67a9cf"
+       class="triangle"
+       data-key="2:12:upper"
+       id="polygon157" />
+    <polygon
+       points="778.61333,106.77333 778.61333,154.61333 730.77333,154.61333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="2:14:lower"
+       id="polygon162" />
+    <polygon
+       points="781.38667,105.38667 829.22667,105.38667 781.38667,153.22667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="2:15:upper"
+       id="polygon163" />
+    <polygon
+       points="830.61333,106.77333 830.61333,154.61333 782.77333,154.61333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="2:15:lower"
+       id="polygon164" />
+    <polygon
+       points="885.38667,105.38667 933.22667,105.38667 885.38667,153.22667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="2:17:upper"
+       id="polygon167" />
+    <polygon
+       points="934.61333,106.77333 934.61333,154.61333 886.77333,154.61333 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="2:17:lower"
+       id="polygon168" />
+    <polygon
+       points="937.38667,105.38667 985.22667,105.38667 937.38667,153.22667 "
+       fill="#3690c0"
+       class="triangle"
+       data-key="2:18:upper"
+       id="polygon169" />
+    <polygon
+       points="1041.3867,105.38667 1089.2267,105.38667 1041.3867,153.22667 "
+       fill="#02818a"
+       class="triangle"
+       data-key="2:20:upper"
+       id="polygon173" />
+    <polygon
+       points="1090.6133,106.77333 1090.6133,154.61333 1042.7733,154.61333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="2:20:lower"
+       id="polygon174" />
+    <polygon
+       points="1145.3867,105.38667 1193.2267,105.38667 1145.3867,153.22667 "
+       fill="#02818a"
+       class="triangle"
+       data-key="2:22:upper"
+       id="polygon177" />
+    <polygon
+       points="1194.6133,106.77333 1194.6133,154.61333 1146.7733,154.61333 "
+       fill="#02818a"
+       class="triangle"
+       data-key="2:22:lower"
+       id="polygon178" />
+    <polygon
+       points="1249.3867,105.38667 1297.2267,105.38667 1249.3867,153.22667 "
+       fill="#016c59"
+       class="triangle"
+       data-key="2:24:upper"
+       id="polygon181" />
+    <polygon
+       points="1298.6133,106.77333 1298.6133,154.61333 1250.7733,154.61333 "
+       fill="#016c59"
+       class="triangle"
+       data-key="2:24:lower"
+       id="polygon182" />
+    <polygon
+       points="1457.3867,105.38667 1505.2267,105.38667 1457.3867,153.22667 "
+       fill="#014636"
+       class="triangle"
+       data-key="2:28:upper"
+       id="polygon189" />
+    <polygon
+       points="1506.6133,106.77333 1506.6133,154.61333 1458.7733,154.61333 "
+       fill="#014636"
+       class="triangle"
+       data-key="2:28:lower"
+       id="polygon190" />
+    <polygon
+       points="1509.3867,105.38667 1557.2267,105.38667 1509.3867,153.22667 "
+       fill="#014636"
+       class="triangle"
+       data-key="2:29:upper"
+       id="polygon191" />
+    <polygon
+       points="1558.6133,106.77333 1558.6133,154.61333 1510.7733,154.61333 "
+       fill="#014636"
+       class="triangle"
+       data-key="2:29:lower"
+       id="polygon192" />
+    <polygon
+       points="1662.6133,106.77333 1662.6133,154.61333 1614.7733,154.61333 "
+       fill="#014636"
+       class="triangle"
+       data-key="2:31:lower"
+       id="polygon196" />
+    <polygon
+       points="1665.3867,105.38667 1713.2267,105.38667 1665.3867,153.22667 "
+       fill="#014636"
+       class="triangle"
+       data-key="2:32:upper"
+       id="polygon197" />
+    <polygon
+       points="1714.6133,106.77333 1714.6133,154.61333 1666.7733,154.61333 "
+       fill="#014636"
+       class="triangle"
+       data-key="2:32:lower"
+       id="polygon198" />
+  </g>
+</svg>

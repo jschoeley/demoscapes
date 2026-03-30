@@ -6,7 +6,6 @@ const websiteRoot = path.join(repoRoot, 'website');
 const contentRoot = path.join(websiteRoot, 'content');
 const templatesRoot = path.join(websiteRoot, 'templates');
 const distRoot = path.join(websiteRoot, 'dist');
-const pvtRoot = path.join(repoRoot, 'pvt');
 const sourcesYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 'sources.yml');
 const collectionsYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 'collections.yml');
 
@@ -269,31 +268,11 @@ function readMarkdown(filePath) {
 }
 
 function renderLogoHtml() {
-  const logoCandidatePaths = [
-    path.join(websiteRoot, 'assets', 'logo.svg'),
-    path.join(pvtRoot, 'logo', 'logo-wide.svg'),
-  ];
-
-  for (const candidatePath of logoCandidatePaths) {
-    if (fs.existsSync(candidatePath)) {
-      return '<img src="/assets/logo.svg" alt="Demoscapes" class="brand-logo" />';
-    }
+  const logoPath = path.join(websiteRoot, 'assets', 'logo.svg');
+  if (fs.existsSync(logoPath)) {
+    return '<img src="/assets/logo.svg" alt="Demoscapes" class="brand-logo" />';
   }
   return '<span class="brand-text">demoscapes</span>';
-}
-
-function copyLogoAsset() {
-  const logoCandidatePaths = [
-    path.join(websiteRoot, 'assets', 'logo.svg'),
-    path.join(pvtRoot, 'logo', 'logo-wide.svg'),
-  ];
-
-  const sourcePath = logoCandidatePaths.find((candidatePath) => fs.existsSync(candidatePath));
-  if (!sourcePath) {
-    return;
-  }
-
-  copyRecursive(sourcePath, path.join(distRoot, 'assets', 'logo.svg'));
 }
 
 function renderBasePage({ title, navKey, content }) {
@@ -536,7 +515,6 @@ function main() {
   copyRecursive(path.join(websiteRoot, 'styles.css'), path.join(distRoot, 'styles.css'));
   copyRecursive(path.join(websiteRoot, 'js'), path.join(distRoot, 'js'));
   copyRecursive(path.join(websiteRoot, 'assets'), path.join(distRoot, 'assets'));
-  copyLogoAsset();
 
   console.log('Website build complete.');
 }
