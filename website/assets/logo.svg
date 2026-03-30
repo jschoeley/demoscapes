@@ -24,14 +24,14 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
-     inkscape:zoom="0.47834302"
-     inkscape:cx="198.60225"
-     inkscape:cy="-9.4074749"
-     inkscape:window-width="3440"
-     inkscape:window-height="1372"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:zoom="2.7059167"
+     inkscape:cx="233.19269"
+     inkscape:cy="63.93397"
+     inkscape:window-width="1084"
+     inkscape:window-height="1217"
+     inkscape:window-x="478"
+     inkscape:window-y="138"
+     inkscape:window-maximized="0"
      inkscape:current-layer="lexis-canvas" />
   <g
      aria-hidden="false"
@@ -42,91 +42,106 @@
        fill="#d0d1e6"
        class="triangle"
        data-key="0:0:upper"
-       id="polygon1" />
+       id="polygon1"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="50.613333,2.7733333 50.613333,50.613333 2.7733333,50.613333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="0:0:lower"
-       id="polygon2" />
+       id="polygon2"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="53.386667,1.3866667 101.22667,1.3866667 53.386667,49.226667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="0:1:upper"
-       id="polygon3" />
+       id="polygon3"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="102.61333,2.7733333 102.61333,50.613333 54.773333,50.613333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="0:1:lower"
-       id="polygon4" />
+       id="polygon4"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="157.38667,1.3866667 205.22667,1.3866667 157.38667,49.226667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="0:3:upper"
-       id="polygon7" />
+       id="polygon7"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="206.61333,2.7733333 206.61333,50.613333 158.77333,50.613333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="0:3:lower"
-       id="polygon8" />
+       id="polygon8"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="209.38667,1.3866667 257.22667,1.3866667 209.38667,49.226667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="0:4:upper"
-       id="polygon9" />
+       id="polygon9"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="362.61333,2.7733333 362.61333,50.613333 314.77333,50.613333 "
        fill="#a6bddb"
        class="triangle"
        data-key="0:6:lower"
-       id="polygon14" />
+       id="polygon14"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="414.61333,2.7733333 414.61333,50.613333 366.77333,50.613333 "
        fill="#a6bddb"
        class="triangle"
        data-key="0:7:lower"
-       id="polygon16" />
+       id="polygon16"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="466.61333,2.7733333 466.61333,50.613333 418.77333,50.613333 "
        fill="#a6bddb"
        class="triangle"
        data-key="0:8:lower"
-       id="polygon18" />
+       id="polygon18"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="570.61333,2.7733333 570.61333,50.613333 522.77333,50.613333 "
        fill="#67a9cf"
        class="triangle"
        data-key="0:10:lower"
-       id="polygon22" />
+       id="polygon22"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="573.38667,1.3866667 621.22667,1.3866667 573.38667,49.226667 "
        fill="#67a9cf"
        class="triangle"
        data-key="0:11:upper"
-       id="polygon23" />
+       id="polygon23"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="622.61333,2.7733333 622.61333,50.613333 574.77333,50.613333 "
        fill="#67a9cf"
        class="triangle"
        data-key="0:11:lower"
-       id="polygon24" />
+       id="polygon24"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="625.38667,1.3866667 673.22667,1.3866667 625.38667,49.226667 "
        fill="#67a9cf"
        class="triangle"
        data-key="0:12:upper"
-       id="polygon25" />
+       id="polygon25"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="674.61333,2.7733333 674.61333,50.613333 626.77333,50.613333 "
        fill="#67a9cf"
        class="triangle"
        data-key="0:12:lower"
-       id="polygon26" />
+       id="polygon26"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="729.38667,1.3866667 777.22667,1.3866667 729.38667,49.226667 "
        fill="#3690c0"
@@ -258,85 +273,99 @@
        fill="#d0d1e6"
        class="triangle"
        data-key="1:0:upper"
-       id="polygon67" />
+       id="polygon67"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="53.386667,53.386667 101.22667,53.386667 53.386667,101.22667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="1:1:upper"
-       id="polygon69" />
+       id="polygon69"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="102.61333,54.773333 102.61333,102.61333 54.773333,102.61333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="1:1:lower"
-       id="polygon70" />
+       id="polygon70"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="157.38667,53.386667 205.22667,53.386667 157.38667,101.22667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="1:3:upper"
-       id="polygon73" />
+       id="polygon73"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="206.61333,54.773333 206.61333,102.61333 158.77333,102.61333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="1:3:lower"
-       id="polygon74" />
+       id="polygon74"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="209.38667,53.386667 257.22667,53.386667 209.38667,101.22667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="1:4:upper"
-       id="polygon75" />
+       id="polygon75"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="313.38667,53.386667 361.22667,53.386667 313.38667,101.22667 "
        fill="#a6bddb"
        class="triangle"
        data-key="1:6:upper"
-       id="polygon79" />
+       id="polygon79"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="362.61333,54.773333 362.61333,102.61333 314.77333,102.61333 "
        fill="#a6bddb"
        class="triangle"
        data-key="1:6:lower"
-       id="polygon80" />
+       id="polygon80"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="417.38667,53.386667 465.22667,53.386667 417.38667,101.22667 "
        fill="#a6bddb"
        class="triangle"
        data-key="1:8:upper"
-       id="polygon83" />
+       id="polygon83"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="466.61333,54.773333 466.61333,102.61333 418.77333,102.61333 "
        fill="#a6bddb"
        class="triangle"
        data-key="1:8:lower"
-       id="polygon84" />
+       id="polygon84"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="521.38667,53.386667 569.22667,53.386667 521.38667,101.22667 "
        fill="#67a9cf"
        class="triangle"
        data-key="1:10:upper"
-       id="polygon87" />
+       id="polygon87"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="570.61333,54.773333 570.61333,102.61333 522.77333,102.61333 "
        fill="#67a9cf"
        class="triangle"
        data-key="1:10:lower"
-       id="polygon88" />
+       id="polygon88"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="625.38667,53.386667 673.22667,53.386667 625.38667,101.22667 "
        fill="#67a9cf"
        class="triangle"
        data-key="1:12:upper"
-       id="polygon91" />
+       id="polygon91"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="674.61333,54.773333 674.61333,102.61333 626.77333,102.61333 "
        fill="#67a9cf"
        class="triangle"
        data-key="1:12:lower"
-       id="polygon92" />
+       id="polygon92"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="729.38667,53.386667 777.22667,53.386667 729.38667,101.22667 "
        fill="#3690c0"
@@ -480,85 +509,99 @@
        fill="#d0d1e6"
        class="triangle"
        data-key="2:0:upper"
-       id="polygon133" />
+       id="polygon133"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="50.613333,106.77333 50.613333,154.61333 2.7733333,154.61333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="2:0:lower"
-       id="polygon134" />
+       id="polygon134"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="53.386667,105.38667 101.22667,105.38667 53.386667,153.22667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="2:1:upper"
-       id="polygon135" />
+       id="polygon135"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="157.38667,105.38667 205.22667,105.38667 157.38667,153.22667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="2:3:upper"
-       id="polygon139" />
+       id="polygon139"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="206.61333,106.77333 206.61333,154.61333 158.77333,154.61333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="2:3:lower"
-       id="polygon140" />
+       id="polygon140"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="209.38667,105.38667 257.22667,105.38667 209.38667,153.22667 "
        fill="#d0d1e6"
        class="triangle"
        data-key="2:4:upper"
-       id="polygon141" />
+       id="polygon141"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="258.61333,106.77333 258.61333,154.61333 210.77333,154.61333 "
        fill="#d0d1e6"
        class="triangle"
        data-key="2:4:lower"
-       id="polygon142" />
+       id="polygon142"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="313.38667,105.38667 361.22667,105.38667 313.38667,153.22667 "
        fill="#a6bddb"
        class="triangle"
        data-key="2:6:upper"
-       id="polygon145" />
+       id="polygon145"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="417.38667,105.38667 465.22667,105.38667 417.38667,153.22667 "
        fill="#a6bddb"
        class="triangle"
        data-key="2:8:upper"
-       id="polygon149" />
+       id="polygon149"
+       style="fill:#2d2d2d;fill-opacity:1" />
     <polygon
        points="521.38667,105.38667 569.22667,105.38667 521.38667,153.22667 "
        fill="#67a9cf"
        class="triangle"
        data-key="2:10:upper"
-       id="polygon153" />
+       id="polygon153"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="570.61333,106.77333 570.61333,154.61333 522.77333,154.61333 "
        fill="#67a9cf"
        class="triangle"
        data-key="2:10:lower"
-       id="polygon154" />
+       id="polygon154"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="573.38667,105.38667 621.22667,105.38667 573.38667,153.22667 "
        fill="#67a9cf"
        class="triangle"
        data-key="2:11:upper"
-       id="polygon155" />
+       id="polygon155"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="622.61333,106.77333 622.61333,154.61333 574.77333,154.61333 "
        fill="#67a9cf"
        class="triangle"
        data-key="2:11:lower"
-       id="polygon156" />
+       id="polygon156"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="625.38667,105.38667 673.22667,105.38667 625.38667,153.22667 "
        fill="#67a9cf"
        class="triangle"
        data-key="2:12:upper"
-       id="polygon157" />
+       id="polygon157"
+       style="fill:#4e6161;fill-opacity:1" />
     <polygon
        points="778.61333,106.77333 778.61333,154.61333 730.77333,154.61333 "
        fill="#3690c0"
