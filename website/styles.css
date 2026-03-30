@@ -154,6 +154,22 @@ a:focus {
   color: var(--ink);
 }
 
+.content-page blockquote {
+  margin: 1.25rem 0;
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-left: 4px solid var(--brand-soft);
+  color: var(--ink-muted);
+  background: var(--surface-accent);
+}
+
+.content-page blockquote p {
+  margin: 0;
+}
+
+.content-page blockquote p + p {
+  margin-top: 0.35rem;
+}
+
 .content-grid,
 .source-grid {
   display: grid;

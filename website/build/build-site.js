@@ -1,4 +1,5 @@
 const fs = require('fs');
+const MarkdownIt = require('markdown-it');
 const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
@@ -10,6 +11,9 @@ const sourcesYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 's
 const collectionsYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 'collections.yml');
 
 let embedCounter = 0;
+const markdown = new MarkdownIt({
+  html: true,
+});
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
@@ -141,81 +145,6 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
-function renderInlineMarkdown(text) {
-  const escaped = escapeHtml(text);
-  return escaped
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-}
-
-function markdownToHtml(markdownText) {
-  const lines = markdownText.replaceAll('\r\n', '\n').split('\n');
-  const out = [];
-  let inList = false;
-  let paragraph = [];
-
-  const flushParagraph = () => {
-    if (paragraph.length === 0) {
-      return;
-    }
-    out.push(`<p>${renderInlineMarkdown(paragraph.join(' '))}</p>`);
-    paragraph = [];
-  };
-
-  const closeList = () => {
-    if (!inList) {
-      return;
-    }
-    out.push('</ul>');
-    inList = false;
-  };
-
-  lines.forEach((line) => {
-    const trimmed = line.trim();
-
-    if (trimmed.length === 0) {
-      flushParagraph();
-      closeList();
-      return;
-    }
-
-    if (trimmed.startsWith('<div class="lexis-embed"')) {
-      flushParagraph();
-      closeList();
-      out.push(trimmed);
-      return;
-    }
-
-    const headingMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
-    if (headingMatch) {
-      flushParagraph();
-      closeList();
-      const level = headingMatch[1].length;
-      out.push(`<h${level}>${renderInlineMarkdown(headingMatch[2])}</h${level}>`);
-      return;
-    }
-
-    const listMatch = trimmed.match(/^-\s+(.+)$/);
-    if (listMatch) {
-      flushParagraph();
-      if (!inList) {
-        out.push('<ul>');
-        inList = true;
-      }
-      out.push(`<li>${renderInlineMarkdown(listMatch[1])}</li>`);
-      return;
-    }
-
-    paragraph.push(trimmed);
-  });
-
-  flushParagraph();
-  closeList();
-
-  return out.join('\n');
-}
-
 function parseLexisAttributes(rawAttrs) {
   const attributes = {};
   const regex = /(\w+)=("([^"]*)"|'([^']*)')/g;
@@ -259,7 +188,7 @@ function readMarkdown(filePath) {
   const source = fs.readFileSync(filePath, 'utf8');
   const parsed = parseFrontmatter(source);
   const transformed = applyLexisShortcodes(parsed.content);
-  const html = markdownToHtml(transformed);
+  const html = markdown.render(transformed);
 
   return {
     frontmatter: parsed.data || {},
