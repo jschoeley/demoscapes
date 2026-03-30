@@ -1,0 +1,7 @@
+services:
+  api:
+    # Development-only override: publish the internal API to localhost
+    # so the local website dev server can proxy /api without exposing it
+    # on public network interfaces.
+    ports:
+      - '127.0.0.1:3000:3000'
