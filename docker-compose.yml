@@ -58,8 +58,6 @@ services:
       MONGO_API_PASSWORD: ${MONGO_API_PASSWORD:?MONGO_API_PASSWORD is required}
       PORT: 3000
       TRUST_PROXY: 'true'
-    ports:
-      - '127.0.0.1:3000:3000'
     networks:
       - mynetwork
 
