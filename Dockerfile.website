@@ -10,7 +10,8 @@ COPY database ./database
 
 RUN npm run build:website
 
-FROM nginx
+FROM caddy:2.10.2-alpine
 
-COPY --from=build /usr/src/app/website/dist/ /usr/share/nginx/html
-COPY website/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /usr/src/app/website/dist/ /srv
+COPY website/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY website/caddy/Caddyfile.local /etc/caddy/Caddyfile.local
