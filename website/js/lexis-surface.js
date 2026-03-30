@@ -151,7 +151,7 @@
         </section>
       </section>
       <section class="lexis-viz-section">
-        <div class="card lexis-heatmap-section">
+        <div class="lexis-panel lexis-heatmap-section">
           <div class="lexis-heatmap-title">${options.title || "Lexis surface"}</div>
           <div class="lexis-widget-notice" hidden></div>
           <div class="lexis-plot-container"></div>
@@ -316,13 +316,13 @@
     function addAxesToHeatmap(scales, dimensions) {
       plot
         .append("g")
-        .attr("class", "axis")
+        .attr("class", "lexis-axis")
         .attr("transform", `translate(0,${dimensions.plotHeight + 5})`)
         .call(d3.axisBottom(scales.x).tickFormat(d3.format("d")));
 
       plot
         .append("g")
-        .attr("class", "axis")
+        .attr("class", "lexis-axis")
         .attr("transform", "translate(-5,0)")
         .call(d3.axisLeft(scales.y).tickFormat(d3.format("d")));
     }
@@ -340,7 +340,7 @@
 
       plot
         .append("text")
-        .attr("class", "axis-label")
+        .attr("class", "lexis-axis-label")
         .attr("x", dimensions.plotWidth / 2)
         .attr("y", dimensions.plotHeight + 50)
         .attr("text-anchor", "middle")
@@ -348,7 +348,7 @@
 
       plot
         .append("text")
-        .attr("class", "axis-label")
+        .attr("class", "lexis-axis-label")
         .attr("transform", "rotate(-90)")
         .attr("x", -dimensions.plotHeight / 2)
         .attr("y", -45)
@@ -366,7 +366,7 @@
 
       const legendGroup = plot
         .append("g")
-        .attr("class", "legend")
+        .attr("class", "lexis-legend")
         .attr("transform", `translate(0,${dimensions.plotHeight + 70})`);
 
       const length = colors.length;
@@ -442,7 +442,7 @@
       const tooltip = d3
         .select("body")
         .append("div")
-        .attr("class", `heatmaptooltip ${tooltipClass}`)
+        .attr("class", `lexis-tooltip ${tooltipClass}`)
         .style("position", "absolute")
         .style("visibility", "hidden");
 
