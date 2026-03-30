@@ -3,7 +3,7 @@
 # Init --------------------------------------------------------------------
 
 library(yaml)
-library(qs)
+library(qs2)
 library(dplyr)
 library(tidyr)
 library(readr)
@@ -26,21 +26,29 @@ cnst <- within(list(), {})
 
 # Load HMD data -----------------------------------------------------------
 
-hmd <- qread(paths$input$deaths_period_by_age.qs)
+hmd <- qs_read(paths$input$deaths_period_by_age.qs)
 
 # Create series -----------------------------------------------------------
 
 deathcountsexdifference_by_region_subpopulation <-
   bind_rows(hmd) |>
-  mutate(value = Male - Female) |>
+  mutate(
+    value = Male - Female,
+    wx = 1, wy = 1
+  ) |>
   select(
     z = value,
     x = Year,
     y = Age,
+    wx, wy,
     region = isocode,
     subpopulation = subpopulation
   ) |>
   mutate(
+    x = as.integer(x),
+    y = as.integer(y),
+    wx = as.integer(wx),
+    wy = as.integer(wy),
     z = round(z, 3)
   )
 

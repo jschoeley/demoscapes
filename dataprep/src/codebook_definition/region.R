@@ -10,9 +10,7 @@ library(ISOcodes)
 # input and output paths
 setwd(".")
 paths <- list()
-paths$input <- list(
-  region_patch.yaml = "./src/codebook_definition/region_patch.yaml"
-)
+paths$input <- list()
 paths$output <- list(
   region.yaml = "./out/codebook_definition/region.yaml"
 )

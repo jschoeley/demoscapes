@@ -65,7 +65,14 @@
   }
 
   function expandSurface(surface) {
-    if (!surface || !surface.xValues || !surface.yValues || !surface.zValues) {
+    if (
+      !surface
+      || !surface.xValues
+      || !surface.yValues
+      || !surface.zValues
+      || !surface.wxValues
+      || !surface.wyValues
+    ) {
       return [];
     }
 
@@ -73,18 +80,29 @@
     let index = 0;
     surface.yValues.forEach((y) => {
       surface.xValues.forEach((x) => {
-        data.push({ x, y, value: surface.zValues[index] });
+        data.push({
+          x,
+          y,
+          wx: surface.wxValues[index],
+          wy: surface.wyValues[index],
+          value: surface.zValues[index],
+        });
         index += 1;
       });
     });
     return data;
   }
 
+  function hasValidGeometry(cell) {
+    return Number.isFinite(cell.wx) && Number.isFinite(cell.wy) && cell.wx > 0 && cell.wy > 0;
+  }
+
   function defineHeatmapScales(data, measure, plotWidth, plotHeight) {
-    const xMin = d3.min(data, (d) => d.x);
-    const xMax = d3.max(data, (d) => d.x);
-    const yMin = d3.min(data, (d) => d.y);
-    const yMax = d3.max(data, (d) => d.y);
+    const geometry = data.filter(hasValidGeometry);
+    const xMin = d3.min(geometry, (d) => d.x);
+    const xMax = d3.max(geometry, (d) => d.x + d.wx);
+    const yMin = d3.min(geometry, (d) => d.y);
+    const yMax = d3.max(geometry, (d) => d.y + d.wy);
 
     const scaleX = d3.scaleLinear().domain([xMin, xMax]).range([0, plotWidth]);
     const scaleY = d3.scaleLinear().domain([yMin, yMax]).range([plotHeight, 0]);
@@ -133,8 +151,11 @@
         </section>
       </section>
       <section class="lexis-viz-section">
-        <div class="card lexis-heatmap-section">
-          <div class="lexis-heatmap-title">${options.title || "Lexis surface"}</div>
+        <div class="lexis-panel lexis-heatmap-section">
+          <div class="lexis-heatmap-title">
+            <div class="lexis-heatmap-title-measure">${options.title || "Lexis surface"}</div>
+            <div class="lexis-heatmap-title-strata" hidden></div>
+          </div>
           <div class="lexis-widget-notice" hidden></div>
           <div class="lexis-plot-container"></div>
           <p class="lexis-heatmap-caption"></p>
@@ -168,7 +189,8 @@
     const strataSummaryNode = d3.select(widget).select(".lexis-strata-summary");
     const strataControls = d3.select(widget).select(".lexis-strata-controls");
     const caption = d3.select(widget).select(".lexis-heatmap-caption");
-    const titleNode = d3.select(widget).select(".lexis-heatmap-title");
+    const titleMeasureNode = d3.select(widget).select(".lexis-heatmap-title-measure");
+    const titleStrataNode = d3.select(widget).select(".lexis-heatmap-title-strata");
     const notice = d3.select(widget).select(".lexis-widget-notice");
     const plotContainer = d3.select(widget).select(".lexis-plot-container");
 
@@ -234,7 +256,8 @@
     function updateHeader(measure) {
       const baseTitle = measure ? measure.name : "Lexis surface";
       if (config.title) {
-        titleNode.text(config.title);
+        titleMeasureNode.text(config.title);
+        titleStrataNode.attr("hidden", true).text("");
         return;
       }
 
@@ -251,11 +274,14 @@
         });
       }
 
-      titleNode.text(
-        strataParts.length > 0
-          ? `${baseTitle}, ${strataParts.join(", ")}`
-          : baseTitle,
-      );
+      titleMeasureNode.text(baseTitle);
+
+      if (strataParts.length > 0) {
+        titleStrataNode.attr("hidden", null).text(strataParts.join(", "));
+        return;
+      }
+
+      titleStrataNode.attr("hidden", true).text("");
     }
 
     function updateCaption(series) {
@@ -278,21 +304,18 @@
     }
 
     function drawHeatmap(data, scales, dimensions) {
-      const rectWidth = dimensions.plotWidth / (scales.x.domain()[1] - scales.x.domain()[0]);
-      const rectHeight = dimensions.plotHeight / (scales.y.domain()[1] - scales.y.domain()[0]);
-
       plot
         .append("g")
         .attr("class", "heatmap")
         .selectAll("rect")
-        .data(data, (d) => `${d.x}:${d.y}`)
+        .data(data.filter(hasValidGeometry), (d) => `${d.x}:${d.y}`)
         .enter()
         .append("rect")
         .attr("class", "heatmapcell")
         .attr("x", (d) => scales.x(d.x))
-        .attr("y", (d) => scales.y(d.y) - rectHeight)
-        .attr("width", rectWidth)
-        .attr("height", rectHeight)
+        .attr("y", (d) => scales.y(d.y + d.wy))
+        .attr("width", (d) => scales.x(d.x + d.wx) - scales.x(d.x))
+        .attr("height", (d) => scales.y(d.y) - scales.y(d.y + d.wy))
         .style("fill", (d) => scales.fill(d.value))
         .style("stroke", (d) => scales.fill(d.value))
         .style("stroke-width", 1);
@@ -301,13 +324,13 @@
     function addAxesToHeatmap(scales, dimensions) {
       plot
         .append("g")
-        .attr("class", "axis")
+        .attr("class", "lexis-axis")
         .attr("transform", `translate(0,${dimensions.plotHeight + 5})`)
         .call(d3.axisBottom(scales.x).tickFormat(d3.format("d")));
 
       plot
         .append("g")
-        .attr("class", "axis")
+        .attr("class", "lexis-axis")
         .attr("transform", "translate(-5,0)")
         .call(d3.axisLeft(scales.y).tickFormat(d3.format("d")));
     }
@@ -325,7 +348,7 @@
 
       plot
         .append("text")
-        .attr("class", "axis-label")
+        .attr("class", "lexis-axis-label")
         .attr("x", dimensions.plotWidth / 2)
         .attr("y", dimensions.plotHeight + 50)
         .attr("text-anchor", "middle")
@@ -333,7 +356,7 @@
 
       plot
         .append("text")
-        .attr("class", "axis-label")
+        .attr("class", "lexis-axis-label")
         .attr("transform", "rotate(-90)")
         .attr("x", -dimensions.plotHeight / 2)
         .attr("y", -45)
@@ -351,7 +374,7 @@
 
       const legendGroup = plot
         .append("g")
-        .attr("class", "legend")
+        .attr("class", "lexis-legend")
         .attr("transform", `translate(0,${dimensions.plotHeight + 70})`);
 
       const length = colors.length;
@@ -427,7 +450,7 @@
       const tooltip = d3
         .select("body")
         .append("div")
-        .attr("class", `heatmaptooltip ${tooltipClass}`)
+        .attr("class", `lexis-tooltip ${tooltipClass}`)
         .style("position", "absolute")
         .style("visibility", "hidden");
 
@@ -472,7 +495,8 @@
       plot.selectAll("*").remove();
 
       const observations = expandSurface(surface);
-      if (observations.length === 0) {
+      const drawableObservations = observations.filter(hasValidGeometry);
+      if (drawableObservations.length === 0) {
         updateHeader(measure);
         updateCaption(series);
         return;

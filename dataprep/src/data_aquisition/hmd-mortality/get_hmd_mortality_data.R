@@ -4,7 +4,7 @@
 
 library(yaml)
 library(HMDHFDplus)
-library(qs)
+library(qs2)
 
 # Constants ---------------------------------------------------------------
 
@@ -53,7 +53,6 @@ deaths_period_by_age <- lapply(cnst$hmdcodes$hmdcode, function(x) {
   )
 })
 
-
 # Download death rates ----------------------------------------------------
 
 deathrates_period_by_age <- lapply(cnst$hmdcodes$hmdcode, function(x) {
@@ -76,5 +75,5 @@ deathrates_period_by_age <- lapply(cnst$hmdcodes$hmdcode, function(x) {
 # Export ------------------------------------------------------------------
 
 # export results of analysis
-qsave(deaths_period_by_age, paths$output$deaths_period_by_age.qs)
-qsave(deathrates_period_by_age, paths$output$deathrates_period_by_age.qs)
+qs_save(deaths_period_by_age, paths$output$deaths_period_by_age.qs)
+qs_save(deathrates_period_by_age, paths$output$deathrates_period_by_age.qs)

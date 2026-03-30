@@ -268,12 +268,9 @@ function readMarkdown(filePath) {
 }
 
 function renderLogoHtml() {
-  const logoCandidates = ['logo.svg', 'logo.png', 'logo.webp', 'logo.jpg', 'logo.jpeg'];
-  for (const candidate of logoCandidates) {
-    const candidatePath = path.join(websiteRoot, 'assets', candidate);
-    if (fs.existsSync(candidatePath)) {
-      return `<img src="/assets/${candidate}" alt="Demoscapes" class="brand-logo" />`;
-    }
+  const logoPath = path.join(websiteRoot, 'assets', 'logo.svg');
+  if (fs.existsSync(logoPath)) {
+    return '<img src="/assets/logo.svg" alt="Demoscapes" class="brand-logo" />';
   }
   return '<span class="brand-text">demoscapes</span>';
 }

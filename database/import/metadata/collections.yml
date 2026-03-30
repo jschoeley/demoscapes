@@ -17,3 +17,9 @@ collections:
     summary: "Fertility-focused collection"
     order: 20
     isPublic: true
+  - key: "gutierrezetal2023"
+    name: "Estimates of human kinship for all countries"
+    description: "Estimates from the paper by D. Alburez-Gutierrez, I. Williams, & H. Caswell, Projections of human kinship for all countries, PNAS (2023)."
+    summary: "Kinship-focused collection"
+    order: 30
+    isPublic: true
