@@ -35,10 +35,15 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
   text-decoration: none;
   color: var(--ink);
   line-height: 1;
@@ -47,7 +52,9 @@ a {
 .brand-logo {
   display: block;
   max-height: 42px;
+  max-width: min(100%, 430px);
   width: auto;
+  height: auto;
 }
 
 .brand-text {
@@ -60,6 +67,9 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: flex-end;
+  flex: 1 1 420px;
+  min-width: 0;
 }
 
 .site-nav a {
@@ -281,6 +291,16 @@ a {
   .page {
     padding-left: 14px;
     padding-right: 14px;
+  }
+
+  .brand-logo {
+    max-height: 34px;
+    max-width: min(100%, 320px);
+  }
+
+  .site-nav {
+    flex-basis: 100%;
+    justify-content: flex-start;
   }
 
   .lexis-controls-primary {
