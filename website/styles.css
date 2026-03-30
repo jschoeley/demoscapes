@@ -340,12 +340,25 @@ a:focus {
 
 .lexis-widget .lexis-heatmap-title {
   margin: 0 0 12px;
+  display: grid;
+  gap: 3px;
+}
+
+.lexis-widget .lexis-heatmap-title-measure {
   font-family: "Roboto", sans-serif;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--brand);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.lexis-widget .lexis-heatmap-title-strata {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: 0.03em;
+  text-transform: none;
 }
 
 .lexis-widget .lexis-plot-container {
@@ -450,6 +463,14 @@ a:focus {
   }
 
   .lexis-widget .lexis-heatmap-title {
-    font-size: 1.1rem;
+    gap: 2px;
+  }
+
+  .lexis-widget .lexis-heatmap-title-measure {
+    font-size: 1rem;
+  }
+
+  .lexis-widget .lexis-heatmap-title-strata {
+    font-size: 0.76rem;
   }
 }

@@ -152,7 +152,10 @@
       </section>
       <section class="lexis-viz-section">
         <div class="lexis-panel lexis-heatmap-section">
-          <div class="lexis-heatmap-title">${options.title || "Lexis surface"}</div>
+          <div class="lexis-heatmap-title">
+            <div class="lexis-heatmap-title-measure">${options.title || "Lexis surface"}</div>
+            <div class="lexis-heatmap-title-strata" hidden></div>
+          </div>
           <div class="lexis-widget-notice" hidden></div>
           <div class="lexis-plot-container"></div>
           <p class="lexis-heatmap-caption"></p>
@@ -186,7 +189,8 @@
     const strataSummaryNode = d3.select(widget).select(".lexis-strata-summary");
     const strataControls = d3.select(widget).select(".lexis-strata-controls");
     const caption = d3.select(widget).select(".lexis-heatmap-caption");
-    const titleNode = d3.select(widget).select(".lexis-heatmap-title");
+    const titleMeasureNode = d3.select(widget).select(".lexis-heatmap-title-measure");
+    const titleStrataNode = d3.select(widget).select(".lexis-heatmap-title-strata");
     const notice = d3.select(widget).select(".lexis-widget-notice");
     const plotContainer = d3.select(widget).select(".lexis-plot-container");
 
@@ -252,7 +256,8 @@
     function updateHeader(measure) {
       const baseTitle = measure ? measure.name : "Lexis surface";
       if (config.title) {
-        titleNode.text(config.title);
+        titleMeasureNode.text(config.title);
+        titleStrataNode.attr("hidden", true).text("");
         return;
       }
 
@@ -269,11 +274,14 @@
         });
       }
 
-      titleNode.text(
-        strataParts.length > 0
-          ? `${baseTitle}, ${strataParts.join(", ")}`
-          : baseTitle,
-      );
+      titleMeasureNode.text(baseTitle);
+
+      if (strataParts.length > 0) {
+        titleStrataNode.attr("hidden", null).text(strataParts.join(", "));
+        return;
+      }
+
+      titleStrataNode.attr("hidden", true).text("");
     }
 
     function updateCaption(series) {
