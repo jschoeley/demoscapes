@@ -1,0 +1,32 @@
+http://{$LOCAL_WWW_HOST:www.demoscapes.localhost} {
+	redir http://{$LOCAL_CANONICAL_HOST:demoscapes.localhost}:{$LOCAL_HTTP_PORT:8080}{uri} permanent
+}
+
+https://{$LOCAL_WWW_HOST:www.demoscapes.localhost} {
+	tls internal
+	redir https://{$LOCAL_CANONICAL_HOST:demoscapes.localhost}:{$LOCAL_HTTPS_PORT:8443}{uri} permanent
+}
+
+http://{$LOCAL_CANONICAL_HOST:demoscapes.localhost}, http://localhost, http://127.0.0.1 {
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	handle {
+		root * /srv
+		file_server
+	}
+}
+
+https://{$LOCAL_CANONICAL_HOST:demoscapes.localhost}, https://localhost, https://127.0.0.1 {
+	tls internal
+
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	handle {
+		root * /srv
+		file_server
+	}
+}
