@@ -7,11 +7,17 @@
     "mongodb": "^7.0.0",
     "mongoose": "^9.1.5"
   },
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "chokidar": "^4.0.3",
+    "http-proxy-middleware": "^3.0.5"
+  },
   "name": "demoscapes",
   "version": "0.0.1",
   "main": "api/server.js",
   "scripts": {
     "build:website": "node website/build/build-site.js",
+    "dev:website": "node website/build/dev-server.js",
     "init:database": "node database/init.js",
     "start:api": "node api/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
