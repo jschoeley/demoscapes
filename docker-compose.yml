@@ -80,11 +80,7 @@ services:
     depends_on:
       - api
     volumes:
-      - caddy_data:/data
-      - caddy_config:/config
+      - ${CADDY_DATA_DIR:-/opt/demoscapes/caddy/data}:/data
+      - ${CADDY_CONFIG_DIR:-/opt/demoscapes/caddy/config}:/config
     networks:
       - mynetwork
-
-volumes:
-  caddy_data:
-  caddy_config:
