@@ -1,0 +1,18 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$WWW_HOST:www.demoscapes.org} {
+	redir https://{$CANONICAL_HOST:demoscapes.org}{uri} permanent
+}
+
+{$CANONICAL_HOST:demoscapes.org} {
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	handle {
+		root * /srv
+		file_server
+	}
+}

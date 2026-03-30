@@ -5,12 +5,13 @@ WEBSITE_DEV_PORT ?= 8090
 COMPOSE_BASE := docker compose -f docker-compose.yml
 COMPOSE_DEV_API := docker compose -f docker-compose.yml -f docker-compose.dev.yml
 
-.PHONY: help build run dev-api dev-website stop clean
+.PHONY: help build run smoke-website dev-api dev-website stop clean
 
 help:
 	@printf "Available targets:\n"
 	@printf "  make build  Build all Docker images using the production-safe Compose config\n"
 	@printf "  make run    Start the Docker Compose stack in detached mode without publishing the API port\n"
+	@printf "  make smoke-website  Start the full stack locally with the production-style Caddy website using the default Compose ports\n"
 	@printf "  make dev-api  Start database, db-init, and api with the dev override that publishes the API on 127.0.0.1:3000\n"
 	@printf "  make dev-website  Start the local website dev server with live reload and /api proxy\n"
 	@printf "  make stop   Stop and remove the Docker Compose stack\n"
@@ -20,6 +21,11 @@ build:
 	$(COMPOSE_BASE) build
 
 run:
+	$(COMPOSE_BASE) up -d
+
+smoke-website:
+	ACME_EMAIL=local@localhost \
+	CADDY_CONFIG_PATH=/etc/caddy/Caddyfile.local \
 	$(COMPOSE_BASE) up -d
 
 dev-api:
