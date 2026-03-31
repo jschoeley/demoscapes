@@ -1,7 +1,13 @@
 (function (global) {
   const defaultContainerWidth = 800;
   const minContainerWidth = 360;
-  const margin = { top: 10, right: 10, bottom: 120, left: 60 };
+  const mobileBreakpoint = 860;
+  const margin = { top: 10, right: 10, bottom: 96, left: 60 };
+  const mobileXAxisTickTargetPx = 58;
+  const mobileYAxisTickTargetPx = 34;
+  const mobileXAxisOverlapPaddingPx = 3;
+  const mobileLegendOverlapPaddingPx = 4;
+  const mobileYAxisOverlapPaddingPx = 2;
 
   function toTitleCase(value) {
     if (!value) {
@@ -118,6 +124,72 @@
     };
   }
 
+  function isMobileLayout() {
+    return global.innerWidth <= mobileBreakpoint;
+  }
+
+  function dedupeTickValues(values) {
+    return Array.from(new Set((values || []).filter((value) => value !== undefined && value !== null)));
+  }
+
+  function sampleTickValues(values, step) {
+    if (!values || values.length <= 2 || step <= 1) {
+      return values || [];
+    }
+
+    return values.filter((_value, index) => (
+      index === 0
+      || index === values.length - 1
+      || index % step === 0
+    ));
+  }
+
+  function hasHorizontalTickOverlap(axisGroup, padding) {
+    const boxes = axisGroup
+      .selectAll(".tick text")
+      .nodes()
+      .map((node) => node.getBoundingClientRect())
+      .sort((a, b) => a.left - b.left);
+
+    for (let i = 1; i < boxes.length; i += 1) {
+      if (boxes[i - 1].right + padding > boxes[i].left) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function hasVerticalTickOverlap(axisGroup, padding) {
+    const boxes = axisGroup
+      .selectAll(".tick text")
+      .nodes()
+      .map((node) => node.getBoundingClientRect())
+      .sort((a, b) => a.top - b.top);
+
+    for (let i = 1; i < boxes.length; i += 1) {
+      if (boxes[i - 1].bottom + padding > boxes[i].top) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function renderAdaptiveAxis(axisGroup, createAxis, tickValues, overlapChecker) {
+    const uniqueValues = dedupeTickValues(tickValues);
+    if (uniqueValues.length === 0) {
+      axisGroup.call(createAxis(null));
+      return;
+    }
+
+    for (let step = 1; step <= uniqueValues.length; step += 1) {
+      const sampledValues = sampleTickValues(uniqueValues, step);
+      axisGroup.call(createAxis(sampledValues));
+      if (!overlapChecker(axisGroup) || sampledValues.length <= 2) {
+        return;
+      }
+    }
+  }
+
   function createWidgetSkeleton(container, options) {
     container.innerHTML = "";
     container.classList.add("lexis-widget-host");
@@ -227,7 +299,7 @@
       const node = plotContainer.node();
       const measuredWidth = node ? Math.floor(node.clientWidth) : 0;
       const outerWidth = Math.max(minContainerWidth, measuredWidth || defaultContainerWidth);
-      const outerHeight = Math.round(outerWidth * 0.92);
+      const outerHeight = Math.round(outerWidth * 0.76);
       const plotWidth = Math.max(1, outerWidth - margin.left - margin.right);
       const plotHeight = Math.max(1, outerHeight - margin.top - margin.bottom);
       return {
@@ -322,17 +394,47 @@
     }
 
     function addAxesToHeatmap(scales, dimensions) {
-      plot
+      const xAxisGroup = plot
         .append("g")
         .attr("class", "lexis-axis")
-        .attr("transform", `translate(0,${dimensions.plotHeight + 5})`)
-        .call(d3.axisBottom(scales.x).tickFormat(d3.format("d")));
+        .attr("transform", `translate(0,${dimensions.plotHeight + 5})`);
 
-      plot
+      const xTickValues = scales.x.ticks(
+        Math.max(2, Math.floor(dimensions.plotWidth / mobileXAxisTickTargetPx)),
+      );
+      if (isMobileLayout()) {
+        renderAdaptiveAxis(
+          xAxisGroup,
+          (tickValues) => d3.axisBottom(scales.x)
+            .tickValues(tickValues)
+            .tickFormat(d3.format("d")),
+          xTickValues,
+          (group) => hasHorizontalTickOverlap(group, mobileXAxisOverlapPaddingPx),
+        );
+      } else {
+        xAxisGroup.call(d3.axisBottom(scales.x).tickFormat(d3.format("d")));
+      }
+
+      const yAxisGroup = plot
         .append("g")
         .attr("class", "lexis-axis")
-        .attr("transform", "translate(-5,0)")
-        .call(d3.axisLeft(scales.y).tickFormat(d3.format("d")));
+        .attr("transform", "translate(-5,0)");
+
+      yAxisGroup.call(d3.axisLeft(scales.y).tickFormat(d3.format("d")));
+
+      if (isMobileLayout() && hasVerticalTickOverlap(yAxisGroup, mobileYAxisOverlapPaddingPx)) {
+        const yTickValues = scales.y.ticks(
+          Math.max(2, Math.floor(dimensions.plotHeight / mobileYAxisTickTargetPx)),
+        );
+        renderAdaptiveAxis(
+          yAxisGroup,
+          (tickValues) => d3.axisLeft(scales.y)
+            .tickValues(tickValues)
+            .tickFormat(d3.format("d")),
+          yTickValues,
+          (group) => hasVerticalTickOverlap(group, mobileYAxisOverlapPaddingPx),
+        );
+      }
     }
 
     function addAxisLabels(measure, dimensions) {
@@ -350,7 +452,7 @@
         .append("text")
         .attr("class", "lexis-axis-label")
         .attr("x", dimensions.plotWidth / 2)
-        .attr("y", dimensions.plotHeight + 50)
+        .attr("y", dimensions.plotHeight + 40)
         .attr("text-anchor", "middle")
         .text(`${toTitleCase(xLabel)}${xUnit}`);
 
@@ -375,7 +477,7 @@
       const legendGroup = plot
         .append("g")
         .attr("class", "lexis-legend")
-        .attr("transform", `translate(0,${dimensions.plotHeight + 70})`);
+        .attr("transform", `translate(0,${dimensions.plotHeight + 56})`);
 
       const length = colors.length;
       if (length === 0) {
@@ -420,10 +522,24 @@
         return numericFormatter(domainValue * labelMultiplier);
       };
 
-      legendGroup
-        .call(d3.axisTop(x).tickSize(-8).tickValues(tickValues).tickFormat(tickFormatter))
-        .select(".domain")
-        .remove();
+      const renderLegendAxis = (values) => {
+        legendGroup
+          .call(d3.axisTop(x).tickSize(-8).tickValues(values).tickFormat(tickFormatter))
+          .select(".domain")
+          .remove();
+      };
+
+      if (isMobileLayout()) {
+        renderAdaptiveAxis(
+          legendGroup,
+          (values) => d3.axisTop(x).tickSize(-8).tickValues(values).tickFormat(tickFormatter),
+          tickValues,
+          (group) => hasHorizontalTickOverlap(group, mobileLegendOverlapPaddingPx),
+        );
+        legendGroup.select(".domain").remove();
+      } else {
+        renderLegendAxis(tickValues);
+      }
 
       legendGroup
         .append("text")
@@ -431,7 +547,7 @@
         .attr("font-weight", "bold")
         .attr("text-anchor", "start")
         .attr("x", 0)
-        .attr("y", 20)
+        .attr("y", 18)
         .text(legendLabels.left || "");
 
       legendGroup
@@ -440,7 +556,7 @@
         .attr("font-weight", "bold")
         .attr("text-anchor", "end")
         .attr("x", dimensions.plotWidth)
-        .attr("y", 20)
+        .attr("y", 18)
         .text(legendLabels.right || "");
     }
 

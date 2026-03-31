@@ -4,6 +4,11 @@ title: About
 
 # About
 
+## Collaborators
+
+
+## Contact
+
 Demoscapes is managed and developed by [Jonas Schöley](https://www.jschoeley.com) at the [Max Planck Institute for Demographic Research](https://www.demogr.mpg.de/en/). For questions please contact
 
 > Dr. Jonas Schöley \
