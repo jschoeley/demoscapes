@@ -57,7 +57,7 @@ services:
       MONGO_API_USERNAME: ${MONGO_API_USERNAME:?MONGO_API_USERNAME is required}
       MONGO_API_PASSWORD: ${MONGO_API_PASSWORD:?MONGO_API_PASSWORD is required}
       PORT: 3000
-      TRUST_PROXY: 'true'
+      TRUST_PROXY: ${TRUST_PROXY:-false}
     networks:
       - mynetwork
 
