@@ -178,6 +178,13 @@ a:focus {
   margin-top: 18px;
 }
 
+.collaborator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
 .content-card,
 .source-card {
   background: var(--surface);
@@ -185,8 +192,35 @@ a:focus {
   padding: 16px;
 }
 
+.collaborator-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+
 .content-card a,
 .source-card a {
+  font-weight: 700;
+}
+
+.collaborator-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.45rem;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.collaborator-card p {
+  margin: 0;
+  color: var(--ink);
+}
+
+.collaborator-card p + p {
+  margin-top: 0.65rem;
+}
+
+.collaborator-collections a {
   font-weight: 700;
 }
 

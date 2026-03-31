@@ -1,4 +1,5 @@
 const fs = require('fs');
+const yaml = require('js-yaml');
 const MarkdownIt = require('markdown-it');
 const path = require('path');
 
@@ -9,6 +10,7 @@ const templatesRoot = path.join(websiteRoot, 'templates');
 const distRoot = path.join(websiteRoot, 'dist');
 const sourcesYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 'sources.yml');
 const collectionsYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 'collections.yml');
+const collaboratorsYamlPath = path.join(websiteRoot, 'content', 'collaborators', 'collaborators.yml');
 
 let embedCounter = 0;
 const markdown = new MarkdownIt({
@@ -253,6 +255,71 @@ function renderArticleList(items, basePath) {
   return `<section class="content-grid">${cards}</section>`;
 }
 
+function loadYamlDocument(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+  return yaml.load(fs.readFileSync(filePath, 'utf8'));
+}
+
+function getPublicCollections() {
+  const collectionsDoc = loadYamlDocument(collectionsYamlPath);
+  const collections = collectionsDoc && Array.isArray(collectionsDoc.collections)
+    ? collectionsDoc.collections
+    : [];
+
+  return collections
+    .filter((entry) => entry && entry.key)
+    .filter((entry) => entry.isPublic !== false)
+    .map((entry) => ({
+      key: String(entry.key),
+      slug: slugify(entry.key),
+      title: entry.name || entry.key,
+      summary: entry.summary || entry.description || '',
+      description: entry.description || '',
+      order: entry.order,
+    }));
+}
+
+function renderCollaboratorsSection() {
+  const collaboratorsDoc = loadYamlDocument(collaboratorsYamlPath);
+  const collaborators = Array.isArray(collaboratorsDoc) ? collaboratorsDoc : [];
+  const collectionsByKey = getPublicCollections().reduce((acc, collection) => {
+    acc[collection.key] = collection;
+    return acc;
+  }, {});
+
+  if (collaborators.length === 0) {
+    return '<p>No collaborators listed yet.</p>';
+  }
+
+  const cards = collaborators
+    .filter((entry) => entry && entry.name)
+    .map((entry) => {
+      const linkedCollections = Array.isArray(entry.collections)
+        ? entry.collections
+          .map((key) => collectionsByKey[key])
+          .filter(Boolean)
+          .map((collection) => (
+            `<a href="/collections/${collection.slug}.html">${escapeHtml(collection.title)}</a>`
+          ))
+        : [];
+
+      return [
+        '<article class="collaborator-card">',
+        `  <h3>${escapeHtml(entry.name)}</h3>`,
+        entry.blurb ? `  <p>${escapeHtml(entry.blurb)}</p>` : '',
+        linkedCollections.length > 0
+          ? `  <p class="collaborator-collections"><strong>Collections:</strong> ${linkedCollections.join(', ')}</p>`
+          : '',
+        '</article>',
+      ].join('\n');
+    })
+    .join('\n');
+
+  return `<section class="collaborator-grid">${cards}</section>`;
+}
+
 function writeHtml(outputPath, html) {
   ensureDir(path.dirname(outputPath));
   fs.writeFileSync(outputPath, html, 'utf8');
@@ -276,6 +343,22 @@ function renderMarkdownPage(markdownPath, navKey, outFilePath) {
     content: `<article class="content-page markdown-content">${parsed.html}</article>`,
   });
   writeHtml(outFilePath, html);
+}
+
+function buildAboutPage() {
+  const markdownPath = path.join(contentRoot, 'about.md');
+  const parsed = readMarkdown(markdownPath);
+  const collaboratorsHtml = renderCollaboratorsSection();
+  const aboutHtml = parsed.html.includes('<h2>Collaborators</h2>')
+    ? parsed.html.replace('<h2>Collaborators</h2>', `<h2>Collaborators</h2>\n${collaboratorsHtml}`)
+    : `${parsed.html}\n${collaboratorsHtml}`;
+
+  const html = renderBasePage({
+    title: parsed.frontmatter.title || 'About',
+    navKey: 'about',
+    content: `<article class="content-page markdown-content">${aboutHtml}</article>`,
+  });
+  writeHtml(path.join(distRoot, 'about.html'), html);
 }
 
 function buildTopics(sectionName, navKey) {
@@ -360,17 +443,7 @@ function buildSourcesPage() {
 }
 
 function buildCollectionsFromMetadata() {
-  const collections = parseListYaml(fs.readFileSync(collectionsYamlPath, 'utf8'), 'collections')
-    .filter((entry) => entry && entry.key)
-    .filter((entry) => entry.isPublic !== false)
-    .map((entry) => ({
-      key: String(entry.key),
-      slug: slugify(entry.key),
-      title: entry.name || entry.key,
-      summary: entry.summary || entry.description || '',
-      description: entry.description || '',
-      order: entry.order,
-    }))
+  const collections = getPublicCollections()
     .sort(sortByOrderThenTitle);
 
   const outDir = path.join(distRoot, 'collections');
@@ -436,7 +509,7 @@ function main() {
   resetDir(distRoot);
 
   buildHomePage();
-  renderMarkdownPage(path.join(contentRoot, 'about.md'), 'about', path.join(distRoot, 'about.html'));
+  buildAboutPage();
   buildTopics('topics', 'topics');
   buildCollectionsFromMetadata();
   buildSourcesPage();
