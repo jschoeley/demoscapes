@@ -214,7 +214,7 @@ measures:
         - "#016c59"
         - "#014636"
       labelmultiplier: 1000
-      labelprecision: 0
+      labelprecision: 1 
       legend:
         left: ""
         right: "Births per 1,000 female person-years"
