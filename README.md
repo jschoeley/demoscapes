@@ -20,15 +20,10 @@ To build the app locally, first copy the example environment file and set the re
 cp .env.example .env
 ```
 
-Then build the Docker images:
+Then build the Docker images and run the full stack locally with
 
 ```bash
 make build
-```
-
-To start the full local stack after the build completes, run:
-
-```bash
 make smoke-website
 ```
 
