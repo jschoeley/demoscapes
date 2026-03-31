@@ -1,4 +1,4 @@
-# <img src="website/assets/logo.svg" align="right" height="300" />demoscapes.org
+# <img src="website/assets/logo.svg" align="left" height="300" />demoscapes.org
 
 Jonas Schöley [![ORCID](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png)](https://orcid.org/0000-0002-3340-8518) 
 [jschoeley.com](https://www.jschoeley.com/)
