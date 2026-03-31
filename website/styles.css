@@ -521,4 +521,16 @@ a:focus {
   .lexis-widget .lexis-heatmap-title-strata {
     font-size: 0.76rem;
   }
+
+  .lexis-widget .lexis-axis {
+    font-size: 0.82em;
+  }
+
+  .lexis-widget .lexis-legend {
+    font-size: 0.68em;
+  }
+
+  .lexis-widget .lexis-axis-label {
+    font-size: 0.82em;
+  }
 }
