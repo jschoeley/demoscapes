@@ -217,11 +217,11 @@ a:focus {
   --lexis-space-2xs: 3px;
   --lexis-space-xs: 4px;
   --lexis-space-sm: 6px;
-  --lexis-space-md: 8px;
-  --lexis-space-lg: 10px;
-  --lexis-space-xl: 12px;
-  --lexis-space-2xl: 16px;
-  --lexis-space-3xl: 22px;
+  --lexis-space-md: 7px;
+  --lexis-space-lg: 9px;
+  --lexis-space-xl: 10px;
+  --lexis-space-2xl: 12px;
+  --lexis-space-3xl: 18px;
   --lexis-control-padding: var(--lexis-space-md) var(--lexis-space-lg);
   --lexis-inline-panel-padding: var(--lexis-space-lg) var(--lexis-space-xl);
   --lexis-panel-padding: var(--lexis-space-2xl);
@@ -269,7 +269,7 @@ a:focus {
   padding: var(--lexis-panel-padding);
   background: var(--lexis-color-panel-muted);
   border: var(--lexis-border);
-  margin-bottom: var(--lexis-space-md);
+  margin-bottom: var(--lexis-space-xs);
 }
 
 .lexis-widget .lexis-controls-primary {
@@ -387,7 +387,7 @@ a:focus {
 }
 
 .lexis-widget .lexis-heatmap-title {
-  margin: 0 0 var(--lexis-space-xl);
+  margin: 0 0 var(--lexis-space-lg);
   display: grid;
   gap: var(--lexis-space-2xs);
 }
@@ -411,7 +411,7 @@ a:focus {
 
 .lexis-widget .lexis-plot-container {
   overflow-x: auto;
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 .lexis-tooltip {
@@ -460,14 +460,14 @@ a:focus {
 }
 
 .lexis-widget .lexis-heatmap-caption {
-  margin-top: var(--lexis-space-md);
+  margin-top: var(--lexis-space-xs);
   margin-bottom: 0;
   font-size: var(--lexis-font-size-caption);
   color: var(--lexis-color-text-muted);
 }
 
 .lexis-widget .lexis-widget-notice {
-  margin: 0 0 var(--lexis-space-xl);
+  margin: 0 0 var(--lexis-space-lg);
   padding: var(--lexis-inline-panel-padding);
   border: 1px solid var(--lexis-color-brand);
   background: var(--lexis-color-notice);

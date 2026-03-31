@@ -1,7 +1,7 @@
 (function (global) {
   const defaultContainerWidth = 800;
   const minContainerWidth = 360;
-  const margin = { top: 10, right: 10, bottom: 120, left: 60 };
+  const margin = { top: 10, right: 10, bottom: 96, left: 60 };
 
   function toTitleCase(value) {
     if (!value) {
@@ -227,7 +227,7 @@
       const node = plotContainer.node();
       const measuredWidth = node ? Math.floor(node.clientWidth) : 0;
       const outerWidth = Math.max(minContainerWidth, measuredWidth || defaultContainerWidth);
-      const outerHeight = Math.round(outerWidth * 0.92);
+      const outerHeight = Math.round(outerWidth * 0.76);
       const plotWidth = Math.max(1, outerWidth - margin.left - margin.right);
       const plotHeight = Math.max(1, outerHeight - margin.top - margin.bottom);
       return {
@@ -350,7 +350,7 @@
         .append("text")
         .attr("class", "lexis-axis-label")
         .attr("x", dimensions.plotWidth / 2)
-        .attr("y", dimensions.plotHeight + 50)
+        .attr("y", dimensions.plotHeight + 40)
         .attr("text-anchor", "middle")
         .text(`${toTitleCase(xLabel)}${xUnit}`);
 
@@ -375,7 +375,7 @@
       const legendGroup = plot
         .append("g")
         .attr("class", "lexis-legend")
-        .attr("transform", `translate(0,${dimensions.plotHeight + 70})`);
+        .attr("transform", `translate(0,${dimensions.plotHeight + 56})`);
 
       const length = colors.length;
       if (length === 0) {
@@ -431,7 +431,7 @@
         .attr("font-weight", "bold")
         .attr("text-anchor", "start")
         .attr("x", 0)
-        .attr("y", 20)
+        .attr("y", 18)
         .text(legendLabels.left || "");
 
       legendGroup
@@ -440,7 +440,7 @@
         .attr("font-weight", "bold")
         .attr("text-anchor", "end")
         .attr("x", dimensions.plotWidth)
-        .attr("y", 20)
+        .attr("y", 18)
         .text(legendLabels.right || "");
     }
 
