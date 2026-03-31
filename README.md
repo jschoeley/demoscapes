@@ -5,10 +5,10 @@ Jonas Schöley [![ORCID](https://info.orcid.org/wp-content/uploads/2019/11/orcid
 
 [Demoscapes.org](https://demoscapes.org) is a web application for visualizing demographic data as heat maps (so called "Lexis surfaces").
 
-For an introduction to Lexis surfaces and their use in demography see [Minton (2014)], [Scholey & Willekens (2017)], [Rau et al. (2018)], and [Pattaro et al. (2020)].
+For an introduction to Lexis surfaces and their use in demography see [Minton (2014)], [Schöley & Willekens (2017)], [Rau et al. (2018)], and [Pattaro et al. (2020)].
 
 [Minton (2014)]: https://doi.org/10.1016/j.sste.2014.04.003
-[Schoeley & Willekens (2017)]: https://www.demographic-research.org/articles/volume/36/21/
+[Schöley & Willekens (2017)]: https://www.demographic-research.org/articles/volume/36/21/
 [Rau et al. (2018)]: https://doi.org/10.1007/978-3-319-64820-0
 [Pattaro et al. (2020)]: http://www.demographic-research.org/Volumes/Vol42/23/
 
