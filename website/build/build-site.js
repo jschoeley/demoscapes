@@ -214,6 +214,7 @@ function renderBasePage({ title, navKey, content }) {
     home: navKey === 'home' ? 'is-current' : '',
     topics: navKey === 'topics' ? 'is-current' : '',
     collections: navKey === 'collections' ? 'is-current' : '',
+    contribute: navKey === 'contribute' ? 'is-current' : '',
     sources: navKey === 'sources' ? 'is-current' : '',
     about: navKey === 'about' ? 'is-current' : '',
   };
@@ -225,6 +226,7 @@ function renderBasePage({ title, navKey, content }) {
     '{{NAV_HOME}}': navClasses.home,
     '{{NAV_TOPICS}}': navClasses.topics,
     '{{NAV_COLLECTIONS}}': navClasses.collections,
+    '{{NAV_CONTRIBUTE}}': navClasses.contribute,
     '{{NAV_SOURCES}}': navClasses.sources,
     '{{NAV_ABOUT}}': navClasses.about,
   };
@@ -359,6 +361,14 @@ function buildAboutPage() {
     content: `<article class="content-page markdown-content">${aboutHtml}</article>`,
   });
   writeHtml(path.join(distRoot, 'about.html'), html);
+}
+
+function buildContributePage() {
+  renderMarkdownPage(
+    path.join(contentRoot, 'contribute.md'),
+    'contribute',
+    path.join(distRoot, 'contribute.html'),
+  );
 }
 
 function buildTopics(sectionName, navKey) {
@@ -510,6 +520,7 @@ function main() {
 
   buildHomePage();
   buildAboutPage();
+  buildContributePage();
   buildTopics('topics', 'topics');
   buildCollectionsFromMetadata();
   buildSourcesPage();
