@@ -147,6 +147,10 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+function formatDisplayUrl(value) {
+  return String(value || '').replace(/^https?:\/\//i, '');
+}
+
 function parseLexisAttributes(rawAttrs) {
   const attributes = {};
   const regex = /(\w+)=("([^"]*)"|'([^']*)')/g;
@@ -422,12 +426,11 @@ function buildSourcesPage() {
 
   const cards = sources.map((source) => {
     const link = source.url
-      ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.url)}</a>`
+      ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(formatDisplayUrl(source.url))}</a>`
       : '';
     return [
       '<article class="source-card">',
       `  <h2>${escapeHtml(source.name || source.key || '')}</h2>`,
-      `  <p class="source-key"><strong>Key:</strong> ${escapeHtml(source.key || '')}</p>`,
       source.citation ? `  <p>${escapeHtml(source.citation)}</p>` : '',
       source.license ? `  <p><strong>License:</strong> ${escapeHtml(source.license)}</p>` : '',
       link ? `  <p>${link}</p>` : '',
