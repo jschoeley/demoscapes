@@ -155,6 +155,45 @@ a:focus {
   color: var(--ink);
 }
 
+ul {
+  margin: 1.1rem 0;
+  padding-left: 1.75rem;
+  list-style: none;
+}
+
+ol {
+  margin: 1.1rem 0;
+  padding-left: 1.75rem;
+}
+
+ul li {
+  position: relative;
+}
+
+ul li + li {
+  margin-top: 0.45rem;
+}
+
+ol li + li {
+  margin-top: 0.45rem;
+}
+
+ul li::before {
+  content: "";
+  position: absolute;
+  top: 0.48em;
+  left: -1.1rem;
+  width: 0;
+  height: 0;
+  border-top: 0.3em solid transparent;
+  border-bottom: 0.3em solid transparent;
+  border-left: 0.5em solid var(--brand);
+}
+
+ol li::marker {
+  color: var(--brand);
+}
+
 .content-page blockquote {
   margin: 1.25rem 0;
   padding: 0.25rem 0 0.25rem 1rem;
