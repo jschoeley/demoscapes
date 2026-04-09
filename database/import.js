@@ -30,6 +30,15 @@ function parseValue(value) {
   return Number(value);
 }
 
+function parseCategoricalValue(value) {
+  if (value === '.' || value === undefined || value === null) {
+    return null;
+  }
+
+  const trimmed = String(value).trim();
+  return trimmed === '' ? null : trimmed;
+}
+
 function parseRequiredNumber(value, label, row) {
   requireField(value, label);
   const parsed = Number(value);
@@ -105,6 +114,11 @@ async function runImport() {
     : [];
   const seriesSeed = seriesDoc && seriesDoc.series ? seriesDoc.series : [];
   const strataSeed = loadStrataSeed();
+  const measuresByKey = new Map(
+    measuresSeed
+      .filter((entry) => entry && entry.key)
+      .map((entry) => [entry.key, entry]),
+  );
 
   const normalizedCollections = collectionsSeed.map((entry) => {
     requireField(entry && entry.key, 'collections.key');
@@ -191,6 +205,9 @@ async function runImport() {
       continue;
     }
 
+    const measureDefinition = measuresByKey.get(definition.measureKey);
+    const isCategoricalMeasure = measureDefinition && measureDefinition.statType === 'categorical';
+
     const strataKeys = Array.isArray(definition.strataKeys) ? definition.strataKeys : [];
     const valuesByKey = {};
     strataKeys.forEach((key) => {
@@ -235,7 +252,7 @@ async function runImport() {
         surface.xSet.add(x);
         surface.ySet.add(y);
         surface.cellsByPosition.set(`${x}|${y}`, {
-          z: parseValue(row.z),
+          z: isCategoricalMeasure ? parseCategoricalValue(row.z) : parseValue(row.z),
           wx,
           wy,
         });

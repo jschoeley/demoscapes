@@ -19,7 +19,7 @@ const measureSchema = new Schema({
     labelmultiplier: Number,
     labelprecision: Number,
     colorScale: String,
-    colorDomain: [Number],
+    colorDomain: [Schema.Types.Mixed],
     colorRange: [String],
     legend: {
       left: String,
@@ -77,7 +77,7 @@ const surfaceSchema = new Schema({
   yValues: [Number],
   wxValues: [Number],
   wyValues: [Number],
-  zValues: [Number],
+  zValues: [Schema.Types.Mixed],
   zEncoding: { type: String, default: 'row-major-y' },
 });
 

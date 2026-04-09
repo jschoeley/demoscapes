@@ -3,6 +3,13 @@
   const minContainerWidth = 360;
   const mobileBreakpoint = 860;
   const margin = { top: 10, right: 10, bottom: 96, left: 60 };
+  const qualitativeLegendRowHeight = 28;
+  const qualitativeLegendLabelGap = 8;
+  const qualitativeLegendItemGap = 16;
+  const qualitativeLegendSwatchSize = 12;
+  const qualitativeLegendTopOffset = 56;
+  const qualitativeLegendBottomPadding = 14;
+  const fallbackCategoricalColor = "#d9d9d9";
   const mobileXAxisTickTargetPx = 58;
   const mobileYAxisTickTargetPx = 34;
   const mobileXAxisOverlapPaddingPx = 3;
@@ -49,6 +56,42 @@
   function buildColorScale(display) {
     const rawDomain = display.colorDomain || [];
     const colors = display.colorRange || ["#f7f7f7"];
+    const colorScaleName = display.colorScale || "";
+
+    if (colorScaleName === "qualitative") {
+      const categories = rawDomain.map((value) => String(value));
+      const colorByCategory = new Map();
+      const warnedCategories = new Set();
+
+      categories.forEach((category, index) => {
+        colorByCategory.set(category, colors[index] || fallbackCategoricalColor);
+      });
+
+      return {
+        kind: "qualitative",
+        fill: (value) => {
+          if (value === null || value === undefined || value === "") {
+            return "white";
+          }
+
+          const category = String(value);
+          if (!colorByCategory.has(category)) {
+            if (!warnedCategories.has(category)) {
+              warnedCategories.add(category);
+              console.warn(`Unknown qualitative category: ${category}`);
+            }
+            return fallbackCategoricalColor;
+          }
+
+          return colorByCategory.get(category);
+        },
+        legend: {
+          categories,
+          colors: categories.map((category) => colorByCategory.get(category)),
+        },
+      };
+    }
+
     const edges = rawDomain.map(parseDomainValue);
 
     if (edges.length === colors.length + 1) {
@@ -68,11 +111,12 @@
         return value < edges[0] ? colors[0] : colors[colors.length - 1];
       };
 
-      return { fill, legend: { colors, edges } };
+      return { kind: "numeric", fill, legend: { colors, edges } };
     }
 
     const scale = d3.scaleThreshold().domain(edges).range(colors);
     return {
+      kind: "numeric",
       fill: (value) => {
         if (value === null || value === undefined || Number.isNaN(value)) {
           return "white";
@@ -132,9 +176,84 @@
     return {
       x: scaleX,
       y: scaleY,
+      kind: colorScale.kind,
       legend: colorScale.legend,
       fill: colorScale.fill,
     };
+  }
+
+  function measureTextWidth(text, className) {
+    const probe = d3
+      .select(document.body)
+      .append("svg")
+      .attr("width", 0)
+      .attr("height", 0)
+      .style("position", "absolute")
+      .style("visibility", "hidden")
+      .style("pointer-events", "none");
+
+    const textNode = probe
+      .append("text")
+      .attr("class", className)
+      .text(text || "");
+
+    const width = textNode.node().getComputedTextLength();
+    probe.remove();
+    return width;
+  }
+
+  function buildQualitativeLegendRows(categories, plotWidth) {
+    const rows = [];
+    let currentRow = [];
+    let currentWidth = 0;
+
+    categories.forEach((category) => {
+      const labelWidth = measureTextWidth(category, "lexis-legend-label");
+      const itemWidth = qualitativeLegendSwatchSize + qualitativeLegendLabelGap + labelWidth;
+      const nextWidth = currentRow.length === 0
+        ? itemWidth
+        : currentWidth + qualitativeLegendItemGap + itemWidth;
+
+      if (currentRow.length > 0 && nextWidth > plotWidth) {
+        rows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+      }
+
+      currentRow.push({
+        label: category,
+        width: itemWidth,
+      });
+      currentWidth = currentRow.length === 1
+        ? itemWidth
+        : currentWidth + qualitativeLegendItemGap + itemWidth;
+    });
+
+    if (currentRow.length > 0) {
+      rows.push(currentRow);
+    }
+
+    return rows;
+  }
+
+  function getLegendBottomMargin(scales, plotWidth) {
+    if (!scales || scales.kind !== "qualitative") {
+      return margin.bottom;
+    }
+
+    const categories = scales.legend && Array.isArray(scales.legend.categories)
+      ? scales.legend.categories
+      : [];
+    if (categories.length === 0) {
+      return margin.bottom;
+    }
+
+    const rows = buildQualitativeLegendRows(categories, plotWidth);
+    const legendHeight = rows.length * qualitativeLegendRowHeight;
+    return Math.max(
+      margin.bottom,
+      qualitativeLegendTopOffset + legendHeight + qualitativeLegendBottomPadding,
+    );
   }
 
   function isMobileLayout() {
@@ -308,18 +427,20 @@
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    function getDimensions() {
+    function getDimensions(scales) {
       const node = plotContainer.node();
       const measuredWidth = node ? Math.floor(node.clientWidth) : 0;
       const outerWidth = Math.max(minContainerWidth, measuredWidth || defaultContainerWidth);
-      const outerHeight = Math.round(outerWidth * 0.76);
       const plotWidth = Math.max(1, outerWidth - margin.left - margin.right);
-      const plotHeight = Math.max(1, outerHeight - margin.top - margin.bottom);
+      const bottomMargin = getLegendBottomMargin(scales, plotWidth);
+      const outerHeight = Math.round(outerWidth * 0.76) + Math.max(0, bottomMargin - margin.bottom);
+      const plotHeight = Math.max(1, outerHeight - margin.top - bottomMargin);
       return {
         outerWidth,
         outerHeight,
         plotWidth,
         plotHeight,
+        bottomMargin,
       };
     }
 
@@ -485,18 +606,13 @@
         .text(`${toTitleCase(yLabel)}${yUnit}`);
     }
 
-    function addColorBarToHeatmap(scales, measure, dimensions) {
+    function addNumericColorBarToHeatmap(scales, measure, dimensions, legendGroup) {
       const display = measure && measure.display ? measure.display : {};
       const legendLabels = display.legend || {};
       const colorScaleName = display.colorScale || "";
       const legend = scales.legend || { colors: [], edges: [] };
       const colors = legend.colors || [];
       const edges = legend.edges || [];
-
-      const legendGroup = plot
-        .append("g")
-        .attr("class", "lexis-legend")
-        .attr("transform", `translate(0,${dimensions.plotHeight + 56})`);
 
       const length = colors.length;
       if (length === 0) {
@@ -579,6 +695,86 @@
         .text(legendLabels.right || "");
     }
 
+    function addQualitativeColorBarToHeatmap(scales, measure, dimensions, legendGroup) {
+      const display = measure && measure.display ? measure.display : {};
+      const legendLabels = display.legend || {};
+      const legend = scales.legend || { categories: [], colors: [] };
+      const categories = Array.isArray(legend.categories) ? legend.categories : [];
+      const colors = Array.isArray(legend.colors) ? legend.colors : [];
+      const rows = buildQualitativeLegendRows(categories, dimensions.plotWidth);
+
+      if (rows.length === 0) {
+        return;
+      }
+
+      let categoryIndex = 0;
+      rows.forEach((row, rowIndex) => {
+        const rowGroup = legendGroup
+          .append("g")
+          .attr("class", "lexis-legend-row")
+          .attr("transform", `translate(0,${rowIndex * qualitativeLegendRowHeight})`);
+
+        let offsetX = 0;
+        row.forEach((item) => {
+          const color = colors[categoryIndex] || fallbackCategoricalColor;
+          const itemGroup = rowGroup
+            .append("g")
+            .attr("class", "lexis-legend-item")
+            .attr("transform", `translate(${offsetX},0)`);
+
+          itemGroup
+            .append("rect")
+            .attr("width", qualitativeLegendSwatchSize)
+            .attr("height", qualitativeLegendSwatchSize)
+            .attr("y", -qualitativeLegendSwatchSize + 2)
+            .attr("fill", color);
+
+          itemGroup
+            .append("text")
+            .attr("class", "lexis-legend-label")
+            .attr("x", qualitativeLegendSwatchSize + qualitativeLegendLabelGap)
+            .attr("y", 2)
+            .text(item.label);
+
+          offsetX += item.width + qualitativeLegendItemGap;
+          categoryIndex += 1;
+        });
+      });
+
+      const labelY = rows.length * qualitativeLegendRowHeight + 2;
+      legendGroup
+        .append("text")
+        .attr("fill", "#000")
+        .attr("font-weight", "bold")
+        .attr("text-anchor", "start")
+        .attr("x", 0)
+        .attr("y", labelY)
+        .text(legendLabels.left || "");
+
+      legendGroup
+        .append("text")
+        .attr("fill", "#000")
+        .attr("font-weight", "bold")
+        .attr("text-anchor", "end")
+        .attr("x", dimensions.plotWidth)
+        .attr("y", labelY)
+        .text(legendLabels.right || "");
+    }
+
+    function addColorBarToHeatmap(scales, measure, dimensions) {
+      const legendGroup = plot
+        .append("g")
+        .attr("class", "lexis-legend")
+        .attr("transform", `translate(0,${dimensions.plotHeight + qualitativeLegendTopOffset})`);
+
+      if (scales.kind === "qualitative") {
+        addQualitativeColorBarToHeatmap(scales, measure, dimensions, legendGroup);
+        return;
+      }
+
+      addNumericColorBarToHeatmap(scales, measure, dimensions, legendGroup);
+    }
+
     function addMouseHoverToHeatmap(measure) {
       d3.select("body").selectAll(`.${tooltipClass}`).remove();
 
@@ -600,6 +796,7 @@
           ? measure.display.labelprecision
           : 0;
       const formatter = d3.format(`.${labelPrecision}f`);
+      const isCategoricalMeasure = measure && measure.statType === "categorical";
 
       plot
         .selectAll(".heatmapcell")
@@ -610,7 +807,11 @@
           const event = d3.event;
           const value = d.value;
           let text = "No data";
-          if (value !== null && value !== undefined && !Number.isNaN(value)) {
+          if (isCategoricalMeasure) {
+            if (value !== null && value !== undefined && value !== "") {
+              text = String(value);
+            }
+          } else if (value !== null && value !== undefined && !Number.isNaN(value)) {
             text = formatter(value * labelMultiplier) + suffix;
           }
           tooltip
@@ -625,19 +826,30 @@
 
     function renderSurface(surface, series, measure) {
       state.lastSurface = surface;
-      const dimensions = getDimensions();
-      applySvgDimensions(dimensions);
-      plot.selectAll("*").remove();
-
       const observations = expandSurface(surface);
       const drawableObservations = observations.filter(hasValidGeometry);
       if (drawableObservations.length === 0) {
+        const emptyDimensions = getDimensions();
+        applySvgDimensions(emptyDimensions);
+        plot.selectAll("*").remove();
         updateHeader(measure);
         updateCaption(series);
         return;
       }
 
+      const initialDimensions = getDimensions();
+      const initialScales = defineHeatmapScales(
+        observations,
+        measure,
+        initialDimensions.plotWidth,
+        initialDimensions.plotHeight,
+      );
+      const dimensions = getDimensions(initialScales);
       const scales = defineHeatmapScales(observations, measure, dimensions.plotWidth, dimensions.plotHeight);
+
+      applySvgDimensions(dimensions);
+      plot.selectAll("*").remove();
+
       drawHeatmap(observations, scales, dimensions);
       addAxesToHeatmap(scales, dimensions);
       addAxisLabels(measure, dimensions);

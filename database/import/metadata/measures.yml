@@ -266,7 +266,7 @@ measures:
         precision: 0
   - key: modalcodcontributiontoprematuremalemortality
     name: Primary cause for male premature mortality
-    unit:
+    unit: " "
     statType: categorical
     description: The cause of death with the highest contribution to premature male mortality.
     axes:

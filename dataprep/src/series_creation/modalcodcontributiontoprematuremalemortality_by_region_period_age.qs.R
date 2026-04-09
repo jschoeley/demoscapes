@@ -39,6 +39,9 @@ modalcodcontributiontoprematuremalemortality_by_region_period_age.qs <-
   mutate(across(c(year, age), as.integer)) |>
   mutate(across(c(state, cause_name), as.character)) |>
   mutate(
+    cause_name = stringr::str_replace_all(cause_name, "\n", " ")
+  ) |>
+  mutate(
     state = case_when(
       state == "Coahuila" ~ "Coahuila de Zaragoza",
       state == "Michoacán" ~ "Michoacán de Ocampo",
