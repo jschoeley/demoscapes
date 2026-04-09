@@ -264,4 +264,46 @@ measures:
       tooltip:
         suffix: " kin"
         precision: 0
+  - key: modalcodcontributiontoprematuremalemortality
+    name: Primary cause for male premature mortality
+    unit:
+    statType: categorical
+    description: The cause of death with the highest contribution to premature male mortality.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: qualitative
+      colorDomain:
+        - Amenable to medical service
+        - Cirrhosis
+        - Diabetes
+        - Human Immunodeficiency Virus 
+        - Ischaemic Heart Disease
+        - Other
+        - Road traffic
+        - Suicide
+        - Homicide
+      colorRange:
+        - "#A65628"
+        - "#08306B"
+        - "#2171B5"
+        - "#C6DBEF"
+        - "#6BAED6"
+        - "#999999"
+        - "#FFFF33"
+        - "#FF7F00"
+        - "#FF00FF"
+      labelmultiplier: 
+      labelprecision:  
+      legend:
+        left: ""
+        right: "Cause of death"
+      tooltip:
+        suffix: ""
+        precision:
  
