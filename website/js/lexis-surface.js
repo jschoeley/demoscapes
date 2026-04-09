@@ -1,13 +1,32 @@
 (function (global) {
   const defaultContainerWidth = 800;
   const minContainerWidth = 360;
-  const margin = { top: 10, right: 10, bottom: 120, left: 60 };
+  const mobileBreakpoint = 860;
+  const margin = { top: 10, right: 10, bottom: 96, left: 60 };
+  const mobileXAxisTickTargetPx = 58;
+  const mobileYAxisTickTargetPx = 34;
+  const mobileXAxisOverlapPaddingPx = 3;
+  const mobileLegendOverlapPaddingPx = 4;
+  const mobileYAxisOverlapPaddingPx = 2;
 
   function toTitleCase(value) {
     if (!value) {
       return "";
     }
     return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function formatDisplayUrl(value) {
+    return String(value || "").replace(/^https?:\/\//i, "");
   }
 
   function parseDomainValue(value) {
@@ -118,6 +137,72 @@
     };
   }
 
+  function isMobileLayout() {
+    return global.innerWidth <= mobileBreakpoint;
+  }
+
+  function dedupeTickValues(values) {
+    return Array.from(new Set((values || []).filter((value) => value !== undefined && value !== null)));
+  }
+
+  function sampleTickValues(values, step) {
+    if (!values || values.length <= 2 || step <= 1) {
+      return values || [];
+    }
+
+    return values.filter((_value, index) => (
+      index === 0
+      || index === values.length - 1
+      || index % step === 0
+    ));
+  }
+
+  function hasHorizontalTickOverlap(axisGroup, padding) {
+    const boxes = axisGroup
+      .selectAll(".tick text")
+      .nodes()
+      .map((node) => node.getBoundingClientRect())
+      .sort((a, b) => a.left - b.left);
+
+    for (let i = 1; i < boxes.length; i += 1) {
+      if (boxes[i - 1].right + padding > boxes[i].left) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function hasVerticalTickOverlap(axisGroup, padding) {
+    const boxes = axisGroup
+      .selectAll(".tick text")
+      .nodes()
+      .map((node) => node.getBoundingClientRect())
+      .sort((a, b) => a.top - b.top);
+
+    for (let i = 1; i < boxes.length; i += 1) {
+      if (boxes[i - 1].bottom + padding > boxes[i].top) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function renderAdaptiveAxis(axisGroup, createAxis, tickValues, overlapChecker) {
+    const uniqueValues = dedupeTickValues(tickValues);
+    if (uniqueValues.length === 0) {
+      axisGroup.call(createAxis(null));
+      return;
+    }
+
+    for (let step = 1; step <= uniqueValues.length; step += 1) {
+      const sampledValues = sampleTickValues(uniqueValues, step);
+      axisGroup.call(createAxis(sampledValues));
+      if (!overlapChecker(axisGroup) || sampledValues.length <= 2) {
+        return;
+      }
+    }
+  }
+
   function createWidgetSkeleton(container, options) {
     container.innerHTML = "";
     container.classList.add("lexis-widget-host");
@@ -137,7 +222,7 @@
           </div>
           <div class="lexis-controls-actions">
             <button type="button" class="lexis-action-button lexis-reset-button">Reset</button>
-            <button type="button" class="lexis-action-button lexis-copylink-button">Copy link</button>
+            <button type="button" class="lexis-action-button lexis-randomize-button">Randomize</button>
           </div>
         </div>
         <section class="lexis-strata-panel">
@@ -151,8 +236,11 @@
         </section>
       </section>
       <section class="lexis-viz-section">
-        <div class="card lexis-heatmap-section">
-          <div class="lexis-heatmap-title">${options.title || "Lexis surface"}</div>
+        <div class="lexis-panel lexis-heatmap-section">
+          <div class="lexis-heatmap-title">
+            <div class="lexis-heatmap-title-measure">${options.title || "Lexis surface"}</div>
+            <div class="lexis-heatmap-title-strata" hidden></div>
+          </div>
           <div class="lexis-widget-notice" hidden></div>
           <div class="lexis-plot-container"></div>
           <p class="lexis-heatmap-caption"></p>
@@ -181,12 +269,13 @@
     const measureDropdown = d3.select(widget).select(".lexis-measure-dropdown");
     const seriesDropdown = d3.select(widget).select(".lexis-series-dropdown");
     const resetButton = d3.select(widget).select(".lexis-reset-button");
-    const copyLinkButton = d3.select(widget).select(".lexis-copylink-button");
+    const randomizeButton = d3.select(widget).select(".lexis-randomize-button");
     const strataPanel = d3.select(widget).select(".lexis-strata-panel");
     const strataSummaryNode = d3.select(widget).select(".lexis-strata-summary");
     const strataControls = d3.select(widget).select(".lexis-strata-controls");
     const caption = d3.select(widget).select(".lexis-heatmap-caption");
-    const titleNode = d3.select(widget).select(".lexis-heatmap-title");
+    const titleMeasureNode = d3.select(widget).select(".lexis-heatmap-title-measure");
+    const titleStrataNode = d3.select(widget).select(".lexis-heatmap-title-strata");
     const notice = d3.select(widget).select(".lexis-widget-notice");
     const plotContainer = d3.select(widget).select(".lexis-plot-container");
 
@@ -223,7 +312,7 @@
       const node = plotContainer.node();
       const measuredWidth = node ? Math.floor(node.clientWidth) : 0;
       const outerWidth = Math.max(minContainerWidth, measuredWidth || defaultContainerWidth);
-      const outerHeight = Math.round(outerWidth * 0.92);
+      const outerHeight = Math.round(outerWidth * 0.76);
       const plotWidth = Math.max(1, outerWidth - margin.left - margin.right);
       const plotHeight = Math.max(1, outerHeight - margin.top - margin.bottom);
       return {
@@ -252,7 +341,8 @@
     function updateHeader(measure) {
       const baseTitle = measure ? measure.name : "Lexis surface";
       if (config.title) {
-        titleNode.text(config.title);
+        titleMeasureNode.text(config.title);
+        titleStrataNode.attr("hidden", true).text("");
         return;
       }
 
@@ -269,30 +359,39 @@
         });
       }
 
-      titleNode.text(
-        strataParts.length > 0
-          ? `${baseTitle}, ${strataParts.join(", ")}`
-          : baseTitle,
-      );
+      titleMeasureNode.text(baseTitle);
+
+      if (strataParts.length > 0) {
+        titleStrataNode.attr("hidden", null).text(strataParts.join(", "));
+        return;
+      }
+
+      titleStrataNode.attr("hidden", true).text("");
     }
 
     function updateCaption(series) {
       if (config.captionMode === "hidden") {
-        caption.text("");
+        caption.html("");
         return;
       }
       if (!series || !series.sourceKeys || series.sourceKeys.length === 0) {
-        caption.text("");
+        caption.html("");
         return;
       }
       const parts = series.sourceKeys.map((key) => {
         const source = state.sourcesByKey[key];
         if (!source) {
-          return key;
+          return escapeHtml(key);
         }
-        return source.citation || source.name || key;
+        const label = escapeHtml(source.citation || source.name || key);
+        if (!source.url) {
+          return label;
+        }
+        const href = escapeHtml(source.url);
+        const displayUrl = escapeHtml(formatDisplayUrl(source.url));
+        return `${label} <a href="${href}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>`;
       });
-      caption.text(`Data source: ${parts.join("; ")}`);
+      caption.html(`Data source: ${parts.join("; ")}`);
     }
 
     function drawHeatmap(data, scales, dimensions) {
@@ -314,17 +413,47 @@
     }
 
     function addAxesToHeatmap(scales, dimensions) {
-      plot
+      const xAxisGroup = plot
         .append("g")
-        .attr("class", "axis")
-        .attr("transform", `translate(0,${dimensions.plotHeight + 5})`)
-        .call(d3.axisBottom(scales.x).tickFormat(d3.format("d")));
+        .attr("class", "lexis-axis")
+        .attr("transform", `translate(0,${dimensions.plotHeight + 5})`);
 
-      plot
+      const xTickValues = scales.x.ticks(
+        Math.max(2, Math.floor(dimensions.plotWidth / mobileXAxisTickTargetPx)),
+      );
+      if (isMobileLayout()) {
+        renderAdaptiveAxis(
+          xAxisGroup,
+          (tickValues) => d3.axisBottom(scales.x)
+            .tickValues(tickValues)
+            .tickFormat(d3.format("d")),
+          xTickValues,
+          (group) => hasHorizontalTickOverlap(group, mobileXAxisOverlapPaddingPx),
+        );
+      } else {
+        xAxisGroup.call(d3.axisBottom(scales.x).tickFormat(d3.format("d")));
+      }
+
+      const yAxisGroup = plot
         .append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(-5,0)")
-        .call(d3.axisLeft(scales.y).tickFormat(d3.format("d")));
+        .attr("class", "lexis-axis")
+        .attr("transform", "translate(-5,0)");
+
+      yAxisGroup.call(d3.axisLeft(scales.y).tickFormat(d3.format("d")));
+
+      if (isMobileLayout() && hasVerticalTickOverlap(yAxisGroup, mobileYAxisOverlapPaddingPx)) {
+        const yTickValues = scales.y.ticks(
+          Math.max(2, Math.floor(dimensions.plotHeight / mobileYAxisTickTargetPx)),
+        );
+        renderAdaptiveAxis(
+          yAxisGroup,
+          (tickValues) => d3.axisLeft(scales.y)
+            .tickValues(tickValues)
+            .tickFormat(d3.format("d")),
+          yTickValues,
+          (group) => hasVerticalTickOverlap(group, mobileYAxisOverlapPaddingPx),
+        );
+      }
     }
 
     function addAxisLabels(measure, dimensions) {
@@ -340,15 +469,15 @@
 
       plot
         .append("text")
-        .attr("class", "axis-label")
+        .attr("class", "lexis-axis-label")
         .attr("x", dimensions.plotWidth / 2)
-        .attr("y", dimensions.plotHeight + 50)
+        .attr("y", dimensions.plotHeight + 40)
         .attr("text-anchor", "middle")
         .text(`${toTitleCase(xLabel)}${xUnit}`);
 
       plot
         .append("text")
-        .attr("class", "axis-label")
+        .attr("class", "lexis-axis-label")
         .attr("transform", "rotate(-90)")
         .attr("x", -dimensions.plotHeight / 2)
         .attr("y", -45)
@@ -366,8 +495,8 @@
 
       const legendGroup = plot
         .append("g")
-        .attr("class", "legend")
-        .attr("transform", `translate(0,${dimensions.plotHeight + 70})`);
+        .attr("class", "lexis-legend")
+        .attr("transform", `translate(0,${dimensions.plotHeight + 56})`);
 
       const length = colors.length;
       if (length === 0) {
@@ -412,10 +541,24 @@
         return numericFormatter(domainValue * labelMultiplier);
       };
 
-      legendGroup
-        .call(d3.axisTop(x).tickSize(-8).tickValues(tickValues).tickFormat(tickFormatter))
-        .select(".domain")
-        .remove();
+      const renderLegendAxis = (values) => {
+        legendGroup
+          .call(d3.axisTop(x).tickSize(-8).tickValues(values).tickFormat(tickFormatter))
+          .select(".domain")
+          .remove();
+      };
+
+      if (isMobileLayout()) {
+        renderAdaptiveAxis(
+          legendGroup,
+          (values) => d3.axisTop(x).tickSize(-8).tickValues(values).tickFormat(tickFormatter),
+          tickValues,
+          (group) => hasHorizontalTickOverlap(group, mobileLegendOverlapPaddingPx),
+        );
+        legendGroup.select(".domain").remove();
+      } else {
+        renderLegendAxis(tickValues);
+      }
 
       legendGroup
         .append("text")
@@ -423,7 +566,7 @@
         .attr("font-weight", "bold")
         .attr("text-anchor", "start")
         .attr("x", 0)
-        .attr("y", 20)
+        .attr("y", 18)
         .text(legendLabels.left || "");
 
       legendGroup
@@ -432,7 +575,7 @@
         .attr("font-weight", "bold")
         .attr("text-anchor", "end")
         .attr("x", dimensions.plotWidth)
-        .attr("y", 20)
+        .attr("y", 18)
         .text(legendLabels.right || "");
     }
 
@@ -442,7 +585,7 @@
       const tooltip = d3
         .select("body")
         .append("div")
-        .attr("class", `heatmaptooltip ${tooltipClass}`)
+        .attr("class", `lexis-tooltip ${tooltipClass}`)
         .style("position", "absolute")
         .style("visibility", "hidden");
 
@@ -568,65 +711,6 @@
       strataSummaryNode.text(parts.length > 0 ? parts.join(", ") : "No strata selected");
     }
 
-    function buildShareUrl() {
-      const url = new URL(global.location.href);
-      if (state.currentMeasure && state.currentMeasure.key) {
-        url.searchParams.set("measureKey", state.currentMeasure.key);
-      } else {
-        url.searchParams.delete("measureKey");
-      }
-
-      if (state.currentSeries && state.currentSeries.key) {
-        url.searchParams.set("seriesKey", state.currentSeries.key);
-      } else {
-        url.searchParams.delete("seriesKey");
-      }
-
-      const seriesStrataKeys = state.currentSeries && Array.isArray(state.currentSeries.strataKeys)
-        ? state.currentSeries.strataKeys
-        : [];
-      const activeStrata = {};
-      seriesStrataKeys.forEach((key) => {
-        if (state.currentStrataSelections[key]) {
-          activeStrata[key] = state.currentStrataSelections[key];
-        }
-      });
-      if (Object.keys(activeStrata).length > 0) {
-        url.searchParams.set("strata", JSON.stringify(activeStrata));
-      } else {
-        url.searchParams.delete("strata");
-      }
-
-      if (config.collectionKey) {
-        url.searchParams.set("collectionKey", config.collectionKey);
-      } else {
-        url.searchParams.delete("collectionKey");
-      }
-
-      return url.toString();
-    }
-
-    async function handleCopyLink() {
-      const button = copyLinkButton.node();
-      const originalText = button ? button.textContent : "Copy link";
-      const shareUrl = buildShareUrl();
-
-      try {
-        if (global.navigator && global.navigator.clipboard && global.navigator.clipboard.writeText) {
-          await global.navigator.clipboard.writeText(shareUrl);
-        } else {
-          throw new Error("Clipboard API unavailable");
-        }
-        copyLinkButton.text("Copied");
-      } catch (error) {
-        copyLinkButton.text("Copy failed");
-      } finally {
-        global.setTimeout(() => {
-          copyLinkButton.text(originalText);
-        }, 1200);
-      }
-    }
-
     function getAvailableValues(strataKey) {
       const values = new Set();
       state.currentStrataCombos.forEach((combo) => {
@@ -648,6 +732,42 @@
       }
 
       return Array.from(values).sort();
+    }
+
+    function normalizeStrataSelections(series, strata) {
+      const keys = series && Array.isArray(series.strataKeys) ? series.strataKeys : [];
+      const normalized = {};
+      keys.forEach((key) => {
+        if (strata && strata[key] !== undefined && strata[key] !== null && strata[key] !== "") {
+          normalized[key] = strata[key];
+        }
+      });
+      return normalized;
+    }
+
+    function buildSurfaceIdentity(target) {
+      const series = target && target.series ? target.series : null;
+      const measure = target && target.measure ? target.measure : null;
+      return JSON.stringify({
+        measureKey: measure && measure.key ? measure.key : null,
+        seriesKey: series && series.key ? series.key : null,
+        strata: normalizeStrataSelections(series, target && target.strata),
+      });
+    }
+
+    function getCurrentSurfaceIdentity() {
+      return buildSurfaceIdentity({
+        measure: state.currentMeasure,
+        series: state.currentSeries,
+        strata: state.currentStrataSelections,
+      });
+    }
+
+    function getRandomItem(items) {
+      if (!items || items.length === 0) {
+        return null;
+      }
+      return items[Math.floor(Math.random() * items.length)];
     }
 
     async function loadSurfaceForSelections() {
@@ -714,10 +834,12 @@
       updateStrataSummary();
     }
 
-    function renderStrataControls(series) {
+    function renderStrataControls(series, preferredStrata) {
       strataControls.selectAll("*").remove();
 
-      if (!(initialDefaults.strata && Object.keys(initialDefaults.strata).length > 0)) {
+      if (preferredStrata) {
+        state.currentStrataSelections = { ...preferredStrata };
+      } else if (!(initialDefaults.strata && Object.keys(initialDefaults.strata).length > 0)) {
         state.currentStrataSelections = {};
       }
       state.currentStrataCombos = series && series.strataCombos ? series.strataCombos : [];
@@ -789,7 +911,7 @@
       });
     }
 
-    async function loadSeriesForMeasure(measureKey, preferredSeriesKey) {
+    async function loadSeriesForMeasure(measureKey, preferredSeriesKey, preferredStrata) {
       state.seriesList = await api.fetchSeries({
         measureKey,
         collectionKey: config.collectionKey,
@@ -814,7 +936,7 @@
       seriesDropdown.property("value", state.currentSeries.key);
       await ensureStrataDefinitions(state.currentSeries.strataKeys || []);
       await ensureSources(state.currentSeries.sourceKeys || []);
-      renderStrataControls(state.currentSeries);
+      renderStrataControls(state.currentSeries, preferredStrata);
       await loadSurfaceForSelections();
     }
 
@@ -855,6 +977,101 @@
       await loadSeriesForMeasure(state.currentMeasure.key, initialDefaults.seriesKey);
     }
 
+    async function fetchSeriesListsByMeasure() {
+      const entries = await Promise.all(
+        state.measures.map(async (measure) => ({
+          measure,
+          seriesList: await api.fetchSeries({
+            measureKey: measure.key,
+            collectionKey: config.collectionKey,
+          }),
+        })),
+      );
+
+      return entries.filter((entry) => Array.isArray(entry.seriesList) && entry.seriesList.length > 0);
+    }
+
+    function getSeriesRandomTargets(series) {
+      const combos = Array.isArray(series && series.strataCombos) ? series.strataCombos : [];
+      if (combos.length === 0) {
+        return [{}];
+      }
+      return combos.map((combo) => normalizeStrataSelections(series, combo));
+    }
+
+    function countRandomTargets(entries) {
+      return entries.reduce((total, entry) => (
+        total + entry.seriesList.reduce((seriesTotal, series) => (
+          seriesTotal + getSeriesRandomTargets(series).length
+        ), 0)
+      ), 0);
+    }
+
+    function drawHierarchicalRandomTarget(entries) {
+      const measureEntry = getRandomItem(entries);
+      if (!measureEntry) {
+        return null;
+      }
+
+      const series = getRandomItem(measureEntry.seriesList);
+      if (!series) {
+        return null;
+      }
+
+      const strata = getRandomItem(getSeriesRandomTargets(series)) || {};
+      return {
+        measure: measureEntry.measure,
+        series,
+        strata,
+      };
+    }
+
+    async function randomizeSurface() {
+      if (!state.measures || state.measures.length === 0) {
+        return;
+      }
+
+      const entries = await fetchSeriesListsByMeasure();
+      if (entries.length === 0) {
+        return;
+      }
+
+      const totalTargets = countRandomTargets(entries);
+      const currentIdentity = getCurrentSurfaceIdentity();
+      let nextTarget = null;
+
+      if (totalTargets <= 1) {
+        nextTarget = drawHierarchicalRandomTarget(entries);
+      } else {
+        for (let attempt = 0; attempt < 24; attempt += 1) {
+          const candidate = drawHierarchicalRandomTarget(entries);
+          if (!candidate) {
+            continue;
+          }
+          if (buildSurfaceIdentity(candidate) !== currentIdentity) {
+            nextTarget = candidate;
+            break;
+          }
+        }
+      }
+
+      if (!nextTarget) {
+        nextTarget = drawHierarchicalRandomTarget(entries);
+      }
+      if (!nextTarget) {
+        return;
+      }
+
+      state.currentMeasure = nextTarget.measure;
+      state.currentStrataSelections = { ...nextTarget.strata };
+      measureDropdown.property("value", state.currentMeasure.key);
+      await loadSeriesForMeasure(
+        state.currentMeasure.key,
+        nextTarget.series.key,
+        nextTarget.strata,
+      );
+    }
+
     async function initialize() {
       applyQueryDefaults();
       state.measures = await api.fetchMeasures(config.collectionKey);
@@ -876,8 +1093,8 @@
       resetButton.on("click", async function () {
         await resetToDefaults();
       });
-      copyLinkButton.on("click", async function () {
-        await handleCopyLink();
+      randomizeButton.on("click", async function () {
+        await randomizeSurface();
       });
 
       measureDropdown.on("change", async function () {

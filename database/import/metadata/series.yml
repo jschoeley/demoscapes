@@ -58,3 +58,11 @@ series:
     strataKeys:
       - "kin"
       - "region"
+  - key: "modalcodcontributiontoprematuremalemortality_by_region_period_age"
+    label: "by region"
+    measureKey: "modalcodcontributiontoprematuremalemortality"
+    sourceKeys:
+      - "kashnitskyetal2019"
+    collectionKeys:
+    strataKeys:
+      - "region"

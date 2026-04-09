@@ -1,4 +1,6 @@
 const fs = require('fs');
+const yaml = require('js-yaml');
+const MarkdownIt = require('markdown-it');
 const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
@@ -8,8 +10,12 @@ const templatesRoot = path.join(websiteRoot, 'templates');
 const distRoot = path.join(websiteRoot, 'dist');
 const sourcesYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 'sources.yml');
 const collectionsYamlPath = path.join(repoRoot, 'database', 'import', 'metadata', 'collections.yml');
+const collaboratorsYamlPath = path.join(websiteRoot, 'content', 'collaborators', 'collaborators.yml');
 
 let embedCounter = 0;
+const markdown = new MarkdownIt({
+  html: true,
+});
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
@@ -141,79 +147,8 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
-function renderInlineMarkdown(text) {
-  const escaped = escapeHtml(text);
-  return escaped
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-}
-
-function markdownToHtml(markdownText) {
-  const lines = markdownText.replaceAll('\r\n', '\n').split('\n');
-  const out = [];
-  let inList = false;
-  let paragraph = [];
-
-  const flushParagraph = () => {
-    if (paragraph.length === 0) {
-      return;
-    }
-    out.push(`<p>${renderInlineMarkdown(paragraph.join(' '))}</p>`);
-    paragraph = [];
-  };
-
-  const closeList = () => {
-    if (!inList) {
-      return;
-    }
-    out.push('</ul>');
-    inList = false;
-  };
-
-  lines.forEach((line) => {
-    const trimmed = line.trim();
-
-    if (trimmed.length === 0) {
-      flushParagraph();
-      closeList();
-      return;
-    }
-
-    if (trimmed.startsWith('<div class="lexis-embed"')) {
-      flushParagraph();
-      closeList();
-      out.push(trimmed);
-      return;
-    }
-
-    const headingMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
-    if (headingMatch) {
-      flushParagraph();
-      closeList();
-      const level = headingMatch[1].length;
-      out.push(`<h${level}>${renderInlineMarkdown(headingMatch[2])}</h${level}>`);
-      return;
-    }
-
-    const listMatch = trimmed.match(/^-\s+(.+)$/);
-    if (listMatch) {
-      flushParagraph();
-      if (!inList) {
-        out.push('<ul>');
-        inList = true;
-      }
-      out.push(`<li>${renderInlineMarkdown(listMatch[1])}</li>`);
-      return;
-    }
-
-    paragraph.push(trimmed);
-  });
-
-  flushParagraph();
-  closeList();
-
-  return out.join('\n');
+function formatDisplayUrl(value) {
+  return String(value || '').replace(/^https?:\/\//i, '');
 }
 
 function parseLexisAttributes(rawAttrs) {
@@ -259,7 +194,7 @@ function readMarkdown(filePath) {
   const source = fs.readFileSync(filePath, 'utf8');
   const parsed = parseFrontmatter(source);
   const transformed = applyLexisShortcodes(parsed.content);
-  const html = markdownToHtml(transformed);
+  const html = markdown.render(transformed);
 
   return {
     frontmatter: parsed.data || {},
@@ -268,12 +203,9 @@ function readMarkdown(filePath) {
 }
 
 function renderLogoHtml() {
-  const logoCandidates = ['logo.svg', 'logo.png', 'logo.webp', 'logo.jpg', 'logo.jpeg'];
-  for (const candidate of logoCandidates) {
-    const candidatePath = path.join(websiteRoot, 'assets', candidate);
-    if (fs.existsSync(candidatePath)) {
-      return `<img src="/assets/${candidate}" alt="Demoscapes" class="brand-logo" />`;
-    }
+  const logoPath = path.join(websiteRoot, 'assets', 'logo.svg');
+  if (fs.existsSync(logoPath)) {
+    return '<img src="/assets/logo.svg" alt="Demoscapes" class="brand-logo" />';
   }
   return '<span class="brand-text">demoscapes</span>';
 }
@@ -286,6 +218,7 @@ function renderBasePage({ title, navKey, content }) {
     home: navKey === 'home' ? 'is-current' : '',
     topics: navKey === 'topics' ? 'is-current' : '',
     collections: navKey === 'collections' ? 'is-current' : '',
+    contribute: navKey === 'contribute' ? 'is-current' : '',
     sources: navKey === 'sources' ? 'is-current' : '',
     about: navKey === 'about' ? 'is-current' : '',
   };
@@ -297,6 +230,7 @@ function renderBasePage({ title, navKey, content }) {
     '{{NAV_HOME}}': navClasses.home,
     '{{NAV_TOPICS}}': navClasses.topics,
     '{{NAV_COLLECTIONS}}': navClasses.collections,
+    '{{NAV_CONTRIBUTE}}': navClasses.contribute,
     '{{NAV_SOURCES}}': navClasses.sources,
     '{{NAV_ABOUT}}': navClasses.about,
   };
@@ -327,6 +261,71 @@ function renderArticleList(items, basePath) {
   return `<section class="content-grid">${cards}</section>`;
 }
 
+function loadYamlDocument(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+  return yaml.load(fs.readFileSync(filePath, 'utf8'));
+}
+
+function getPublicCollections() {
+  const collectionsDoc = loadYamlDocument(collectionsYamlPath);
+  const collections = collectionsDoc && Array.isArray(collectionsDoc.collections)
+    ? collectionsDoc.collections
+    : [];
+
+  return collections
+    .filter((entry) => entry && entry.key)
+    .filter((entry) => entry.isPublic !== false)
+    .map((entry) => ({
+      key: String(entry.key),
+      slug: slugify(entry.key),
+      title: entry.name || entry.key,
+      summary: entry.summary || entry.description || '',
+      description: entry.description || '',
+      order: entry.order,
+    }));
+}
+
+function renderCollaboratorsSection() {
+  const collaboratorsDoc = loadYamlDocument(collaboratorsYamlPath);
+  const collaborators = Array.isArray(collaboratorsDoc) ? collaboratorsDoc : [];
+  const collectionsByKey = getPublicCollections().reduce((acc, collection) => {
+    acc[collection.key] = collection;
+    return acc;
+  }, {});
+
+  if (collaborators.length === 0) {
+    return '<p>No collaborators listed yet.</p>';
+  }
+
+  const cards = collaborators
+    .filter((entry) => entry && entry.name)
+    .map((entry) => {
+      const linkedCollections = Array.isArray(entry.collections)
+        ? entry.collections
+          .map((key) => collectionsByKey[key])
+          .filter(Boolean)
+          .map((collection) => (
+            `<a href="/collections/${collection.slug}.html">${escapeHtml(collection.title)}</a>`
+          ))
+        : [];
+
+      return [
+        '<article class="collaborator-card">',
+        `  <h3>${escapeHtml(entry.name)}</h3>`,
+        entry.blurb ? `  <p>${escapeHtml(entry.blurb)}</p>` : '',
+        linkedCollections.length > 0
+          ? `  <p class="collaborator-collections"><strong>Collections:</strong> ${linkedCollections.join(', ')}</p>`
+          : '',
+        '</article>',
+      ].join('\n');
+    })
+    .join('\n');
+
+  return `<section class="collaborator-grid">${cards}</section>`;
+}
+
 function writeHtml(outputPath, html) {
   ensureDir(path.dirname(outputPath));
   fs.writeFileSync(outputPath, html, 'utf8');
@@ -350,6 +349,30 @@ function renderMarkdownPage(markdownPath, navKey, outFilePath) {
     content: `<article class="content-page markdown-content">${parsed.html}</article>`,
   });
   writeHtml(outFilePath, html);
+}
+
+function buildAboutPage() {
+  const markdownPath = path.join(contentRoot, 'about.md');
+  const parsed = readMarkdown(markdownPath);
+  const collaboratorsHtml = renderCollaboratorsSection();
+  const aboutHtml = parsed.html.includes('<h2>Collaborators</h2>')
+    ? parsed.html.replace('<h2>Collaborators</h2>', `<h2>Collaborators</h2>\n${collaboratorsHtml}`)
+    : `${parsed.html}\n${collaboratorsHtml}`;
+
+  const html = renderBasePage({
+    title: parsed.frontmatter.title || 'About',
+    navKey: 'about',
+    content: `<article class="content-page markdown-content">${aboutHtml}</article>`,
+  });
+  writeHtml(path.join(distRoot, 'about.html'), html);
+}
+
+function buildContributePage() {
+  renderMarkdownPage(
+    path.join(contentRoot, 'contribute.md'),
+    'contribute',
+    path.join(distRoot, 'contribute.html'),
+  );
 }
 
 function buildTopics(sectionName, navKey) {
@@ -403,12 +426,11 @@ function buildSourcesPage() {
 
   const cards = sources.map((source) => {
     const link = source.url
-      ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.url)}</a>`
+      ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(formatDisplayUrl(source.url))}</a>`
       : '';
     return [
       '<article class="source-card">',
       `  <h2>${escapeHtml(source.name || source.key || '')}</h2>`,
-      `  <p class="source-key"><strong>Key:</strong> ${escapeHtml(source.key || '')}</p>`,
       source.citation ? `  <p>${escapeHtml(source.citation)}</p>` : '',
       source.license ? `  <p><strong>License:</strong> ${escapeHtml(source.license)}</p>` : '',
       link ? `  <p>${link}</p>` : '',
@@ -434,17 +456,7 @@ function buildSourcesPage() {
 }
 
 function buildCollectionsFromMetadata() {
-  const collections = parseListYaml(fs.readFileSync(collectionsYamlPath, 'utf8'), 'collections')
-    .filter((entry) => entry && entry.key)
-    .filter((entry) => entry.isPublic !== false)
-    .map((entry) => ({
-      key: String(entry.key),
-      slug: slugify(entry.key),
-      title: entry.name || entry.key,
-      summary: entry.summary || entry.description || '',
-      description: entry.description || '',
-      order: entry.order,
-    }))
+  const collections = getPublicCollections()
     .sort(sortByOrderThenTitle);
 
   const outDir = path.join(distRoot, 'collections');
@@ -510,7 +522,8 @@ function main() {
   resetDir(distRoot);
 
   buildHomePage();
-  renderMarkdownPage(path.join(contentRoot, 'about.md'), 'about', path.join(distRoot, 'about.html'));
+  buildAboutPage();
+  buildContributePage();
   buildTopics('topics', 'topics');
   buildCollectionsFromMetadata();
   buildSourcesPage();

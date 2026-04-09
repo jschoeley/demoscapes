@@ -57,7 +57,7 @@ services:
       MONGO_API_USERNAME: ${MONGO_API_USERNAME:?MONGO_API_USERNAME is required}
       MONGO_API_PASSWORD: ${MONGO_API_PASSWORD:?MONGO_API_PASSWORD is required}
       PORT: 3000
-      TRUST_PROXY: 'true'
+      TRUST_PROXY: ${TRUST_PROXY:-false}
     networks:
       - mynetwork
 
@@ -65,9 +65,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.website
+    command: ["caddy", "run", "--config", "${CADDY_CONFIG_PATH:-/etc/caddy/Caddyfile}"]
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+      CANONICAL_HOST: ${CANONICAL_HOST:-demoscapes.org}
+      WWW_HOST: ${WWW_HOST:-www.demoscapes.org}
+      LOCAL_CANONICAL_HOST: ${LOCAL_CANONICAL_HOST:-demoscapes.localhost}
+      LOCAL_WWW_HOST: ${LOCAL_WWW_HOST:-www.demoscapes.localhost}
+      LOCAL_HTTP_PORT: ${LOCAL_HTTP_PORT:-18080}
+      LOCAL_HTTPS_PORT: ${LOCAL_HTTPS_PORT:-18443}
     ports:
-      - '80:80'
+      - '${WEBSITE_HTTP_PORT:-18080}:80'
+      - '${WEBSITE_HTTPS_PORT:-18443}:443'
     depends_on:
       - api
+    volumes:
+      - ${CADDY_DATA_DIR:-/opt/demoscapes/caddy/data}:/data
+      - ${CADDY_CONFIG_DIR:-/opt/demoscapes/caddy/config}:/config
     networks:
       - mynetwork
