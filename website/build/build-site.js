@@ -427,7 +427,6 @@ function buildSourcesPage() {
     return [
       '<article class="source-card">',
       `  <h2>${escapeHtml(source.name || source.key || '')}</h2>`,
-      `  <p class="source-key"><strong>Key:</strong> ${escapeHtml(source.key || '')}</p>`,
       source.citation ? `  <p>${escapeHtml(source.citation)}</p>` : '',
       source.license ? `  <p><strong>License:</strong> ${escapeHtml(source.license)}</p>` : '',
       link ? `  <p>${link}</p>` : '',
