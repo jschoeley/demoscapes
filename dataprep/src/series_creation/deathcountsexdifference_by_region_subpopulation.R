@@ -32,15 +32,23 @@ hmd <- qs_read(paths$input$deaths_period_by_age.qs)
 
 deathcountsexdifference_by_region_subpopulation <-
   bind_rows(hmd) |>
-  mutate(value = Male - Female) |>
+  mutate(
+    value = Male - Female,
+    wx = 1, wy = 1
+  ) |>
   select(
     z = value,
     x = Year,
     y = Age,
+    wx, wy,
     region = isocode,
     subpopulation = subpopulation
   ) |>
   mutate(
+    x = as.integer(x),
+    y = as.integer(y),
+    wx = as.integer(wx),
+    wy = as.integer(wy),
     z = round(z, 3)
   )
 

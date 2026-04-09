@@ -30,6 +30,15 @@ function parseValue(value) {
   return Number(value);
 }
 
+function parseRequiredNumber(value, label, row) {
+  requireField(value, label);
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Invalid ${label} value in row: ${JSON.stringify(row)}`);
+  }
+  return parsed;
+}
+
 function requireField(value, label) {
   if (value === undefined || value === null || value === '') {
     throw new Error(`Missing required field: ${label}`);
@@ -206,6 +215,8 @@ async function runImport() {
 
         const x = Number(row.x);
         const y = Number(row.y);
+        const wx = parseRequiredNumber(row.wx, 'wx', row);
+        const wy = parseRequiredNumber(row.wy, 'wy', row);
         if (Number.isNaN(x) || Number.isNaN(y)) {
           throw new Error(`Invalid x/y value in ${definition.key} row: ${JSON.stringify(row)}`);
         }
@@ -216,14 +227,18 @@ async function runImport() {
             strata: { ...strata },
             xSet: new Set(),
             ySet: new Set(),
-            zMap: new Map(),
+            cellsByPosition: new Map(),
           });
         }
 
         const surface = surfacesByCombo.get(comboKey);
         surface.xSet.add(x);
         surface.ySet.add(y);
-        surface.zMap.set(`${x}|${y}`, parseValue(row.z));
+        surface.cellsByPosition.set(`${x}|${y}`, {
+          z: parseValue(row.z),
+          wx,
+          wy,
+        });
 
         strataKeys.forEach((key) => {
           valuesByKey[key].add(strata[key]);
@@ -242,12 +257,16 @@ async function runImport() {
     for (const surface of surfacesByCombo.values()) {
       const xValues = Array.from(surface.xSet).sort((a, b) => a - b);
       const yValues = Array.from(surface.ySet).sort((a, b) => a - b);
+      const wxValues = [];
+      const wyValues = [];
       const zValues = [];
 
       yValues.forEach((y) => {
         xValues.forEach((x) => {
-          const value = surface.zMap.get(`${x}|${y}`);
-          zValues.push(value === undefined ? null : value);
+          const cell = surface.cellsByPosition.get(`${x}|${y}`);
+          zValues.push(cell ? cell.z : null);
+          wxValues.push(cell ? cell.wx : null);
+          wyValues.push(cell ? cell.wy : null);
         });
       });
 
@@ -256,6 +275,8 @@ async function runImport() {
         strata: surface.strata,
         xValues,
         yValues,
+        wxValues,
+        wyValues,
         zValues,
         zEncoding: 'row-major-y',
       });
