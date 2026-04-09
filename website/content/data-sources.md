@@ -1,5 +1,5 @@
 ---
-title: Data Sources
+title: Sources
 ---
 
 # Data Sources

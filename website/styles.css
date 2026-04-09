@@ -93,10 +93,11 @@ a:focus {
   justify-content: flex-end;
   flex: 1 1 420px;
   min-width: 0;
+  font-size: 1rem;
 }
 
 .site-nav a {
-  padding: 8px 10px;
+  padding: 8px 8px;
   color: var(--brand);
   text-decoration: none;
   text-transform: uppercase;
