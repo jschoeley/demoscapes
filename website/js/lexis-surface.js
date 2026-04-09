@@ -209,7 +209,7 @@
           </div>
           <div class="lexis-controls-actions">
             <button type="button" class="lexis-action-button lexis-reset-button">Reset</button>
-            <button type="button" class="lexis-action-button lexis-copylink-button">Copy link</button>
+            <button type="button" class="lexis-action-button lexis-randomize-button">Randomize</button>
           </div>
         </div>
         <section class="lexis-strata-panel">
@@ -256,7 +256,7 @@
     const measureDropdown = d3.select(widget).select(".lexis-measure-dropdown");
     const seriesDropdown = d3.select(widget).select(".lexis-series-dropdown");
     const resetButton = d3.select(widget).select(".lexis-reset-button");
-    const copyLinkButton = d3.select(widget).select(".lexis-copylink-button");
+    const randomizeButton = d3.select(widget).select(".lexis-randomize-button");
     const strataPanel = d3.select(widget).select(".lexis-strata-panel");
     const strataSummaryNode = d3.select(widget).select(".lexis-strata-summary");
     const strataControls = d3.select(widget).select(".lexis-strata-controls");
@@ -692,65 +692,6 @@
       strataSummaryNode.text(parts.length > 0 ? parts.join(", ") : "No strata selected");
     }
 
-    function buildShareUrl() {
-      const url = new URL(global.location.href);
-      if (state.currentMeasure && state.currentMeasure.key) {
-        url.searchParams.set("measureKey", state.currentMeasure.key);
-      } else {
-        url.searchParams.delete("measureKey");
-      }
-
-      if (state.currentSeries && state.currentSeries.key) {
-        url.searchParams.set("seriesKey", state.currentSeries.key);
-      } else {
-        url.searchParams.delete("seriesKey");
-      }
-
-      const seriesStrataKeys = state.currentSeries && Array.isArray(state.currentSeries.strataKeys)
-        ? state.currentSeries.strataKeys
-        : [];
-      const activeStrata = {};
-      seriesStrataKeys.forEach((key) => {
-        if (state.currentStrataSelections[key]) {
-          activeStrata[key] = state.currentStrataSelections[key];
-        }
-      });
-      if (Object.keys(activeStrata).length > 0) {
-        url.searchParams.set("strata", JSON.stringify(activeStrata));
-      } else {
-        url.searchParams.delete("strata");
-      }
-
-      if (config.collectionKey) {
-        url.searchParams.set("collectionKey", config.collectionKey);
-      } else {
-        url.searchParams.delete("collectionKey");
-      }
-
-      return url.toString();
-    }
-
-    async function handleCopyLink() {
-      const button = copyLinkButton.node();
-      const originalText = button ? button.textContent : "Copy link";
-      const shareUrl = buildShareUrl();
-
-      try {
-        if (global.navigator && global.navigator.clipboard && global.navigator.clipboard.writeText) {
-          await global.navigator.clipboard.writeText(shareUrl);
-        } else {
-          throw new Error("Clipboard API unavailable");
-        }
-        copyLinkButton.text("Copied");
-      } catch (error) {
-        copyLinkButton.text("Copy failed");
-      } finally {
-        global.setTimeout(() => {
-          copyLinkButton.text(originalText);
-        }, 1200);
-      }
-    }
-
     function getAvailableValues(strataKey) {
       const values = new Set();
       state.currentStrataCombos.forEach((combo) => {
@@ -772,6 +713,42 @@
       }
 
       return Array.from(values).sort();
+    }
+
+    function normalizeStrataSelections(series, strata) {
+      const keys = series && Array.isArray(series.strataKeys) ? series.strataKeys : [];
+      const normalized = {};
+      keys.forEach((key) => {
+        if (strata && strata[key] !== undefined && strata[key] !== null && strata[key] !== "") {
+          normalized[key] = strata[key];
+        }
+      });
+      return normalized;
+    }
+
+    function buildSurfaceIdentity(target) {
+      const series = target && target.series ? target.series : null;
+      const measure = target && target.measure ? target.measure : null;
+      return JSON.stringify({
+        measureKey: measure && measure.key ? measure.key : null,
+        seriesKey: series && series.key ? series.key : null,
+        strata: normalizeStrataSelections(series, target && target.strata),
+      });
+    }
+
+    function getCurrentSurfaceIdentity() {
+      return buildSurfaceIdentity({
+        measure: state.currentMeasure,
+        series: state.currentSeries,
+        strata: state.currentStrataSelections,
+      });
+    }
+
+    function getRandomItem(items) {
+      if (!items || items.length === 0) {
+        return null;
+      }
+      return items[Math.floor(Math.random() * items.length)];
     }
 
     async function loadSurfaceForSelections() {
@@ -838,10 +815,12 @@
       updateStrataSummary();
     }
 
-    function renderStrataControls(series) {
+    function renderStrataControls(series, preferredStrata) {
       strataControls.selectAll("*").remove();
 
-      if (!(initialDefaults.strata && Object.keys(initialDefaults.strata).length > 0)) {
+      if (preferredStrata) {
+        state.currentStrataSelections = { ...preferredStrata };
+      } else if (!(initialDefaults.strata && Object.keys(initialDefaults.strata).length > 0)) {
         state.currentStrataSelections = {};
       }
       state.currentStrataCombos = series && series.strataCombos ? series.strataCombos : [];
@@ -913,7 +892,7 @@
       });
     }
 
-    async function loadSeriesForMeasure(measureKey, preferredSeriesKey) {
+    async function loadSeriesForMeasure(measureKey, preferredSeriesKey, preferredStrata) {
       state.seriesList = await api.fetchSeries({
         measureKey,
         collectionKey: config.collectionKey,
@@ -938,7 +917,7 @@
       seriesDropdown.property("value", state.currentSeries.key);
       await ensureStrataDefinitions(state.currentSeries.strataKeys || []);
       await ensureSources(state.currentSeries.sourceKeys || []);
-      renderStrataControls(state.currentSeries);
+      renderStrataControls(state.currentSeries, preferredStrata);
       await loadSurfaceForSelections();
     }
 
@@ -979,6 +958,101 @@
       await loadSeriesForMeasure(state.currentMeasure.key, initialDefaults.seriesKey);
     }
 
+    async function fetchSeriesListsByMeasure() {
+      const entries = await Promise.all(
+        state.measures.map(async (measure) => ({
+          measure,
+          seriesList: await api.fetchSeries({
+            measureKey: measure.key,
+            collectionKey: config.collectionKey,
+          }),
+        })),
+      );
+
+      return entries.filter((entry) => Array.isArray(entry.seriesList) && entry.seriesList.length > 0);
+    }
+
+    function getSeriesRandomTargets(series) {
+      const combos = Array.isArray(series && series.strataCombos) ? series.strataCombos : [];
+      if (combos.length === 0) {
+        return [{}];
+      }
+      return combos.map((combo) => normalizeStrataSelections(series, combo));
+    }
+
+    function countRandomTargets(entries) {
+      return entries.reduce((total, entry) => (
+        total + entry.seriesList.reduce((seriesTotal, series) => (
+          seriesTotal + getSeriesRandomTargets(series).length
+        ), 0)
+      ), 0);
+    }
+
+    function drawHierarchicalRandomTarget(entries) {
+      const measureEntry = getRandomItem(entries);
+      if (!measureEntry) {
+        return null;
+      }
+
+      const series = getRandomItem(measureEntry.seriesList);
+      if (!series) {
+        return null;
+      }
+
+      const strata = getRandomItem(getSeriesRandomTargets(series)) || {};
+      return {
+        measure: measureEntry.measure,
+        series,
+        strata,
+      };
+    }
+
+    async function randomizeSurface() {
+      if (!state.measures || state.measures.length === 0) {
+        return;
+      }
+
+      const entries = await fetchSeriesListsByMeasure();
+      if (entries.length === 0) {
+        return;
+      }
+
+      const totalTargets = countRandomTargets(entries);
+      const currentIdentity = getCurrentSurfaceIdentity();
+      let nextTarget = null;
+
+      if (totalTargets <= 1) {
+        nextTarget = drawHierarchicalRandomTarget(entries);
+      } else {
+        for (let attempt = 0; attempt < 24; attempt += 1) {
+          const candidate = drawHierarchicalRandomTarget(entries);
+          if (!candidate) {
+            continue;
+          }
+          if (buildSurfaceIdentity(candidate) !== currentIdentity) {
+            nextTarget = candidate;
+            break;
+          }
+        }
+      }
+
+      if (!nextTarget) {
+        nextTarget = drawHierarchicalRandomTarget(entries);
+      }
+      if (!nextTarget) {
+        return;
+      }
+
+      state.currentMeasure = nextTarget.measure;
+      state.currentStrataSelections = { ...nextTarget.strata };
+      measureDropdown.property("value", state.currentMeasure.key);
+      await loadSeriesForMeasure(
+        state.currentMeasure.key,
+        nextTarget.series.key,
+        nextTarget.strata,
+      );
+    }
+
     async function initialize() {
       applyQueryDefaults();
       state.measures = await api.fetchMeasures(config.collectionKey);
@@ -1000,8 +1074,8 @@
       resetButton.on("click", async function () {
         await resetToDefaults();
       });
-      copyLinkButton.on("click", async function () {
-        await handleCopyLink();
+      randomizeButton.on("click", async function () {
+        await randomizeSurface();
       });
 
       measureDropdown.on("change", async function () {
