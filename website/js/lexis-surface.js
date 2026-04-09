@@ -16,6 +16,19 @@
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function formatDisplayUrl(value) {
+    return String(value || "").replace(/^https?:\/\//i, "");
+  }
+
   function parseDomainValue(value) {
     if (typeof value === "number") {
       return value;
@@ -358,21 +371,27 @@
 
     function updateCaption(series) {
       if (config.captionMode === "hidden") {
-        caption.text("");
+        caption.html("");
         return;
       }
       if (!series || !series.sourceKeys || series.sourceKeys.length === 0) {
-        caption.text("");
+        caption.html("");
         return;
       }
       const parts = series.sourceKeys.map((key) => {
         const source = state.sourcesByKey[key];
         if (!source) {
-          return key;
+          return escapeHtml(key);
         }
-        return source.citation || source.name || key;
+        const label = escapeHtml(source.citation || source.name || key);
+        if (!source.url) {
+          return label;
+        }
+        const href = escapeHtml(source.url);
+        const displayUrl = escapeHtml(formatDisplayUrl(source.url));
+        return `${label} <a href="${href}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>`;
       });
-      caption.text(`Data source: ${parts.join("; ")}`);
+      caption.html(`Data source: ${parts.join("; ")}`);
     }
 
     function drawHeatmap(data, scales, dimensions) {
