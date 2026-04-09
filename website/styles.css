@@ -407,10 +407,20 @@ ol li::marker {
   cursor: pointer;
 }
 
-.lexis-widget .lexis-action-button:hover,
-.lexis-widget .lexis-action-button:focus {
+.lexis-widget .lexis-action-button:hover {
   background: var(--lexis-color-brand-soft);
   color: var(--lexis-color-text);
+}
+
+.lexis-widget .lexis-action-button:focus {
+  outline: none;
+}
+
+.lexis-widget .lexis-action-button:focus-visible {
+  background: var(--lexis-color-panel);
+  color: var(--lexis-color-text);
+  outline: var(--lexis-focus-outline);
+  outline-offset: 1px;
 }
 
 .lexis-widget .lexis-action-button:active {
