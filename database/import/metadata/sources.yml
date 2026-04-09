@@ -14,3 +14,7 @@ sources:
     url: https://doi.org/10.7910/DVN/FKCRHW 
     citation: D. Alburez-Gutierrez, I. Williams, & H. Caswell, Projections of human kinship for all countries, PNAS (2023).
     license: CC0.1.0
+  - key: kashnitskyetal2019
+    name: Replication Data for Geofaceting – Aligning small-multiples for regions in a spatially meaningful way
+    url: https://doi.org/10.4054/DemRes.2019.41.17
+    citation: I. Kashnitsky, & J. M. Aburto, Geofaceting – Alligning small-multiples for regions in a spatially meaningful way. Demographic Research (2019).
