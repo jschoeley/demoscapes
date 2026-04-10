@@ -64,5 +64,6 @@ series:
     sourceKeys:
       - "kashnitskyetal2019"
     collectionKeys:
+      - "kashnitskyetal2019"
     strataKeys:
       - "region"

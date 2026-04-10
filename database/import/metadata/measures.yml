@@ -266,7 +266,7 @@ measures:
         precision: 0
   - key: modalcodcontributiontoprematuremalemortality
     name: Primary cause for male premature mortality
-    unit:
+    unit: " "
     statType: categorical
     description: The cause of death with the highest contribution to premature male mortality.
     axes:
@@ -289,15 +289,15 @@ measures:
         - Suicide
         - Homicide
       colorRange:
-        - "#A65628"
-        - "#08306B"
-        - "#2171B5"
-        - "#C6DBEF"
-        - "#6BAED6"
-        - "#999999"
+        - "#06713B"
+        - "#2B1555"
+        - "#63ABD2"
+        - "#F3AA9B"
+        - "#A41D24"
+        - "#C1C1C1"
+        - "#F47C0C"
+        - "#1C1C1C"
         - "#FFFF33"
-        - "#FF7F00"
-        - "#FF00FF"
       labelmultiplier: 
       labelprecision:  
       legend:

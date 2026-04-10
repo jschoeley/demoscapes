@@ -23,3 +23,9 @@ collections:
     summary: "Kinship-focused collection"
     order: 30
     isPublic: true
+  - key: "kashnitskyetal2019"
+    name: "The most important cause for premature male mortality across Mexican states"
+    description: "Estimates from the paper by Kashnitsky & Aburto, Geofaceting – Aligning small multiples for regions in a spatially meaningful way, Demographic Research (2019)"
+    order: 40
+    isPublic: true
+ 
