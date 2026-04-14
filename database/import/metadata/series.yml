@@ -67,3 +67,14 @@ series:
       - "kashnitskyetal2019"
     strataKeys:
       - "region"
+  - key: "cohabitiontomarriagerate_by_region_sex_model_age_duration"
+    label: "by region, sex, and model"
+    measureKey: "cohabitiontomarriagerate"
+    sourceKeys:
+      - "carollo2025"
+    collectionKeys:
+      - ""
+    strataKeys:
+      - "region"
+      - "sex"
+      - "modelcarollo2025"
