@@ -37,7 +37,6 @@ const collectionSchema = new Schema({
   key: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   description: String,
-  summary: String,
   order: Number,
   isPublic: { type: Boolean, default: true },
 });

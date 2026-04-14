@@ -2,30 +2,50 @@ collections:
   - key: "global"
     name: "Global"
     description: "All available series in demoscapes."
-    summary: "Complete dataset coverage"
-    order: 0
+    order: 99
+    isPublic: true
+  - key: "fertility"
+    name: "Fertility"
+    description: "Fertility related Lexis surfaces."
+    order: 10
+    isPublic: true
+  - key: "mortality"
+    name: "Mortality"
+    description: "Mortality related Lexis surfaces."
+    order: 10
+    isPublic: true
+  - key: "migration"
+    name: "Migration"
+    description: "Migration related Lexis surfaces."
+    order: 10
+    isPublic: false
+  - key: "mpidr"
+    name: "Max Planck Institute for Demographic Research"
+    description: "Lexis surfaces by researchers at the Max Planck Institute for Demographic Research"
+    order: 20
     isPublic: true
   - key: "hmd"
     name: "Human Mortality Database"
     description: "Series sourced from the Human Mortality Database."
-    summary: "Mortality-focused collection"
-    order: 10
+    order: 20
     isPublic: true
   - key: "hfd"
     name: "Human Fertility Database"
     description: "Series sourced from the Human Fertility Database."
-    summary: "Fertility-focused collection"
     order: 20
     isPublic: true
   - key: "gutierrezetal2023"
-    name: "Estimates of human kinship for all countries"
+    name: "Alburez-Gutierrez et al. 2023"
     description: "Estimates from the paper by D. Alburez-Gutierrez, I. Williams, & H. Caswell, Projections of human kinship for all countries, PNAS (2023)."
-    summary: "Kinship-focused collection"
     order: 30
     isPublic: true
   - key: "kashnitskyetal2019"
-    name: "The most important cause for premature male mortality across Mexican states"
+    name: "Kashnitsky et al. 2019"
     description: "Estimates from the paper by Kashnitsky & Aburto, Geofaceting – Aligning small multiples for regions in a spatially meaningful way, Demographic Research (2019)"
-    order: 40
+    order: 30
     isPublic: true
- 
+  - key: "carollo2025"
+    name: "Carollo et al. 2025"
+    description: "Estimates from the paper by A. Carollo, H. Putter, P. H. C. Eilers, & J. Gampe. Analysis of Time-to-Event Data With Two Time Scales. An Application to Transitions out of Cohabitation. Sociological Methods & Research (2025)."
+    order: 30
+    isPublic: true

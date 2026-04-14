@@ -306,4 +306,47 @@ measures:
       tooltip:
         suffix: ""
         precision:
+  - key: cohabitiontomarriagerate
+    name: Rate of marriage among cohabiting partners
+    unit: Marriages per 1,000 person-years lived in cohabition
+    statType: rate
+    description: Marriages per 1,000 person-years lived in cohabition among individuals who entered cohabition at age x and cohabited for y years.
+    axes:
+      x:
+        name: Age at entry into cohabition 
+        unit: year
+      y:
+        name: Duration of cohabition
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 0.001
+        - 0.005
+        - 0.01
+        - 0.05
+        - 0.1
+        - 0.2
+        - 0.25
+        - 0.3
+        - 1
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 1000
+      labelprecision: 1 
+      legend:
+        left: ""
+        right: "Marriages per 1,000 person-years"
+      tooltip:
+        suffix: " marriages per 1,000 person-years"
+        precision: 0
  

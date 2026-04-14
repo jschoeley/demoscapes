@@ -127,7 +127,6 @@ async function runImport() {
       key: entry.key,
       name: entry.name,
       description: entry.description || '',
-      summary: entry.summary || '',
       order: entry.order,
       isPublic: entry.isPublic === undefined ? true : Boolean(entry.isPublic),
     };

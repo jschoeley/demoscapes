@@ -1,0 +1,6 @@
+- key: "modelcarollo2025"
+  label: "Model type"
+  description: "Type of model used to estimate the hazard rate."
+  valuesFromData: true
+  codebook:
+

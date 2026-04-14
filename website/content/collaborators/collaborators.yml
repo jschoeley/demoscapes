@@ -1,9 +1,12 @@
 - name: Diego Alburez-Gutierrez
   blurb: Diego Alburez-Gutierrez leads the Kinship Inequalities Research Group at the Max Planck Institute for Demographic Research in Germany. His work explores kinship structures, family bereavement, and intergenerational relations. Diego helps develop the R packages DemoKin and rsocsim for modeling kinship dynamics using mathematical and simulation models. He earned his Ph.D. at the London School of Economics in 2019.
-  collections: [gutierrezetal2023]
+  collections: [gutierrezetal2023, mpidr]
 - name: Ilya Kashnitsky
   blurb: Senior Researcher @ Statistics Denmark. Associate Member at Leverhulme Centre for Demographic Science, University of Oxford. Demographer, highly interested in dataviz, my workflow goes through R/RStudio.
-  collections: [kashnitskyetal2019]
+  collections: [kashnitskyetal2019, mortality]
 - name: José Manuel Aburto 
   blurb: José Manuel joined LSHTM in 2022 as Brass Blacker Associate Professor of Demography. He leads the Mortality and Inequalities Research group within PSG. Before joining LSHTM he held the Newton International and Marie Skłodowska-Curie fellowships at University of Oxford and was Assistant Professor at University of Southern Denmark. José Manuel received his MA in Demography at El Colegio de México, training at the European Doctoral School of Demography at Sapienza University of Rome, and PhD in Demography at the University of Southern Denmark and Germany’s Max Planck Institute for Demographic Research in 2020.
-  collections: [kashnitskyetal2019]
+  collections: [kashnitskyetal2019, mortality]
+- name: Angela Carollo
+  blurb: Angela Carollo is a Statistical Analyst and Research Scientist in the Laboratory of Fertility and Well-Being at the Max Planck Institute for Demographic Research. She is the author and contributor of the R-package TwoTimeScales. Her research interests lie at the intersection of Statistics and Demography. In her PhD dissertation she proposes a model for time-to-event data over multiple time scales.
+  collections: [carollo2025, mpidr, fertility]
