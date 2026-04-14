@@ -147,6 +147,10 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+function formatDisplayUrl(value) {
+  return String(value || '').replace(/^https?:\/\//i, '');
+}
+
 function parseLexisAttributes(rawAttrs) {
   const attributes = {};
   const regex = /(\w+)=("([^"]*)"|'([^']*)')/g;
@@ -277,7 +281,6 @@ function getPublicCollections() {
       key: String(entry.key),
       slug: slugify(entry.key),
       title: entry.name || entry.key,
-      summary: entry.summary || entry.description || '',
       description: entry.description || '',
       order: entry.order,
     }));
@@ -422,12 +425,11 @@ function buildSourcesPage() {
 
   const cards = sources.map((source) => {
     const link = source.url
-      ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.url)}</a>`
+      ? `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(formatDisplayUrl(source.url))}</a>`
       : '';
     return [
       '<article class="source-card">',
       `  <h2>${escapeHtml(source.name || source.key || '')}</h2>`,
-      `  <p class="source-key"><strong>Key:</strong> ${escapeHtml(source.key || '')}</p>`,
       source.citation ? `  <p>${escapeHtml(source.citation)}</p>` : '',
       source.license ? `  <p><strong>License:</strong> ${escapeHtml(source.license)}</p>` : '',
       link ? `  <p>${link}</p>` : '',
@@ -464,7 +466,7 @@ function buildCollectionsFromMetadata() {
       return [
         '<article class="content-card">',
         `  <h2><a href="/collections/${collection.slug}.html">${escapeHtml(collection.title)}</a></h2>`,
-        collection.summary ? `  <p>${escapeHtml(collection.summary)}</p>` : '',
+        collection.description ? `  <p>${escapeHtml(collection.description)}</p>` : '',
         '</article>',
       ].join('\n');
     })
@@ -486,7 +488,6 @@ function buildCollectionsFromMetadata() {
   collections.forEach((collection) => {
     const options = {
       collectionKey: collection.key,
-      title: `${collection.title} Lexis surface`,
       showControls: true,
     };
     const encoded = encodeURIComponent(JSON.stringify(options));

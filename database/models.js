@@ -19,7 +19,7 @@ const measureSchema = new Schema({
     labelmultiplier: Number,
     labelprecision: Number,
     colorScale: String,
-    colorDomain: [Number],
+    colorDomain: [Schema.Types.Mixed],
     colorRange: [String],
     legend: {
       left: String,
@@ -37,7 +37,6 @@ const collectionSchema = new Schema({
   key: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   description: String,
-  summary: String,
   order: Number,
   isPublic: { type: Boolean, default: true },
 });
@@ -77,7 +76,7 @@ const surfaceSchema = new Schema({
   yValues: [Number],
   wxValues: [Number],
   wyValues: [Number],
-  zValues: [Number],
+  zValues: [Schema.Types.Mixed],
   zEncoding: { type: String, default: 'row-major-y' },
 });
 
