@@ -488,7 +488,6 @@ function buildCollectionsFromMetadata() {
   collections.forEach((collection) => {
     const options = {
       collectionKey: collection.key,
-      title: `${collection.title} Lexis surface`,
       showControls: true,
     };
     const encoded = encodeURIComponent(JSON.stringify(options));
