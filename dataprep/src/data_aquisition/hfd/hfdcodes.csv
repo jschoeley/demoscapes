@@ -1,0 +1,44 @@
+name,hfdcode,iso3
+Austria,AUT,AT
+Belarus,BLR,BY
+Belgium,BEL,BE
+Bulgaria,BGR,BG
+Canada,CAN,CA
+Chile,CHL,CL
+Croatia,HRV,HR
+Czechia,CZE,CZ
+Denmark,DNK,DK
+Estonia,EST,EE
+Finland,FIN,FI
+France,FRATNP,FR
+Germany,DEUTNP,DE
+East Germany,DEUTE,DE-E
+West Germany,DEUTW,DE-W
+Hungary,HUN,HU
+Iceland,ISL,IS
+Ireland,IRL,IE
+Italy,ITA,IT
+Japan,JPN,JP
+Lithuania,LTU,LT
+Netherlands,NLD,NL
+Norway,NOR,NO
+Poland,POL,PL
+Portugal,PRT,PT
+Republic of Korea,KOR,KR
+Russia,RUS,RU
+Slovakia,SVK,SK
+Slovenia,SVN,SI
+Spain,ESP,ES
+Sweden,SWE,SE
+Switzerland,CHE,CH
+Taiwan,TWN,TW
+Ukraine,UKR,UA
+U.K.,GBR_NP,GB
+England and Wales,GBRTENW,GB-EAW
+Northern Ireland,GBR_NIR,GB-NIR
+Scotland,GBR_SCO,GB-SCT
+U.S.A,USA,US
+Greece,GRC,GR
+Israel,ISR,IL
+Latvia,LVA,LV
+Luxembourg,LUX,LU

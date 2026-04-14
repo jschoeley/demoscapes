@@ -1,0 +1,352 @@
+measures:
+  - key: deathratesexratio
+    name: Deathrate sex ratio (male/female)
+    unit: Male deaths per 100 female deaths
+    statType: ratio
+    description: Male deaths per 100 female deaths.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: ratio_diverging
+      colorDomain:
+        - 0
+        - 0.5
+        - 0.5714285714
+        - 0.6666666667
+        - 0.8
+        - 0.99009901
+        - 1.01
+        - 1.25
+        - 1.5
+        - 1.75
+        - 2
+        - 100
+      colorRange:
+        - "#67001F"
+        - "#B2182B"
+        - "#D6604D"
+        - "#F4A582"
+        - "#FDDBC7"
+        - "#F7F7F7"
+        - "#D1E5F0"
+        - "#92C5DE"
+        - "#4393C3"
+        - "#2166AC"
+        - "#053061"
+      labelmultiplier: 100
+      labelprecision: 0
+      legend:
+        left: Excess female mortality
+        right: Excess male mortality
+      tooltip:
+        suffix: " male deaths per 100 female deaths"
+        precision: 0
+  - key: deathcountsexdifference
+    name: Death count sex difference (male - female)
+    unit: deaths
+    statType: count
+    description: Male deaths in excess of female deaths.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: difference_diverging
+      colorDomain:
+        - -1000
+        - -500
+        - -250
+        - -100
+        - -50
+        - -10
+        - 10
+        - 50
+        - 100
+        - 250
+        - 500
+        - 1000
+      colorRange:
+        - "#67001F"
+        - "#B2182B"
+        - "#D6604D"
+        - "#F4A582"
+        - "#FDDBC7"
+        - "#F7F7F7"
+        - "#D1E5F0"
+        - "#92C5DE"
+        - "#4393C3"
+        - "#2166AC"
+        - "#053061"
+      labelmultiplier: 1
+      labelprecision: 0
+      legend:
+        left: Female excess deaths
+        right: Male excess deaths
+      tooltip:
+        suffix: " deaths (male - female)"
+  - key: deathrate
+    name: Death rate
+    unit: Deaths per 10,000 person-years
+    statType: rate
+    description: Deaths per 10,000 person-years.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 0.0001
+        - 0.0005
+        - 0.001
+        - 0.005
+        - 0.01
+        - 0.05
+        - 0.1
+        - 0.5
+        - 1
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 10000
+      labelprecision: 0
+      legend:
+        left: ""
+        right: "Deaths per 10,000 person-years"
+      tooltip:
+        suffix: " deaths per 10,000 person-years"
+        precision: 0
+  - key: birthcount
+    name: Births
+    unit: Births
+    statType: count
+    description: The number of births.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 1
+        - 5
+        - 10
+        - 50
+        - 100
+        - 500
+        - 1000
+        - 10000
+        - 100000
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 1
+      labelprecision: 0
+      legend:
+        left: ""
+        right: "Births"
+      tooltip:
+        suffix: " births"
+        precision: 0
+  - key: fertilityrate
+    name: Fertility rate
+    unit: Births per 1,000 women
+    statType: rate
+    description: The number of births per 1,000 person-years lived by women.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 0.0001
+        - 0.0005
+        - 0.001
+        - 0.005
+        - 0.01
+        - 0.05
+        - 0.1
+        - 0.5
+        - 1
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 1000
+      labelprecision: 1 
+      legend:
+        left: ""
+        right: "Births per 1,000 female person-years"
+      tooltip:
+        suffix: " births per 1,000 female person-years"
+        precision: 0
+  - key: numberofkin 
+    name: Number of kin
+    unit: Kin
+    statType: count
+    description: The number of kin a person has.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 10
+        - 15
+        - 20
+        - 25
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 1
+      labelprecision: 1 
+      legend:
+        left: ""
+        right: "Kin"
+      tooltip:
+        suffix: " kin"
+        precision: 0
+  - key: modalcodcontributiontoprematuremalemortality
+    name: Primary cause for male premature mortality
+    unit: " "
+    statType: categorical
+    description: The cause of death with the highest contribution to premature male mortality.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: qualitative
+      colorDomain:
+        - Amenable to medical service
+        - Cirrhosis
+        - Diabetes
+        - Human Immunodeficiency Virus 
+        - Ischaemic Heart Disease
+        - Other
+        - Road traffic
+        - Suicide
+        - Homicide
+      colorRange:
+        - "#06713B"
+        - "#2B1555"
+        - "#63ABD2"
+        - "#F3AA9B"
+        - "#A41D24"
+        - "#C1C1C1"
+        - "#F47C0C"
+        - "#1C1C1C"
+        - "#FFFF33"
+      labelmultiplier: 
+      labelprecision:  
+      legend:
+        left: ""
+        right: "Cause of death"
+      tooltip:
+        suffix: ""
+        precision:
+  - key: cohabitiontomarriagerate
+    name: Rate of marriage among cohabiting partners
+    unit: Marriages per 1,000 person-years lived in cohabition
+    statType: rate
+    description: Marriages per 1,000 person-years lived in cohabition among individuals who entered cohabition at age x and cohabited for y years.
+    axes:
+      x:
+        name: Age at entry into cohabition 
+        unit: year
+      y:
+        name: Duration of cohabition
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 0.001
+        - 0.005
+        - 0.01
+        - 0.05
+        - 0.1
+        - 0.2
+        - 0.25
+        - 0.3
+        - 1
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 1000
+      labelprecision: 1 
+      legend:
+        left: ""
+        right: "Marriages per 1,000 person-years"
+      tooltip:
+        suffix: " marriages per 1,000 person-years"
+        precision: 0
+ 

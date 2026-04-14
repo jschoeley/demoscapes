@@ -1,0 +1,86 @@
+networks:
+  mynetwork:
+
+services:
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile.database
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:?MONGO_INITDB_ROOT_USERNAME is required}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:?MONGO_INITDB_ROOT_PASSWORD is required}
+    command: ["mongod", "--auth", "--bind_ip_all"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --eval \"quit(db.hello().ok ? 0 : 1)\""
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - mynetwork
+
+  db-init:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: ["npm", "run", "init:database"]
+    environment:
+      MONGO_HOST: ${MONGO_HOST:?MONGO_HOST is required}
+      MONGO_PORT: ${MONGO_PORT:?MONGO_PORT is required}
+      MONGO_APP_DATABASE: ${MONGO_APP_DATABASE:?MONGO_APP_DATABASE is required}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:?MONGO_INITDB_ROOT_USERNAME is required}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:?MONGO_INITDB_ROOT_PASSWORD is required}
+      MONGO_API_USERNAME: ${MONGO_API_USERNAME:?MONGO_API_USERNAME is required}
+      MONGO_API_PASSWORD: ${MONGO_API_PASSWORD:?MONGO_API_PASSWORD is required}
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - mynetwork
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    depends_on:
+      database:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      MONGO_HOST: ${MONGO_HOST:?MONGO_HOST is required}
+      MONGO_PORT: ${MONGO_PORT:?MONGO_PORT is required}
+      MONGO_APP_DATABASE: ${MONGO_APP_DATABASE:?MONGO_APP_DATABASE is required}
+      MONGO_API_USERNAME: ${MONGO_API_USERNAME:?MONGO_API_USERNAME is required}
+      MONGO_API_PASSWORD: ${MONGO_API_PASSWORD:?MONGO_API_PASSWORD is required}
+      PORT: 3000
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+    networks:
+      - mynetwork
+
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile.website
+    command: ["caddy", "run", "--config", "${CADDY_CONFIG_PATH:-/etc/caddy/Caddyfile}"]
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+      CANONICAL_HOST: ${CANONICAL_HOST:-demoscapes.org}
+      WWW_HOST: ${WWW_HOST:-www.demoscapes.org}
+      LOCAL_CANONICAL_HOST: ${LOCAL_CANONICAL_HOST:-demoscapes.localhost}
+      LOCAL_WWW_HOST: ${LOCAL_WWW_HOST:-www.demoscapes.localhost}
+      LOCAL_HTTP_PORT: ${LOCAL_HTTP_PORT:-18080}
+      LOCAL_HTTPS_PORT: ${LOCAL_HTTPS_PORT:-18443}
+    ports:
+      - '${WEBSITE_HTTP_PORT:-18080}:80'
+      - '${WEBSITE_HTTPS_PORT:-18443}:443'
+    depends_on:
+      - api
+    volumes:
+      - ${CADDY_DATA_DIR:-/opt/demoscapes/caddy/data}:/data
+      - ${CADDY_CONFIG_DIR:-/opt/demoscapes/caddy/config}:/config
+    networks:
+      - mynetwork

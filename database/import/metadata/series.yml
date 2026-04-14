@@ -1,0 +1,94 @@
+series:
+  - key: "deathratesexratio_by_region_subpopulation"
+    label: "by region and subpopulation"
+    measureKey: "deathratesexratio"
+    sourceKeys:
+      - "hmd"
+    collectionKeys:
+      - "hmd"
+      - "mpidr"
+      - "mortality"
+    strataKeys:
+      - "region"
+      - "subpopulation"
+  - key: "deathcountsexdifference_by_region_subpopulation"
+    label: "by region and subpopulation"
+    measureKey: "deathcountsexdifference"
+    sourceKeys:
+      - "hmd"
+    collectionKeys:
+      - "hmd"
+      - "mpidr"
+      - "mortality"
+    strataKeys:
+      - "region"
+      - "subpopulation"
+  - key: "deathrate_by_region_sex_subpopulation"
+    label: "by region, sex, and subpopulation"
+    measureKey: "deathrate"
+    sourceKeys:
+      - "hmd"
+    collectionKeys:
+      - "hmd"
+      - "mpidr"
+      - "mortality"
+    strataKeys:
+      - "region"
+      - "sex"
+      - "subpopulation"
+  - key: "birthcount_by_region"
+    label: "by region"
+    measureKey: "birthcount"
+    sourceKeys:
+      - "hfd"
+    collectionKeys:
+      - "hfd"
+      - "mpidr"
+      - "fertility"
+    strataKeys:
+      - "region"
+  - key: "fertilityrate_by_region"
+    label: "by region"
+    measureKey: "fertilityrate"
+    sourceKeys:
+      - "hfd"
+    collectionKeys:
+      - "hfd"
+      - "mpidr"
+      - "fertility"
+    strataKeys:
+      - "region"
+  - key: "numberofkin_by_kin_region"
+    label: "by kin, and region"
+    measureKey: "numberofkin"
+    sourceKeys:
+      - "gutierrezetal2023"
+    collectionKeys:
+      - "gutierrezetal2023"
+      - "mpidr"
+    strataKeys:
+      - "kin"
+      - "region"
+  - key: "modalcodcontributiontoprematuremalemortality_by_region_period_age"
+    label: "by region"
+    measureKey: "modalcodcontributiontoprematuremalemortality"
+    sourceKeys:
+      - "kashnitskyetal2019"
+    collectionKeys:
+      - "kashnitskyetal2019"
+      - "mortality"
+    strataKeys:
+      - "region"
+  - key: "cohabitiontomarriagerate_by_region_sex_model_age_duration"
+    label: "by region, sex, and model"
+    measureKey: "cohabitiontomarriagerate"
+    sourceKeys:
+      - "carollo2025"
+    collectionKeys:
+      - "carollo2025"
+      - "mpidr"
+      - "fertility"
+    strataKeys:
+      - "region"
+      - "sex"
+      - "modelcarollo2025"

@@ -1,0 +1,17 @@
+FROM node:25 AS build
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm install
+
+COPY website ./website
+COPY database ./database
+
+RUN npm run build:website
+
+FROM caddy:2.10.2-alpine
+
+COPY --from=build /usr/src/app/website/dist/ /srv
+COPY website/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY website/caddy/Caddyfile.local /etc/caddy/Caddyfile.local
