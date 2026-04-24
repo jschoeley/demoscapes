@@ -281,7 +281,6 @@ function getPublicCollections() {
       key: String(entry.key),
       slug: slugify(entry.key),
       title: entry.name || entry.key,
-      summary: entry.summary || entry.description || '',
       description: entry.description || '',
       order: entry.order,
     }));
@@ -467,7 +466,7 @@ function buildCollectionsFromMetadata() {
       return [
         '<article class="content-card">',
         `  <h2><a href="/collections/${collection.slug}.html">${escapeHtml(collection.title)}</a></h2>`,
-        collection.summary ? `  <p>${escapeHtml(collection.summary)}</p>` : '',
+        collection.description ? `  <p>${escapeHtml(collection.description)}</p>` : '',
         '</article>',
       ].join('\n');
     })
@@ -489,7 +488,6 @@ function buildCollectionsFromMetadata() {
   collections.forEach((collection) => {
     const options = {
       collectionKey: collection.key,
-      title: `${collection.title} Lexis surface`,
       showControls: true,
     };
     const encoded = encodeURIComponent(JSON.stringify(options));
