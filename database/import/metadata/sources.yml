@@ -24,3 +24,8 @@ sources:
     url: https://doi.org/10.1177/00491241251374193
     citation: A. Carollo, H. Putter, P. H. C. Eilers, & J. Gampe. Analysis of Time-to-Event Data With Two Time Scales. An Application to Transitions out of Cohabitation. Sociological Methods & Research (2025).
     license: CC BY 4.0
+  - key: abramsetal2026
+    name: Replication Data for Insights into US life expectancy stagnation from birth cohort mortality dynamics.
+    url: https://osf.io/xf57e
+    citation: L. Abrams, O. Bramajo, A. van Raalte, M. Myrskylä, & N.K. Mehta. Insights into US life expectancy stagnation from birth cohort mortality dynamics. Proc. Natl. Acad. Sci. (2026).
+    license: CC BY-NC 4.0

@@ -1,0 +1,6 @@
+- key: "codabramsetal2026"
+  label: "Cause of death"
+  description: "Cause of death."
+  valuesFromData: true
+  codebook:
+
