@@ -1,6 +1,28 @@
 - key: "codabramsetal2026"
   label: "Cause of death"
   description: "Cause of death."
-  valuesFromData: true
+  valuesFromData: false 
   codebook:
-
+    - key: Accidents
+      name: Accidents
+    - key: Suicides
+      name: Suicides
+    - key: Homicides
+      name: Homicides
+    - key: DrugPoisoning
+      name: Drug poisoning
+    - key: All Other External
+      name: All other external
+    - key: Infectious
+      name: Infections
+    - key: Respiratory
+      name: Respiratory
+    - key: ColonCancer
+      name: Colon cancer
+    - key: LungCancer
+      name: Lung cancer
+    - key: All Other Cancers
+      name: All other cancers
+    - key: All Other Internal causes
+      name: All other internal causes
+ 
