@@ -92,3 +92,16 @@ series:
       - "region"
       - "sex"
       - "modelcarollo2025"
+  - key: "percentannualmortalitychange_by_cod_sex_period_age"
+    label: "by cause of death, and sex"
+    measureKey: "percentannualmortalitychange"
+    sourceKeys:
+      - "abramsetal2026"
+    collectionKeys:
+      - "abramsetal2026"
+      - "mpidr"
+      - "mortality"
+    strataKeys:
+      - "codabramsetal2026"
+      - "sex"
+
