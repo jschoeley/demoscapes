@@ -45,6 +45,13 @@ percentannualmortalitychange_by_cod_sex_period_age.csv <-
   # somehow the signs were flipped, turn % mortality improvements
   # into % mortality change
   mutate(Mx_change_year = -Mx_change_year) |>
+  # code sex
+  mutate(
+    sex = case_when(
+      sex == 'f' ~ 'Female',
+      sex == 'm' ~ 'Male'
+    )
+  ) |>
   mutate(
     wx = 1,
     wy = 1
@@ -55,7 +62,7 @@ percentannualmortalitychange_by_cod_sex_period_age.csv <-
     y = Age,
     wx,
     wy,
-    codabramsetal2026 = Cause,
+    codabramsetal2026 = cause,
     sex = sex
   ) |>
   mutate(across(where(is.factor), as.character)) |>

@@ -3,6 +3,8 @@
   description: "Cause of death."
   valuesFromData: false 
   codebook:
+    - key: All
+      name: All deaths
     - key: Accidents
       name: Accidents
     - key: Suicides
@@ -17,12 +19,16 @@
       name: Infections
     - key: Respiratory
       name: Respiratory
+    - key: Cancer
+      name: All cancers
     - key: ColonCancer
       name: Colon cancer
     - key: LungCancer
       name: Lung cancer
     - key: All Other Cancers
       name: All other cancers
+    - key: CVD
+      name: Cardiovascular diseases
     - key: All Other Internal causes
       name: All other internal causes
  

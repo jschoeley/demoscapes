@@ -55,7 +55,12 @@ csvs <- grep(
 x <- as.list(csvs)
 abramsetal2026 <- lapply(x, function (x) {
   file <- paste0(paths$output$osf_data_path, x)
-  read_csv(file)
+  dfr <- read_csv(file)
+  dfr <- dfr[,c('Year', 'Age', 'Mx', 'Mx_change_year')]
+  filename <- stringr::str_extract(x, '[A-Za-z ]+_[fm]_ROMI.csv$')
+  dfr$cause <- strsplit(filename, split = '_')[[1]][1]
+  dfr$sex <- strsplit(filename, split = '_')[[1]][2]
+  dfr
 }) |>
   bind_rows()
 
