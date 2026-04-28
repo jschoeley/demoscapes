@@ -893,9 +893,6 @@
       if (!definition) {
         return value;
       }
-      if (definition.valuesFromData) {
-        return value;
-      }
       const codebookMap = definition.codebookMap || {};
       return codebookMap[value] || value;
     }
@@ -941,6 +938,15 @@
       if (values.size === 0 && state.currentSeries && state.currentSeries.strataValues) {
         const fallback = state.currentSeries.strataValues[strataKey] || [];
         fallback.forEach((value) => values.add(value));
+      }
+
+      const definition = state.strataDefinitions[strataKey];
+      const codebookKeys = definition && Array.isArray(definition.codebookKeys)
+        ? definition.codebookKeys
+        : [];
+
+      if (codebookKeys.length > 0) {
+        return codebookKeys.filter((value) => values.has(value));
       }
 
       return Array.from(values).sort();
@@ -1079,11 +1085,6 @@
           });
       });
 
-      const initialCombo = state.currentStrataCombos.length > 0 ? state.currentStrataCombos[0] : null;
-      if (initialCombo) {
-        state.currentStrataSelections = { ...initialCombo, ...state.currentStrataSelections };
-      }
-
       refreshStrataOptions();
       updateStrataSummary();
     }
@@ -1098,6 +1099,9 @@
       Object.keys(fetched || {}).forEach((key) => {
         const entry = fetched[key];
         if (entry && entry.codebook && Array.isArray(entry.codebook)) {
+          entry.codebookKeys = entry.codebook
+            .filter((item) => item && item.key !== undefined)
+            .map((item) => item.key);
           entry.codebookMap = entry.codebook.reduce((acc, item) => {
             if (item && item.key !== undefined) {
               acc[item.key] = item.name || item.key;
