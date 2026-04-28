@@ -42,6 +42,9 @@ percentannualmortalitychange_by_cod_sex_period_age.csv <-
   abramsetal2026.qs |>
   # first and last year don't have percent change
   filter(!Year %in% c(1979, 2020)) |>
+  # somehow the signs were flipped, turn % mortality improvements
+  # into % mortality change
+  mutate(Mx_change_year = -Mx_change_year) |>
   mutate(
     wx = 1,
     wy = 1
@@ -64,6 +67,11 @@ percentannualmortalitychange_by_cod_sex_period_age.csv <-
   arrange(
     sex, codabramsetal2026, x, y
   )
+
+
+# Test --------------------------------------------------------------------
+
+#abramsetal2026.qs |> mutate(y2 = Year %/% 2) |> group_by(y2, Age, Cause, sex) |> mutate(m1 = Mx[which.min(Year)], m2 = Mx[which.max(Year)]) |> ungroup() |> mutate(p = (m2-m1)/m1*100) |> filter(Year == 1980)
 
 # Export ------------------------------------------------------------------
 
