@@ -101,6 +101,51 @@ function normalizeCollectionKeys(keys) {
   return Array.from(set).sort();
 }
 
+function normalizeDefaultStrata(definition, strataKeys) {
+  const defaultStrata = definition.defaultStrata || {};
+  if (defaultStrata === null || Array.isArray(defaultStrata) || typeof defaultStrata !== 'object') {
+    throw new Error(`defaultStrata for series '${definition.key}' must be an object`);
+  }
+
+  const validStrataKeys = new Set(strataKeys);
+  const normalized = {};
+  Object.keys(defaultStrata).forEach((key) => {
+    if (!validStrataKeys.has(key)) {
+      throw new Error(`Unknown defaultStrata key '${key}' in series '${definition.key}'`);
+    }
+
+    const value = defaultStrata[key];
+    if (value === undefined || value === null || value === '') {
+      throw new Error(`Missing defaultStrata value for '${key}' in series '${definition.key}'`);
+    }
+    normalized[key] = String(value);
+  });
+
+  return normalized;
+}
+
+function validateDefaultStrataValues(definition, defaultStrata, valuesByKey, strataCombos) {
+  const entries = Object.entries(defaultStrata || {});
+  if (entries.length === 0) {
+    return;
+  }
+
+  entries.forEach(([key, value]) => {
+    if (!valuesByKey[key] || !valuesByKey[key].has(value)) {
+      throw new Error(
+        `Invalid defaultStrata value '${value}' for '${key}' in series '${definition.key}'`,
+      );
+    }
+  });
+
+  const hasMatchingCombo = strataCombos.some((combo) => (
+    entries.every(([key, value]) => combo[key] === value)
+  ));
+  if (!hasMatchingCombo) {
+    throw new Error(`defaultStrata for series '${definition.key}' does not match any strata combination`);
+  }
+}
+
 async function runImport() {
   const sourcesDoc = yaml.load(fs.readFileSync(sourcesPath, 'utf8'));
   const measuresDoc = yaml.load(fs.readFileSync(measuresPath, 'utf8'));
@@ -184,10 +229,12 @@ async function runImport() {
     return {
       key: definition.key,
       label: definition.label || definition.key,
+      title: definition.title || '',
       measureKey: definition.measureKey,
       sourceKeys: Array.isArray(definition.sourceKeys) ? definition.sourceKeys : [],
       collectionKeys,
       strataKeys,
+      defaultStrata: normalizeDefaultStrata(definition, strataKeys),
       strataValues: {},
       strataCombos: [],
     };
@@ -298,10 +345,6 @@ async function runImport() {
       });
     }
 
-    if (surfaceDocs.length > 0) {
-      await Surface.insertMany(surfaceDocs);
-    }
-
     const strataValues = {};
     Object.keys(valuesByKey).forEach((key) => {
       strataValues[key] = Array.from(valuesByKey[key]).sort();
@@ -311,9 +354,16 @@ async function runImport() {
       .sort()
       .map((value) => JSON.parse(value));
 
+    const defaultStrata = normalizeDefaultStrata(definition, strataKeys);
+    validateDefaultStrataValues(definition, defaultStrata, valuesByKey, strataCombos);
+
+    if (surfaceDocs.length > 0) {
+      await Surface.insertMany(surfaceDocs);
+    }
+
     await Series.updateOne(
       { key: definition.key },
-      { $set: { strataValues, strataCombos } },
+      { $set: { defaultStrata, strataValues, strataCombos } },
     );
   }
 

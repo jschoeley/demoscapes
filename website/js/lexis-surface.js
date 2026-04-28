@@ -36,6 +36,13 @@
     return String(value || "").replace(/^https?:\/\//i, "");
   }
 
+  function formatIntervalValue(value) {
+    if (Number.isInteger(value)) {
+      return d3.format("d")(value);
+    }
+    return d3.format("~g")(value);
+  }
+
   function parseDomainValue(value) {
     if (typeof value === "number") {
       return value;
@@ -460,12 +467,16 @@
     }
 
     function updateHeader(measure) {
-      const baseTitle = measure ? measure.name : "Lexis surface";
       if (config.title) {
         titleMeasureNode.text(config.title);
         titleStrataNode.attr("hidden", true).text("");
         return;
       }
+
+      const seriesTitle = state.currentSeries && state.currentSeries.title
+        ? state.currentSeries.title
+        : null;
+      const baseTitle = seriesTitle || (measure ? measure.name : "Lexis surface");
 
       const strataParts = [];
       if (state.currentSeries && Array.isArray(state.currentSeries.strataKeys)) {
@@ -577,16 +588,20 @@
       }
     }
 
+    function getAxisDisplayLabel(measure, axisKey) {
+      const axis = measure && measure.axes ? measure.axes[axisKey] : null;
+      const name = axis && axis.name ? axis.name : axisKey;
+      const unit = axis && axis.unit ? ` (${axis.unit})` : "";
+      return `${toTitleCase(name)}${unit}`;
+    }
+
     function addAxisLabels(measure, dimensions) {
       if (!measure || !measure.axes) {
         return;
       }
 
-      const axes = measure.axes;
-      const xLabel = axes.x ? axes.x.name : "x";
-      const yLabel = axes.y ? axes.y.name : "y";
-      const xUnit = axes.x && axes.x.unit ? ` (${axes.x.unit})` : "";
-      const yUnit = axes.y && axes.y.unit ? ` (${axes.y.unit})` : "";
+      const xLabel = getAxisDisplayLabel(measure, "x");
+      const yLabel = getAxisDisplayLabel(measure, "y");
 
       plot
         .append("text")
@@ -594,7 +609,7 @@
         .attr("x", dimensions.plotWidth / 2)
         .attr("y", dimensions.plotHeight + 40)
         .attr("text-anchor", "middle")
-        .text(`${toTitleCase(xLabel)}${xUnit}`);
+        .text(xLabel);
 
       plot
         .append("text")
@@ -603,7 +618,7 @@
         .attr("x", -dimensions.plotHeight / 2)
         .attr("y", -45)
         .attr("text-anchor", "middle")
-        .text(`${toTitleCase(yLabel)}${yUnit}`);
+        .text(yLabel);
     }
 
     function addNumericColorBarToHeatmap(scales, measure, dimensions, legendGroup) {
@@ -775,7 +790,59 @@
       addNumericColorBarToHeatmap(scales, measure, dimensions, legendGroup);
     }
 
-    function addMouseHoverToHeatmap(measure) {
+    function addAxisLocationHighlight(scales, dimensions) {
+      const highlight = plot
+        .append("g")
+        .attr("class", "lexis-axis-location-highlight")
+        .attr("hidden", true);
+
+      highlight
+        .append("line")
+        .attr("class", "lexis-axis-location-highlight-x")
+        .attr("y1", dimensions.plotHeight + 5)
+        .attr("y2", dimensions.plotHeight + 5);
+
+      highlight
+        .append("line")
+        .attr("class", "lexis-axis-location-highlight-y")
+        .attr("x1", -5)
+        .attr("x2", -5);
+
+      return {
+        show: (cell) => {
+          highlight.attr("hidden", null);
+          highlight
+            .select(".lexis-axis-location-highlight-x")
+            .attr("x1", scales.x(cell.x))
+            .attr("x2", scales.x(cell.x + cell.wx));
+          highlight
+            .select(".lexis-axis-location-highlight-y")
+            .attr("y1", scales.y(cell.y))
+            .attr("y2", scales.y(cell.y + cell.wy));
+        },
+        hide: () => {
+          highlight.attr("hidden", true);
+        },
+      };
+    }
+
+    function formatCellValueForTooltip(cell, measure, formatter, labelMultiplier, suffix) {
+      const value = cell.value;
+      if (measure && measure.statType === "categorical") {
+        return value !== null && value !== undefined && value !== "" ? String(value) : "No data";
+      }
+      if (value !== null && value !== undefined && !Number.isNaN(value)) {
+        return formatter(value * labelMultiplier) + suffix;
+      }
+      return "No data";
+    }
+
+    function formatCellIntervalForTooltip(label, start, width) {
+      const end = start + width;
+      return `${label}: ${formatIntervalValue(start)}-${formatIntervalValue(end)}`;
+    }
+
+    function addCellLocationInteraction(measure, scales, dimensions) {
       d3.select("body").selectAll(`.${tooltipClass}`).remove();
 
       const tooltip = d3
@@ -796,31 +863,64 @@
           ? measure.display.labelprecision
           : 0;
       const formatter = d3.format(`.${labelPrecision}f`);
-      const isCategoricalMeasure = measure && measure.statType === "categorical";
+      const xLabel = getAxisDisplayLabel(measure, "x");
+      const yLabel = getAxisDisplayLabel(measure, "y");
+      const axisHighlight = addAxisLocationHighlight(scales, dimensions);
+
+      function showCellLocation(cell, event) {
+        const valueText = formatCellValueForTooltip(
+          cell,
+          measure,
+          formatter,
+          labelMultiplier,
+          suffix,
+        );
+        const xText = formatCellIntervalForTooltip(xLabel, cell.x, cell.wx);
+        const yText = formatCellIntervalForTooltip(yLabel, cell.y, cell.wy);
+
+        axisHighlight.show(cell);
+        tooltip
+          .style("visibility", "visible")
+          .style("left", `${event.pageX + 12}px`)
+          .style("top", `${event.pageY + 12}px`)
+          .html([
+            `<div class="lexis-tooltip-value">${escapeHtml(valueText)}</div>`,
+            `<div class="lexis-tooltip-interval">${escapeHtml(xText)}</div>`,
+            `<div class="lexis-tooltip-interval">${escapeHtml(yText)}</div>`,
+          ].join(""));
+      }
+
+      function hideCellLocation() {
+        tooltip.style("visibility", "hidden");
+        axisHighlight.hide();
+      }
 
       plot
         .selectAll(".heatmapcell")
-        .on("mouseover", function () {
-          tooltip.style("visibility", "visible");
-        })
-        .on("mousemove", function (d) {
+        .on("pointerenter", function (d) {
           const event = d3.event;
-          const value = d.value;
-          let text = "No data";
-          if (isCategoricalMeasure) {
-            if (value !== null && value !== undefined && value !== "") {
-              text = String(value);
-            }
-          } else if (value !== null && value !== undefined && !Number.isNaN(value)) {
-            text = formatter(value * labelMultiplier) + suffix;
+          if (event.pointerType === "touch") {
+            return;
           }
-          tooltip
-            .style("left", `${event.pageX + 12}px`)
-            .style("top", `${event.pageY + 12}px`)
-            .text(text);
+          showCellLocation(d, event);
         })
-        .on("mouseout", function () {
-          tooltip.style("visibility", "hidden");
+        .on("pointermove", function (d) {
+          const event = d3.event;
+          if (event.pointerType === "touch") {
+            return;
+          }
+          showCellLocation(d, event);
+        })
+        .on("pointerdown", function (d) {
+          const event = d3.event;
+          showCellLocation(d, event);
+        })
+        .on("pointerleave", function () {
+          const event = d3.event;
+          if (event.pointerType === "touch") {
+            return;
+          }
+          hideCellLocation();
         });
     }
 
@@ -854,7 +954,7 @@
       addAxesToHeatmap(scales, dimensions);
       addAxisLabels(measure, dimensions);
       addColorBarToHeatmap(scales, measure, dimensions);
-      addMouseHoverToHeatmap(measure);
+      addCellLocationInteraction(measure, scales, dimensions);
       updateHeader(measure);
       updateCaption(series);
     }
@@ -891,9 +991,6 @@
     function formatStrataValue(strataKey, value) {
       const definition = state.strataDefinitions[strataKey];
       if (!definition) {
-        return value;
-      }
-      if (definition.valuesFromData) {
         return value;
       }
       const codebookMap = definition.codebookMap || {};
@@ -943,6 +1040,15 @@
         fallback.forEach((value) => values.add(value));
       }
 
+      const definition = state.strataDefinitions[strataKey];
+      const codebookKeys = definition && Array.isArray(definition.codebookKeys)
+        ? definition.codebookKeys
+        : [];
+
+      if (codebookKeys.length > 0) {
+        return codebookKeys.filter((value) => values.has(value));
+      }
+
       return Array.from(values).sort();
     }
 
@@ -955,6 +1061,33 @@
         }
       });
       return normalized;
+    }
+
+    function isSeriesStrataValue(series, strataKey, value) {
+      if (value === undefined || value === null || value === "") {
+        return false;
+      }
+      const values = series && series.strataValues ? series.strataValues[strataKey] : null;
+      return Array.isArray(values) && values.includes(value);
+    }
+
+    function mergeSeriesStrataSelections(series, strata) {
+      const keys = series && Array.isArray(series.strataKeys) ? series.strataKeys : [];
+      const merged = normalizeStrataSelections(series, strata);
+      const defaultStrata = normalizeStrataSelections(series, series && series.defaultStrata);
+
+      keys.forEach((key) => {
+        if (isSeriesStrataValue(series, key, merged[key])) {
+          return;
+        }
+
+        delete merged[key];
+        if (isSeriesStrataValue(series, key, defaultStrata[key])) {
+          merged[key] = defaultStrata[key];
+        }
+      });
+
+      return merged;
     }
 
     function buildSurfaceIdentity(target) {
@@ -1049,12 +1182,11 @@
     function renderStrataControls(series, preferredStrata) {
       strataControls.selectAll("*").remove();
 
-      if (preferredStrata) {
-        state.currentStrataSelections = { ...preferredStrata };
-      } else if (!(initialDefaults.strata && Object.keys(initialDefaults.strata).length > 0)) {
-        state.currentStrataSelections = {};
-      }
       state.currentStrataCombos = series && series.strataCombos ? series.strataCombos : [];
+      state.currentStrataSelections = mergeSeriesStrataSelections(
+        series,
+        preferredStrata || state.currentStrataSelections,
+      );
 
       if (!series || !series.strataKeys || series.strataKeys.length === 0) {
         strataPanel.style("display", "none");
@@ -1079,11 +1211,6 @@
           });
       });
 
-      const initialCombo = state.currentStrataCombos.length > 0 ? state.currentStrataCombos[0] : null;
-      if (initialCombo) {
-        state.currentStrataSelections = { ...initialCombo, ...state.currentStrataSelections };
-      }
-
       refreshStrataOptions();
       updateStrataSummary();
     }
@@ -1098,6 +1225,9 @@
       Object.keys(fetched || {}).forEach((key) => {
         const entry = fetched[key];
         if (entry && entry.codebook && Array.isArray(entry.codebook)) {
+          entry.codebookKeys = entry.codebook
+            .filter((item) => item && item.key !== undefined)
+            .map((item) => item.key);
           entry.codebookMap = entry.codebook.reduce((acc, item) => {
             if (item && item.key !== undefined) {
               acc[item.key] = item.name || item.key;
