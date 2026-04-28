@@ -47,6 +47,7 @@ collectionSchema.index({ order: 1, key: 1 });
 const seriesSchema = new Schema({
   key: { type: String, required: true },
   label: String,
+  title: String,
   measureKey: { type: String, required: true },
   sourceKeys: [String],
   collectionKeys: { type: [String], default: [] },

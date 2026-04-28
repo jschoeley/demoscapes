@@ -88,6 +88,7 @@ series:
       region: "CN"
   - key: "modalcodcontributiontoprematuremalemortality_by_region_period_age"
     label: "by region"
+    title: "Primary cause of male premature mortality in Mexico"
     measureKey: "modalcodcontributiontoprematuremalemortality"
     sourceKeys:
       - "kashnitskyetal2019"
@@ -117,6 +118,7 @@ series:
       modelcarollo2025: "2D-interaction"
   - key: "percentannualmortalitychange_by_cod_sex_period_age"
     label: "by cause of death, and sex"
+    title: "Annual mortality change in the USA"
     measureKey: "percentannualmortalitychange"
     sourceKeys:
       - "abramsetal2026"

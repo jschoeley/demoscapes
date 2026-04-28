@@ -229,6 +229,7 @@ async function runImport() {
     return {
       key: definition.key,
       label: definition.label || definition.key,
+      title: definition.title || '',
       measureKey: definition.measureKey,
       sourceKeys: Array.isArray(definition.sourceKeys) ? definition.sourceKeys : [],
       collectionKeys,

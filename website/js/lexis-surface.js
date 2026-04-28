@@ -460,12 +460,16 @@
     }
 
     function updateHeader(measure) {
-      const baseTitle = measure ? measure.name : "Lexis surface";
       if (config.title) {
         titleMeasureNode.text(config.title);
         titleStrataNode.attr("hidden", true).text("");
         return;
       }
+
+      const seriesTitle = state.currentSeries && state.currentSeries.title
+        ? state.currentSeries.title
+        : null;
+      const baseTitle = seriesTitle || (measure ? measure.name : "Lexis surface");
 
       const strataParts = [];
       if (state.currentSeries && Array.isArray(state.currentSeries.strataKeys)) {
