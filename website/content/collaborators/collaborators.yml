@@ -10,3 +10,9 @@
 - name: Angela Carollo
   blurb: Angela Carollo is a Statistical Analyst and Research Scientist in the Laboratory of Fertility and Well-Being at the Max Planck Institute for Demographic Research. She is the author and contributor of the R-package TwoTimeScales. Her research interests lie at the intersection of Statistics and Demography. In her PhD dissertation she proposes a model for time-to-event data over multiple time scales.
   collections: [carollo2025, mpidr, fertility]
+- name: Leah Abrams
+  blurb: Leah Abrams is a population health and aging researcher in the Tufts University Department of Community Health. She came to Tufts from the Harvard Center for Population and Development Studies where she was a Sloan Postdoctoral Fellow. Dr. Abrams' research and teaching interests include social epidemiology, health policy, population aging, mortality trends, work/retirement, and mental health. She holds a PhD in health policy and an MPH in epidemiology from the University of Michigan School of Public Health.
+  collections: [abramsetal2026, mortality, mpidr]
+- name: Octavio Bramajo
+  blurb: Postdoctoral Researcher in the Institute for Evolutionary Medicine, University of Zurich, Switzerland. Earned a Ph.D. in Demography at the Center for Demographic Studies, Autonomous University of Barcelona, 2023.
+  collections: [abramsetal2026, mortality, mpidr]

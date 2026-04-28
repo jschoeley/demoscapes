@@ -4,8 +4,11 @@ title: About
 
 # About
 
-## Collaborators
+**Demoscapes – a visual atlas of demographic surfaces.**
 
+Demoscapes is building a home for demographic surfaces, with interactive tools for seeing how population processes unfold across two time dimensions. Join our community of contributors and have your research featured on demoscapes by visiting [demoscapes.org/contribute](./contribute.html).
+
+## Collaborators
 
 ## Contact
 
