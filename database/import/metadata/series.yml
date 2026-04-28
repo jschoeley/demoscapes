@@ -11,6 +11,9 @@ series:
     strataKeys:
       - "region"
       - "subpopulation"
+    defaultStrata:
+      region: "GB-EAW"
+      subpopulation: "Total Population"
   - key: "deathcountsexdifference_by_region_subpopulation"
     label: "by region and subpopulation"
     measureKey: "deathcountsexdifference"
@@ -23,6 +26,9 @@ series:
     strataKeys:
       - "region"
       - "subpopulation"
+    defaultStrata:
+      region: "GB-EAW"
+      subpopulation: "Total Population"
   - key: "deathrate_by_region_sex_subpopulation"
     label: "by region, sex, and subpopulation"
     measureKey: "deathrate"
@@ -36,6 +42,10 @@ series:
       - "region"
       - "sex"
       - "subpopulation"
+    defaultStrata:
+      region: "SE"
+      sex: "Male"
+      subpopulation: "Total Population"
   - key: "birthcount_by_region"
     label: "by region"
     measureKey: "birthcount"
@@ -47,6 +57,8 @@ series:
       - "fertility"
     strataKeys:
       - "region"
+    defaultStrata:
+      region: "DE-E"
   - key: "fertilityrate_by_region"
     label: "by region"
     measureKey: "fertilityrate"
@@ -58,6 +70,8 @@ series:
       - "fertility"
     strataKeys:
       - "region"
+    defaultStrata:
+      region: "DE-E"
   - key: "numberofkin_by_kin_region"
     label: "by kin, and region"
     measureKey: "numberofkin"
@@ -69,6 +83,9 @@ series:
     strataKeys:
       - "kin"
       - "region"
+    defaultStrata:
+      kin: "Siblings"
+      region: "CN"
   - key: "modalcodcontributiontoprematuremalemortality_by_region_period_age"
     label: "by region"
     measureKey: "modalcodcontributiontoprematuremalemortality"
@@ -79,6 +96,8 @@ series:
       - "mortality"
     strataKeys:
       - "region"
+    defaultStrata:
+      region: "MX-CHH"
   - key: "cohabitiontomarriagerate_by_region_sex_model_age_duration"
     label: "by region, sex, and model"
     measureKey: "cohabitiontomarriagerate"
@@ -92,6 +111,10 @@ series:
       - "region"
       - "sex"
       - "modelcarollo2025"
+    defaultStrata:
+      region: "DE-W"
+      sex: "Male"
+      modelcarollo2025: "2D-interaction"
   - key: "percentannualmortalitychange_by_cod_sex_period_age"
     label: "by cause of death, and sex"
     measureKey: "percentannualmortalitychange"
@@ -104,4 +127,6 @@ series:
     strataKeys:
       - "codabramsetal2026"
       - "sex"
-
+    defaultStrata:
+      codabramsetal2026: "Accidents"
+      sex: "Male"

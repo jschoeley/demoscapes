@@ -963,6 +963,33 @@
       return normalized;
     }
 
+    function isSeriesStrataValue(series, strataKey, value) {
+      if (value === undefined || value === null || value === "") {
+        return false;
+      }
+      const values = series && series.strataValues ? series.strataValues[strataKey] : null;
+      return Array.isArray(values) && values.includes(value);
+    }
+
+    function mergeSeriesStrataSelections(series, strata) {
+      const keys = series && Array.isArray(series.strataKeys) ? series.strataKeys : [];
+      const merged = normalizeStrataSelections(series, strata);
+      const defaultStrata = normalizeStrataSelections(series, series && series.defaultStrata);
+
+      keys.forEach((key) => {
+        if (isSeriesStrataValue(series, key, merged[key])) {
+          return;
+        }
+
+        delete merged[key];
+        if (isSeriesStrataValue(series, key, defaultStrata[key])) {
+          merged[key] = defaultStrata[key];
+        }
+      });
+
+      return merged;
+    }
+
     function buildSurfaceIdentity(target) {
       const series = target && target.series ? target.series : null;
       const measure = target && target.measure ? target.measure : null;
@@ -1055,12 +1082,11 @@
     function renderStrataControls(series, preferredStrata) {
       strataControls.selectAll("*").remove();
 
-      if (preferredStrata) {
-        state.currentStrataSelections = { ...preferredStrata };
-      } else if (!(initialDefaults.strata && Object.keys(initialDefaults.strata).length > 0)) {
-        state.currentStrataSelections = {};
-      }
       state.currentStrataCombos = series && series.strataCombos ? series.strataCombos : [];
+      state.currentStrataSelections = mergeSeriesStrataSelections(
+        series,
+        preferredStrata || state.currentStrataSelections,
+      );
 
       if (!series || !series.strataKeys || series.strataKeys.length === 0) {
         strataPanel.style("display", "none");

@@ -51,6 +51,7 @@ const seriesSchema = new Schema({
   sourceKeys: [String],
   collectionKeys: { type: [String], default: [] },
   strataKeys: [String],
+  defaultStrata: { type: Schema.Types.Mixed, default: {} },
   strataValues: { type: Schema.Types.Mixed, default: {} },
   strataCombos: { type: [Schema.Types.Mixed], default: [] },
 });
