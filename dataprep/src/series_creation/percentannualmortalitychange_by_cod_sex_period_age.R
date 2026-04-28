@@ -40,6 +40,8 @@ abramsetal2026.qs <- qs_read(paths$input$abramsetal2026.qs)
 
 percentannualmortalitychange_by_cod_sex_period_age.csv <-
   abramsetal2026.qs |>
+  # first and last year don't have percent change
+  filter(!Year %in% c(1979, 2020)) |>
   mutate(
     wx = 1,
     wy = 1
