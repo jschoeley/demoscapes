@@ -377,17 +377,17 @@ measures:
         - 10
         - 100
       colorRange:
-        - "#67001F"
-        - "#B2182B"
-        - "#D6604D"
-        - "#F4A582"
-        - "#FDDBC7"
-        - "#F7F7F7"
-        - "#D1E5F0"
-        - "#92C5DE"
-        - "#4393C3"
-        - "#2166AC"
-        - "#053061"
+        - "#052F25"
+        - "#0B5449"
+        - "#2E867A"
+        - "#6EC5B4"
+        - "#BCE7E0"
+        - "#F5F5F5"
+        - "#D9D9D9"
+        - "#ACACAC"
+        - "#747474"
+        - "#3C3C3C"
+        - "#141414"
       labelmultiplier: 1 
       labelprecision: 1
       legend:
