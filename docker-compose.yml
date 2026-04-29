@@ -65,7 +65,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.website
-    command: ["caddy", "run", "--config", "${CADDY_CONFIG_PATH:-/etc/caddy/Caddyfile}"]
+    command:
+      [
+        "sh",
+        "-c",
+        "mkdir -p /data/logs && caddy run --config ${CADDY_CONFIG_PATH:-/etc/caddy/Caddyfile}"
+      ]
     environment:
       ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
       CANONICAL_HOST: ${CANONICAL_HOST:-demoscapes.org}
@@ -82,5 +87,17 @@ services:
     volumes:
       - ${CADDY_DATA_DIR:-/opt/demoscapes/caddy/data}:/data
       - ${CADDY_CONFIG_DIR:-/opt/demoscapes/caddy/config}:/config
+    networks:
+      - mynetwork
+
+  visitor-summary:
+    build:
+      context: .
+      dockerfile: Dockerfile.website
+      target: visitor-summary
+    depends_on:
+      - website
+    volumes:
+      - ${CADDY_DATA_DIR:-/opt/demoscapes/caddy/data}:/data
     networks:
       - mynetwork

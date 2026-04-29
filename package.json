@@ -20,6 +20,7 @@
     "build:website": "node website/build/build-site.js",
     "dev:website": "node website/build/dev-server.js",
     "init:database": "node database/init.js",
+    "summarize:visitors": "node website/visitor-logs/summarize.js",
     "start:api": "node api/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run start:api"

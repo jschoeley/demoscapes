@@ -7,6 +7,19 @@
 }
 
 {$CANONICAL_HOST:demoscapes.org} {
+	log {
+		output file /data/logs/access.log {
+			roll_keep 100
+			roll_keep_for 2160h
+		}
+		format filter {
+			request>remote_ip ip_mask 24 48
+			request>client_ip ip_mask 24 48
+			request>headers>Cookie delete
+			wrap json
+		}
+	}
+
 	handle /api/* {
 		reverse_proxy api:3000
 	}

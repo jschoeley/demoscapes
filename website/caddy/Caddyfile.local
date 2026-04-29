@@ -8,6 +8,19 @@ https://{$LOCAL_WWW_HOST:www.demoscapes.localhost} {
 }
 
 http://{$LOCAL_CANONICAL_HOST:demoscapes.localhost}, http://localhost, http://127.0.0.1 {
+	log {
+		output file /data/logs/access.log {
+			roll_keep 100
+			roll_keep_for 2160h
+		}
+		format filter {
+			request>remote_ip ip_mask 24 48
+			request>client_ip ip_mask 24 48
+			request>headers>Cookie delete
+			wrap json
+		}
+	}
+
 	handle /api/* {
 		reverse_proxy api:3000
 	}
@@ -20,6 +33,18 @@ http://{$LOCAL_CANONICAL_HOST:demoscapes.localhost}, http://localhost, http://12
 
 https://{$LOCAL_CANONICAL_HOST:demoscapes.localhost}, https://localhost, https://127.0.0.1 {
 	tls internal
+	log {
+		output file /data/logs/access.log {
+			roll_keep 100
+			roll_keep_for 2160h
+		}
+		format filter {
+			request>remote_ip ip_mask 24 48
+			request>client_ip ip_mask 24 48
+			request>headers>Cookie delete
+			wrap json
+		}
+	}
 
 	handle /api/* {
 		reverse_proxy api:3000

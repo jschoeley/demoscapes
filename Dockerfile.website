@@ -10,6 +10,14 @@ COPY database ./database
 
 RUN npm run build:website
 
+FROM node:25-alpine AS visitor-summary
+
+WORKDIR /usr/src/app
+
+COPY website/visitor-logs ./website/visitor-logs
+
+CMD ["node", "website/visitor-logs/summarize.js", "--daemon"]
+
 FROM caddy:2.10.2-alpine
 
 COPY --from=build /usr/src/app/website/dist/ /srv
