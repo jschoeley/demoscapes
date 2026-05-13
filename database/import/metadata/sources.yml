@@ -2,14 +2,12 @@ sources:
   - key: hmd
     name: Human Mortality Database
     url: https://www.mortality.org
-    citation: |
-      HMD. Human Mortality Database. Max Planck Institute for Demographic Research (Germany), University of California, Berkeley (USA), and French Institute for Demographic Studies (France). Available at www.mortality.org (data downloaded on March 26 2026, DOI: 10.4054/HMD.Countries.20260326). 
+    citation: "HMD. Human Mortality Database. Max Planck Institute for Demographic Research (Germany), University of California, Berkeley (USA), and French Institute for Demographic Studies (France). Data downloaded on March 26 2026, doi 10.4054/HMD.Countries.20260326."
     license: CC-BY 4.0 
   - key: hfd
     name: Human Fertility Database
     url: https://www.humanfertility.org
-    citation: |
-        Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria). Available at www.humanfertility.org (data downloaded on March 26 2026).
+    citation: "Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria). Data downloaded on March 26 2026."
     license: CC-BY 4.0 
   - key: gutierrezetal2023
     name: Replication Data for Projections of human kinship for all countries
