@@ -1,4 +1,4 @@
-# Create Series of deathcount sex differences by region, and subpopulation
+# Create Series of deathrates by region, sex, and subpopulation
 
 # Init --------------------------------------------------------------------
 
@@ -14,27 +14,35 @@ library(readr)
 setwd(".")
 paths <- list()
 paths$input <- list(
-  deaths_period_by_age.qs = "./dat/hmd-mortality/deaths_period_by_age.qs"
+  series_input.qs =
+    "./dat/hmd-mortality/deathrates_period_by_age.qs"
 )
 paths$output <- list(
-  deathcountsexdifference_by_region_subpopulation.csv =
-    "./out/series_creation/deathcountsexdifference_by_region_subpopulation.csv"
+  series_output.csv =
+    "./out/series_creation/deathrate-region_sex_subpopulation-hmd.csv"
 )
 
 # constants specific to this analysis
 cnst <- within(list(), {})
 
+# Functions ---------------------------------------------------------------
+
+RoundFloat <- function (x) {
+  signif(x, digits = 6)
+}
+
 # Load HMD data -----------------------------------------------------------
 
-hmd <- qs_read(paths$input$deaths_period_by_age.qs)
+series_input <- qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
-deathcountsexdifference_by_region_subpopulation <-
-  bind_rows(hmd) |>
+series_output <-
+  bind_rows(series_input) |>
+  pivot_longer(cols = c(Female, Male, Total)) |>
   mutate(
-    value = Male - Female,
-    wx = 1, wy = 1
+    wx = 1,
+    wy = 1,
   ) |>
   select(
     z = value,
@@ -42,6 +50,7 @@ deathcountsexdifference_by_region_subpopulation <-
     y = Age,
     wx, wy,
     region = isocode,
+    sex = name,
     subpopulation = subpopulation
   ) |>
   mutate(
@@ -49,14 +58,14 @@ deathcountsexdifference_by_region_subpopulation <-
     y = as.integer(y),
     wx = as.integer(wx),
     wy = as.integer(wy),
-    z = round(z, 3)
+    z = RoundFloat(z)
   )
 
 # Export ------------------------------------------------------------------
 
 # export results of analysis
 write_csv(
-  x = deathcountsexdifference_by_region_subpopulation,
-  file = paths$output$deathcountsexdifference_by_region_subpopulation.csv,
+  x = series_output,
+  file = paths$output$series_output.csv,
   na = "."
 )

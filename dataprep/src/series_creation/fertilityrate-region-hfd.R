@@ -14,12 +14,12 @@ library(readr)
 setwd(".")
 paths <- list()
 paths$input <- list(
-  fertilityrate_period_by_age.qs =
+  series_input.qs =
     "./dat/hfd/fertilityrates_period_by_age.qs"
 )
 paths$output <- list(
-  fertilityrate_by_region.csv =
-    "./out/series_creation/fertilityrate_by_region.csv"
+  series_output.csv =
+    "./out/series_creation/fertilityrate-region-hfd.csv"
 )
 
 # constants specific to this analysis
@@ -27,12 +27,12 @@ cnst <- within(list(), {})
 
 # Load HFD data -----------------------------------------------------------
 
-hfd <- qs_read(paths$input$fertilityrate_period_by_age.qs)
+series_input <- qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
-fertilityrate_by_region <-
-  bind_rows(hfd) |>
+series_output <-
+  bind_rows(series_input) |>
   mutate(
     wx = 1,
     wy = 1
@@ -53,7 +53,7 @@ fertilityrate_by_region <-
 
 # export results of analysis
 write_csv(
-  x = fertilityrate_by_region,
-  file = paths$output$fertilityrate_by_region.csv,
+  x = series_output,
+  file = paths$output$series_output.csv,
   na = "."
 )

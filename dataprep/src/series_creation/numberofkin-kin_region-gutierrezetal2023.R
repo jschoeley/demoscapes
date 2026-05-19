@@ -14,12 +14,12 @@ library(readr)
 setwd(".")
 paths <- list()
 paths$input <- list(
-  numberofkin_by_type_region_period_age.qs =
+  series_input.qs =
     "./dat/gutierrezetal2023/numberofkin_by_type_region_period_age.qs"
 )
 paths$output <- list(
-  numberofkin_by_kin_region.qs =
-    "./out/series_creation/numberofkin_by_kin_region.csv"
+  series_output.csv =
+    "./out/series_creation/numberofkin-kin_region-gutierrezetal2023.csv"
 )
 
 # constants specific to this analysis
@@ -27,13 +27,13 @@ cnst <- within(list(), {})
 
 # Load data ---------------------------------------------------------------
 
-numberofkin_by_type_region_period_age.qs <-
-  qs_read(paths$input$numberofkin_by_type_region_period_age.qs)
+series_input <-
+  qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
-numberofkin_by_kin_region.qs <-
-  numberofkin_by_type_region_period_age.qs |>
+series_output <-
+  series_input |>
   filter(!is.na(Alpha_2), Variant == 'Estimate') |>
   separate(col = year, into = c('year_start', 'year_end'), sep = '-') |>
   separate(col = age_focal, into = c('age_start', 'age_end'), sep = '-') |>
@@ -60,7 +60,7 @@ numberofkin_by_kin_region.qs <-
 
 # export results of analysis
 write_csv(
-  x = numberofkin_by_kin_region.qs,
-  file = paths$output$numberofkin_by_kin_region.qs,
+  x = series_output,
+  file = paths$output$series_output.csv,
   na = "."
 )

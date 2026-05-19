@@ -16,12 +16,12 @@ library(ISOcodes)
 setwd(".")
 paths <- list()
 paths$input <- list(
-  modalcodcontributiontoprematuremalemortality_by_state_period_age.qs =
+  series_input.qs =
     "./dat/kashnitskyetal2019/modalcodcontributiontoprematuremalemortality_by_state_period_age.qs"
 )
 paths$output <- list(
-  modalcodcontributiontoprematuremalemortality_by_region_period_age.qs =
-    "./out/series_creation/modalcodcontributiontoprematuremalemortality_by_region_period_age.csv"
+  series_output.csv =
+    "./out/series_creation/modalcodcontributiontoprematuremalemortality-region-kashnitskyetal2019.csv"
 )
 
 # constants specific to this analysis
@@ -29,13 +29,13 @@ cnst <- within(list(), {})
 
 # Load data ---------------------------------------------------------------
 
-modalcodcontributiontoprematuremalemortality_by_state_period_age.qs <-
-  qs_read(paths$input$modalcodcontributiontoprematuremalemortality_by_state_period_age.qs)
+series_input <-
+  qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
-modalcodcontributiontoprematuremalemortality_by_region_period_age.qs <-
-  modalcodcontributiontoprematuremalemortality_by_state_period_age.qs |>
+series_output <-
+  series_input |>
   mutate(across(c(year, age), as.integer)) |>
   mutate(across(c(state, cause_name), as.character)) |>
   mutate(
@@ -71,7 +71,7 @@ modalcodcontributiontoprematuremalemortality_by_region_period_age.qs <-
 
 # export results of analysis
 write_csv(
-  x = modalcodcontributiontoprematuremalemortality_by_region_period_age.qs,
-  file = paths$output$modalcodcontributiontoprematuremalemortality_by_region_period_age.qs,
+  x = series_output,
+  file = paths$output$series_output.csv,
   na = "."
 )

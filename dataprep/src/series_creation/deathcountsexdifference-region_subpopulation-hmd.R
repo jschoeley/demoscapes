@@ -1,4 +1,4 @@
-# Create Series of birthcounts by region
+# Create Series of deathcount sex differences by region, and subpopulation
 
 # Init --------------------------------------------------------------------
 
@@ -14,12 +14,11 @@ library(readr)
 setwd(".")
 paths <- list()
 paths$input <- list(
-  births_period_by_age.qs =
-    "./dat/hfd/births_period_by_age.qs"
+  series_input.qs = "./dat/hmd-mortality/deaths_period_by_age.qs"
 )
 paths$output <- list(
-  birthcount_by_region.csv =
-    "./out/series_creation/birthcount_by_region.csv"
+  series_output.csv =
+    "./out/series_creation/deathcountsexdifference-region_subpopulation-hmd.csv"
 )
 
 # constants specific to this analysis
@@ -27,37 +26,37 @@ cnst <- within(list(), {})
 
 # Load HMD data -----------------------------------------------------------
 
-hfd <- qs_read(paths$input$births_period_by_age.qs)
+series_input <- qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
-birthcount_by_region <-
-  bind_rows(hfd) |>
+series_output <-
+  bind_rows(series_input) |>
   mutate(
-    wx = 1,
-    wy = 1
+    value = Male - Female,
+    wx = 1, wy = 1
   ) |>
   select(
-    z = Total,
+    z = value,
     x = Year,
     y = Age,
-    wx,
-    wy,
-    region = isocode
+    wx, wy,
+    region = isocode,
+    subpopulation = subpopulation
   ) |>
   mutate(
-    z = as.integer(z),
     x = as.integer(x),
     y = as.integer(y),
     wx = as.integer(wx),
-    wy = as.integer(wy)
+    wy = as.integer(wy),
+    z = round(z, 0)
   )
 
 # Export ------------------------------------------------------------------
 
 # export results of analysis
 write_csv(
-  x = birthcount_by_region,
-  file = paths$output$birthcount_by_region.csv,
+  x = series_output,
+  file = paths$output$series_output.csv,
   na = "."
 )

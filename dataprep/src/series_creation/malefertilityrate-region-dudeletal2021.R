@@ -23,8 +23,8 @@ paths$input <- list(
     paste0("./dat/", cnst$source_key, "/dudeletal2021.qs")
 )
 paths$output <- list(
-  series_name.csv =
-    "./out/series_creation/fertilityrate_by_region_via_dudeletal2021.csv"
+  series_output.csv =
+    "./out/series_creation/malefertilityrate-region-dudeletal2021.csv"
 )
 
 # Functions ---------------------------------------------------------------
@@ -39,11 +39,9 @@ series_input <- qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
-series_name <-
+series_output <-
   series_input |>
-  filter(
-    sex == "f"
-  ) |>
+  filter(sex == "m") |>
   left_join(ISO_3166_1, by = c(region = "Name")) |>
   mutate(Alpha_2 = case_when(
     .default = Alpha_2,
@@ -73,7 +71,7 @@ series_name <-
 
 # export results of analysis
 write_csv(
-  x = series_name,
-  file = paths$output$series_name.csv,
+  x = series_output,
+  file = paths$output$series_output.csv,
   na = "."
 )

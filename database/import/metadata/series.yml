@@ -1,6 +1,6 @@
 series:
-  - key: "deathratesexratio_by_region_subpopulation"
-    label: "by region and subpopulation"
+  - key: "deathratesexratio-region_subpopulation-hmd"
+    label: "by region and subpopulation (HMD)"
     measureKey: "deathratesexratio"
     sourceKeys:
       - "hmd"
@@ -14,8 +14,8 @@ series:
     defaultStrata:
       region: "GB-EAW"
       subpopulation: "Total Population"
-  - key: "deathcountsexdifference_by_region_subpopulation"
-    label: "by region and subpopulation"
+  - key: "deathcountsexdifference-region_subpopulation-hmd"
+    label: "by region and subpopulation (HMD)"
     measureKey: "deathcountsexdifference"
     sourceKeys:
       - "hmd"
@@ -29,8 +29,8 @@ series:
     defaultStrata:
       region: "GB-EAW"
       subpopulation: "Total Population"
-  - key: "deathrate_by_region_sex_subpopulation"
-    label: "by region, sex, and subpopulation"
+  - key: "deathrate-region_sex_subpopulation-hmd"
+    label: "by region, sex, and subpopulation (HMD)"
     measureKey: "deathrate"
     sourceKeys:
       - "hmd"
@@ -46,8 +46,8 @@ series:
       region: "SE"
       sex: "Male"
       subpopulation: "Total Population"
-  - key: "birthcount_by_region"
-    label: "by region"
+  - key: "birthcount-region-hfd"
+    label: "by region (HFD)"
     measureKey: "birthcount"
     sourceKeys:
       - "hfd"
@@ -59,8 +59,8 @@ series:
       - "region"
     defaultStrata:
       region: "DE-E"
-  - key: "fertilityrate_by_region"
-    label: "by region"
+  - key: "fertilityrate-region-hfd"
+    label: "by region (HFD)"
     measureKey: "fertilityrate"
     sourceKeys:
       - "hfd"
@@ -72,7 +72,7 @@ series:
       - "region"
     defaultStrata:
       region: "DE-E"
-  - key: "numberofkin_by_kin_region"
+  - key: "numberofkin-kin_region-gutierrezetal2023"
     label: "by kin, and region"
     measureKey: "numberofkin"
     sourceKeys:
@@ -86,7 +86,7 @@ series:
     defaultStrata:
       kin: "Siblings"
       region: "CN"
-  - key: "modalcodcontributiontoprematuremalemortality_by_region_period_age"
+  - key: "modalcodcontributiontoprematuremalemortality-region-kashnitskyetal2019"
     label: "by region"
     title: "Primary cause of male premature mortality in Mexico"
     measureKey: "modalcodcontributiontoprematuremalemortality"
@@ -99,7 +99,7 @@ series:
       - "region"
     defaultStrata:
       region: "MX-CHH"
-  - key: "cohabitiontomarriagerate_by_region_sex_model_age_duration"
+  - key: "cohabitiontomarriagerate-region_sex_model-carollo2025"
     label: "by region, sex, and model"
     measureKey: "cohabitiontomarriagerate"
     sourceKeys:
@@ -116,7 +116,7 @@ series:
       region: "DE-W"
       sex: "Male"
       modelcarollo2025: "2D-interaction"
-  - key: "percentannualmortalitychange_by_cod_sex_period_age"
+  - key: "percentannualmortalitychange-cod_sex-abramsetal2026"
     label: "by cause of death, and sex"
     title: "Annual mortality change in the USA"
     measureKey: "percentannualmortalitychange"
@@ -132,7 +132,7 @@ series:
     defaultStrata:
       codabramsetal2026: "All"
       sex: "Male"
-  - key: "malefertilityrate_by_region_via_dudeletal2021"
+  - key: "malefertilityrate-region-dudeletal2021"
     label: "by region (Dudel et al. 2021)"
     measureKey: "malefertilityrate"
     sourceKeys:
@@ -145,7 +145,7 @@ series:
       - "region"
     defaultStrata:
       region: "DK"
-  - key: "fertilityrate_by_region_via_dudeletal2021"
+  - key: "fertilityrate-region-dudeletal2021"
     label: "by region (Dudel et al. 2021)"
     measureKey: "fertilityrate"
     sourceKeys:
@@ -158,7 +158,7 @@ series:
       - "region"
     defaultStrata:
       region: "DK"
-  - key: "fertilityratesexratio_by_region_via_dudeletal2021"
+  - key: "fertilityratesexratio-region-dudeletal2021"
     label: "by region (Dudel et al. 2021)"
     measureKey: "fertilityratesexratio"
     sourceKeys:

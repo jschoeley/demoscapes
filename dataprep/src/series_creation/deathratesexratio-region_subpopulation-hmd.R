@@ -14,24 +14,30 @@ library(readr)
 setwd(".")
 paths <- list()
 paths$input <- list(
-  deathrates_period_by_age.qs = "./dat/hmd-mortality/deathrates_period_by_age.qs"
+  series_input.qs = "./dat/hmd-mortality/deathrates_period_by_age.qs"
 )
 paths$output <- list(
-  deathratesexratio_by_region_subpopulation.csv =
-    "./out/series_creation/deathratesexratio_by_region_subpopulation.csv"
+  series_output.csv =
+    "./out/series_creation/deathratesexratio-region_subpopulation-hmd.csv"
 )
 
 # constants specific to this analysis
 cnst <- within(list(), {})
 
-# Load HMD data -----------------------------------------------------------
+# Functions ---------------------------------------------------------------
 
-hmd <- qs_read(paths$input$deathrates_period_by_age.qs)
+RoundFloat <- function (x) {
+  signif(x, digits = 6)
+}
+
+# Load series input -------------------------------------------------------
+
+series_input <- qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
-deathratesexratio_by_region_subpopulation <-
-  bind_rows(hmd) |>
+series_output <-
+  bind_rows(series_input) |>
   mutate(
     value = ifelse(Female == 0, NA, Male / Female),
     wx = 1, wy = 1
@@ -44,16 +50,15 @@ deathratesexratio_by_region_subpopulation <-
     region = isocode,
     subpopulation = subpopulation
   ) |>
-  mutate(
-    z = round(z, 3)
-  ) |>
-  mutate(across(c(x, y, wx, wy), as.integer))
+  mutate(across(where(is.factor), as.character)) |>
+  mutate(across(c(x, y, wx, wy), as.integer)) |>
+  mutate(across(c(z), RoundFloat))
 
 # Export ------------------------------------------------------------------
 
 # export results of analysis
 write_csv(
-  x = deathratesexratio_by_region_subpopulation,
-  file = paths$output$deathratesexratio_by_region_subpopulation.csv,
+  x = series_output,
+  file = paths$output$series_output.csv,
   na = "."
 )
