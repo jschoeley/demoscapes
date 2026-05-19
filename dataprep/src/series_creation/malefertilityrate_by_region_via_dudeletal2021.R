@@ -1,0 +1,76 @@
+# Create Series
+
+# Init --------------------------------------------------------------------
+
+library(yaml)
+library(qs2)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ISOcodes)
+
+# Constants ---------------------------------------------------------------
+
+# constants specific to this analysis
+cnst <- within(list(), {
+  source_key = "dudeletal2021"
+})
+
+# input and output paths
+paths <- list()
+paths$input <- list(
+  series_input.qs =
+    paste0("./dat/", cnst$source_key, "/dudeletal2021.qs")
+)
+paths$output <- list(
+  series_name.csv =
+    "./out/series_creation/malefertilityrate_by_region_via_dudeletal2021.csv"
+)
+
+# Functions ---------------------------------------------------------------
+
+RoundFloat <- function (x) {
+  signif(x, digits = 6)
+}
+
+# Load series input -------------------------------------------------------
+
+series_input <- qs_read(paths$input$series_input.qs)
+
+# Create series -----------------------------------------------------------
+
+series_name <-
+  series_input |>
+  left_join(ISO_3166_1, by = c(region = "Name")) |>
+  mutate(Alpha_2 = case_when(
+    .default = Alpha_2,
+    # it's actually England and Wales
+    region == "England" ~ "UK-EAW",
+    region == "Germanyeast" ~ "DE-E",
+    region == "Germanywest" ~ "DE-W",
+    region == "Taiwan" ~ "TW",
+    region == "USA" ~ "US"
+  )) |>
+  mutate(
+    wx = 1, wy = 1
+  ) |>
+  select(
+    z = ASFR,
+    x = Year,
+    y = Age,
+    wx = wx,
+    wy = wy,
+    region = Alpha_2
+  ) |>
+  mutate(across(where(is.factor), as.character)) |>
+  mutate(across(c(x, y, wx, wy), as.integer)) |>
+  mutate(across(c(z), RoundFloat))
+
+# Export ------------------------------------------------------------------
+
+# export results of analysis
+write_csv(
+  x = series_name,
+  file = paths$output$series_name.csv,
+  na = "."
+)

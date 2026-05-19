@@ -396,3 +396,46 @@ measures:
       tooltip:
         suffix: "%"
         precision: 2
+  - key: malefertilityrate
+    name: Male fertility rate
+    unit: Births per 1,000 men
+    statType: rate
+    description: The number of births per 1,000 person-years lived by men.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 0.0001
+        - 0.0005
+        - 0.001
+        - 0.005
+        - 0.01
+        - 0.05
+        - 0.1
+        - 0.5
+        - 1
+      colorRange:
+        - "#fff7fb"
+        - "#ece2f0"
+        - "#d0d1e6"
+        - "#a6bddb"
+        - "#67a9cf"
+        - "#3690c0"
+        - "#02818a"
+        - "#016c59"
+        - "#014636"
+      labelmultiplier: 1000
+      labelprecision: 1 
+      legend:
+        left: ""
+        right: "Births per 1,000 male person-years"
+      tooltip:
+        suffix: " births per 1,000 male person-years"
+        precision: 0

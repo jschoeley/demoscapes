@@ -54,4 +54,9 @@ collections:
     description: "Estimates from the paper by L. Abrams, O. Bramajo, A. van Raalte, M. Myrskylä, & N.K. Mehta. Insights into US life expectancy stagnation from birth cohort mortality dynamics. Proc. Natl. Acad. Sci. (2026)."
     order: 30
     isPublic: true
+  - key: "dudeletal2021"
+    name: "Dudel et al. 2021"
+    description: "Estimates from the paper by C. Dudel & S. Klüsener. Male–Female Fertility Differentials Across 17 High-Income Countries: Insights From A New Data Resource. Eur. J. Population (2021)."
+    order: 30
+    isPublic: true
 

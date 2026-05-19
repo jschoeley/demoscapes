@@ -3,12 +3,12 @@ sources:
     name: Human Mortality Database
     url: https://www.mortality.org
     citation: "HMD. Human Mortality Database. Max Planck Institute for Demographic Research (Germany), University of California, Berkeley (USA), and French Institute for Demographic Studies (France). Data downloaded on March 26 2026, doi 10.4054/HMD.Countries.20260326."
-    license: CC-BY 4.0 
+    license: CC-BY 4.0
   - key: hfd
     name: Human Fertility Database
     url: https://www.humanfertility.org
     citation: "Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria). Data downloaded on March 26 2026."
-    license: CC-BY 4.0 
+    license: CC-BY 4.0
   - key: gutierrezetal2023
     name: Replication Data for Projections of human kinship for all countries
     url: https://doi.org/10.7910/DVN/FKCRHW 
@@ -28,4 +28,9 @@ sources:
     name: Replication Data for Insights into US life expectancy stagnation from birth cohort mortality dynamics.
     url: https://osf.io/xf57e
     citation: L. Abrams, O. Bramajo, A. van Raalte, M. Myrskylä, & N.K. Mehta. Insights into US life expectancy stagnation from birth cohort mortality dynamics. Proc. Natl. Acad. Sci. (2026).
+    license: CC BY-NC 4.0
+  - key: dudeletal2021
+    name: Replication Data for Male–Female Fertility Differentials Across 17 High-Income Countries.
+    url: https://osf.io/en6fk
+    citation: "C. Dudel & S. Klüsener. Male–Female Fertility Differentials Across 17 High-Income Countries: Insights From A New Data Resource. Eur. J. Population (2021)."
     license: CC BY-NC 4.0

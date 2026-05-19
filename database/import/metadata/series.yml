@@ -132,3 +132,16 @@ series:
     defaultStrata:
       codabramsetal2026: "All"
       sex: "Male"
+  - key: "malefertilityrate_by_region_via_dudeletal2021"
+    label: "by region"
+    measureKey: "malefertilityrate"
+    sourceKeys:
+      - "dudeletal2021"
+    collectionKeys:
+      - "dudeletal2021"
+      - "mpidr"
+      - "fertility"
+    strataKeys:
+      - "region"
+    defaultStrata:
+      region: "DK"
