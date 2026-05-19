@@ -50,7 +50,7 @@ unzip('dat/dudeletal2021/repro_materials.zip',
 
 # get the data into the form of a single data frame
 csvs <- grep(
-  pattern = "ASFR.+_m\\.txt$",
+  pattern = "ASFR.+_[mf]\\.txt$",
   x = list.files(paths$output$osf_data_path, recursive = TRUE),
   value = TRUE
 )
@@ -60,8 +60,9 @@ dudeletal2021 <- lapply(x, function (x) {
   file <- paste0(paths$output$osf_data_path, x)
   dfr <- read_tsv(file)
   dfr <- dfr[,c('Year', 'Age', 'ASFR')]
-  filename <- stringr::str_extract(x, 'ASFR_.+_m.txt$')
+  filename <- stringr::str_extract(x, 'ASFR_.+_[mf].txt$')
   dfr$region <- strsplit(filename, split = '_')[[1]][2]
+  dfr$sex <- substr(strsplit(filename, split = '_')[[1]][3], 1, 1)
   dfr
 }) |>
   bind_rows()

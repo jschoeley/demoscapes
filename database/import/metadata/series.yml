@@ -133,8 +133,34 @@ series:
       codabramsetal2026: "All"
       sex: "Male"
   - key: "malefertilityrate_by_region_via_dudeletal2021"
-    label: "by region"
+    label: "by region (Dudel et al. 2021)"
     measureKey: "malefertilityrate"
+    sourceKeys:
+      - "dudeletal2021"
+    collectionKeys:
+      - "dudeletal2021"
+      - "mpidr"
+      - "fertility"
+    strataKeys:
+      - "region"
+    defaultStrata:
+      region: "DK"
+  - key: "fertilityrate_by_region_via_dudeletal2021"
+    label: "by region (Dudel et al. 2021)"
+    measureKey: "fertilityrate"
+    sourceKeys:
+      - "dudeletal2021"
+    collectionKeys:
+      - "dudeletal2021"
+      - "mpidr"
+      - "fertility"
+    strataKeys:
+      - "region"
+    defaultStrata:
+      region: "DK"
+  - key: "fertilityratesexratio_by_region_via_dudeletal2021"
+    label: "by region (Dudel et al. 2021)"
+    measureKey: "fertilityratesexratio"
     sourceKeys:
       - "dudeletal2021"
     collectionKeys:

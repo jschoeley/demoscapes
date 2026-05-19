@@ -41,6 +41,7 @@ series_input <- qs_read(paths$input$series_input.qs)
 
 series_name <-
   series_input |>
+  filter(sex == "m") |>
   left_join(ISO_3166_1, by = c(region = "Name")) |>
   mutate(Alpha_2 = case_when(
     .default = Alpha_2,

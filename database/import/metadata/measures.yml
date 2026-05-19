@@ -439,3 +439,50 @@ measures:
       tooltip:
         suffix: " births per 1,000 male person-years"
         precision: 0
+  - key: fertilityratesexratio
+    name: Fertility rate sex ratio (male/female)
+    unit: Children born to fathers per 100 children born to mothers
+    statType: ratio
+    description: Children born to fathers per 100 children born to mothers.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: ratio_diverging
+      colorDomain:
+        - 0
+        - 0.5
+        - 0.5714285714
+        - 0.6666666667
+        - 0.8
+        - 0.99009901
+        - 1.01
+        - 1.25
+        - 1.5
+        - 1.75
+        - 2
+        - 100
+      colorRange:
+        - "#67001F"
+        - "#B2182B"
+        - "#D6604D"
+        - "#F4A582"
+        - "#FDDBC7"
+        - "#F7F7F7"
+        - "#D1E5F0"
+        - "#92C5DE"
+        - "#4393C3"
+        - "#2166AC"
+        - "#053061"
+      labelmultiplier: 100
+      labelprecision: 0
+      legend:
+        left: Excess female fertility 
+        right: Excess male fertility 
+      tooltip:
+        suffix: " children born to fathers per 100 children born to mothers"
+        precision: 0
