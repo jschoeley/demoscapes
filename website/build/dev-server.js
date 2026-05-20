@@ -10,8 +10,17 @@ const distRoot = path.join(repoRoot, 'website', 'dist');
 const buildScriptPath = path.join(repoRoot, 'website', 'build', 'build-site.js');
 const sourceStylesPath = path.join(repoRoot, 'website', 'styles.css');
 const distStylesPath = path.join(distRoot, 'styles.css');
-const apiProxyTarget = process.env.WEBSITE_API_PROXY_TARGET || 'http://127.0.0.1:3000';
-const port = Number(process.env.WEBSITE_DEV_PORT || 8080);
+
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+const apiProxyTarget = requireEnv('WEBSITE_API_PROXY_TARGET');
+const port = Number(requireEnv('WEBSITE_DEV_PORT'));
 
 const watchPaths = [
   path.join(repoRoot, 'website', 'content'),
