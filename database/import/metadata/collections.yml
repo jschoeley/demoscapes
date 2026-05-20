@@ -59,4 +59,5 @@ collections:
     description: "Estimates from the paper by C. Dudel & S. Klüsener. Male–Female Fertility Differentials Across 17 High-Income Countries: Insights From A New Data Resource. Eur. J. Population (2021)."
     order: 30
     isPublic: true
+    defaultMeasureKey: "fertilityratesexratio"
 

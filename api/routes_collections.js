@@ -5,7 +5,7 @@ const { Collection } = require('../database/models');
 router.get('/', async (req, res) => {
   try {
     const collections = await Collection.find({})
-      .select('key name description order isPublic -_id')
+      .select('key name description order isPublic defaultMeasureKey -_id')
       .sort({ order: 1, key: 1 });
     res.json(collections);
   } catch (error) {

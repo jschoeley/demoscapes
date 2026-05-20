@@ -101,6 +101,36 @@ function normalizeCollectionKeys(keys) {
   return Array.from(set).sort();
 }
 
+function normalizeDefaultSeriesKey(value, measureKey) {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (typeof value !== 'string') {
+    throw new Error(`defaultSeriesKey for measure '${measureKey}' must be a string`);
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    throw new Error(`defaultSeriesKey for measure '${measureKey}' must not be empty`);
+  }
+  return trimmed;
+}
+
+function normalizeDefaultMeasureKey(value, collectionKey) {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (typeof value !== 'string') {
+    throw new Error(`defaultMeasureKey for collection '${collectionKey}' must be a string`);
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    throw new Error(`defaultMeasureKey for collection '${collectionKey}' must not be empty`);
+  }
+  return trimmed;
+}
+
 function normalizeDefaultStrata(definition, strataKeys) {
   const defaultStrata = definition.defaultStrata || {};
   if (defaultStrata === null || Array.isArray(defaultStrata) || typeof defaultStrata !== 'object') {
@@ -159,11 +189,19 @@ async function runImport() {
     : [];
   const seriesSeed = seriesDoc && seriesDoc.series ? seriesDoc.series : [];
   const strataSeed = loadStrataSeed();
-  const measuresByKey = new Map(
-    measuresSeed
-      .filter((entry) => entry && entry.key)
-      .map((entry) => [entry.key, entry]),
-  );
+  const normalizedMeasures = measuresSeed.map((entry) => {
+    requireField(entry && entry.key, 'measures.key');
+    requireField(entry && entry.name, `measures.name for ${entry.key}`);
+    requireField(entry && entry.unit, `measures.unit for ${entry.key}`);
+    requireField(entry && entry.statType, `measures.statType for ${entry.key}`);
+    requireField(entry && entry.axes, `measures.axes for ${entry.key}`);
+
+    return {
+      ...entry,
+      defaultSeriesKey: normalizeDefaultSeriesKey(entry.defaultSeriesKey, entry.key),
+    };
+  });
+  const measuresByKey = new Map(normalizedMeasures.map((entry) => [entry.key, entry]));
 
   const normalizedCollections = collectionsSeed.map((entry) => {
     requireField(entry && entry.key, 'collections.key');
@@ -174,6 +212,7 @@ async function runImport() {
       description: entry.description || '',
       order: entry.order,
       isPublic: entry.isPublic === undefined ? true : Boolean(entry.isPublic),
+      defaultMeasureKey: normalizeDefaultMeasureKey(entry.defaultMeasureKey, entry.key),
     };
   });
 
@@ -183,31 +222,6 @@ async function runImport() {
   }
   if (!uniqueCollectionKeys.has(GLOBAL_COLLECTION_KEY)) {
     throw new Error(`collections.yml must define '${GLOBAL_COLLECTION_KEY}' collection`);
-  }
-
-  await Promise.all([
-    Source.deleteMany({}),
-    Measure.deleteMany({}),
-    Collection.deleteMany({}),
-    Series.deleteMany({}),
-    Strata.deleteMany({}),
-    Surface.deleteMany({}),
-  ]);
-
-  if (sourcesSeed.length > 0) {
-    await Source.insertMany(sourcesSeed);
-  }
-
-  if (measuresSeed.length > 0) {
-    await Measure.insertMany(measuresSeed);
-  }
-
-  if (normalizedCollections.length > 0) {
-    await Collection.insertMany(normalizedCollections);
-  }
-
-  if (strataSeed.length > 0) {
-    await Strata.insertMany(strataSeed);
   }
 
   const validCollectionKeys = new Set(normalizedCollections.map((entry) => entry.key));
@@ -239,6 +253,73 @@ async function runImport() {
       strataCombos: [],
     };
   });
+
+  const seriesByKey = new Map(seriesDocs.map((entry) => [entry.key, entry]));
+  normalizedMeasures.forEach((measure) => {
+    if (!measure.defaultSeriesKey) {
+      return;
+    }
+
+    const series = seriesByKey.get(measure.defaultSeriesKey);
+    if (!series) {
+      throw new Error(
+        `Unknown defaultSeriesKey '${measure.defaultSeriesKey}' in measure '${measure.key}'`,
+      );
+    }
+    if (series.measureKey !== measure.key) {
+      throw new Error(
+        `defaultSeriesKey '${measure.defaultSeriesKey}' in measure '${measure.key}' belongs to measure '${series.measureKey}'`,
+      );
+    }
+  });
+
+  normalizedCollections.forEach((collection) => {
+    if (!collection.defaultMeasureKey) {
+      return;
+    }
+
+    if (!measuresByKey.has(collection.defaultMeasureKey)) {
+      throw new Error(
+        `Unknown defaultMeasureKey '${collection.defaultMeasureKey}' in collection '${collection.key}'`,
+      );
+    }
+
+    const hasMeasureInCollection = seriesDocs.some((series) => (
+      series.measureKey === collection.defaultMeasureKey
+      && Array.isArray(series.collectionKeys)
+      && series.collectionKeys.includes(collection.key)
+    ));
+    if (!hasMeasureInCollection) {
+      throw new Error(
+        `defaultMeasureKey '${collection.defaultMeasureKey}' in collection '${collection.key}' is not represented by any series in that collection`,
+      );
+    }
+  });
+
+  await Promise.all([
+    Source.deleteMany({}),
+    Measure.deleteMany({}),
+    Collection.deleteMany({}),
+    Series.deleteMany({}),
+    Strata.deleteMany({}),
+    Surface.deleteMany({}),
+  ]);
+
+  if (sourcesSeed.length > 0) {
+    await Source.insertMany(sourcesSeed);
+  }
+
+  if (normalizedMeasures.length > 0) {
+    await Measure.insertMany(normalizedMeasures);
+  }
+
+  if (normalizedCollections.length > 0) {
+    await Collection.insertMany(normalizedCollections);
+  }
+
+  if (strataSeed.length > 0) {
+    await Strata.insertMany(strataSeed);
+  }
 
   if (seriesDocs.length > 0) {
     await Series.insertMany(seriesDocs);

@@ -14,6 +14,7 @@ const measureSchema = new Schema({
   unit: { type: String, required: true },
   statType: { type: String, required: true },
   description: String,
+  defaultSeriesKey: String,
   axes: { type: Schema.Types.Mixed, required: true },
   display: {
     labelmultiplier: Number,
@@ -39,6 +40,7 @@ const collectionSchema = new Schema({
   description: String,
   order: Number,
   isPublic: { type: Boolean, default: true },
+  defaultMeasureKey: String,
 });
 
 collectionSchema.index({ key: 1 }, { unique: true });

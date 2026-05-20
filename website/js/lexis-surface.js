@@ -410,6 +410,7 @@
       seriesList: [],
       currentMeasure: null,
       currentSeries: null,
+      currentCollection: null,
       strataDefinitions: {},
       currentStrataSelections: { ...(config.strata || {}) },
       currentStrataCombos: [],
@@ -1253,6 +1254,58 @@
       });
     }
 
+    async function ensureCurrentCollection() {
+      if (!config.collectionKey) {
+        state.currentCollection = null;
+        return null;
+      }
+      if (state.currentCollection && state.currentCollection.key === config.collectionKey) {
+        return state.currentCollection;
+      }
+
+      const collections = await api.fetchCollections();
+      state.currentCollection = Array.isArray(collections)
+        ? (collections.find((item) => item.key === config.collectionKey) || null)
+        : null;
+      return state.currentCollection;
+    }
+
+    function getDefaultMeasure() {
+      const preferredMeasure =
+        initialDefaults.measureKey && state.measures.find((item) => item.key === initialDefaults.measureKey);
+      if (preferredMeasure) {
+        return preferredMeasure;
+      }
+
+      const collectionDefaultMeasure =
+        state.currentCollection
+        && state.currentCollection.defaultMeasureKey
+        && state.measures.find((item) => item.key === state.currentCollection.defaultMeasureKey);
+      if (collectionDefaultMeasure) {
+        return collectionDefaultMeasure;
+      }
+
+      return state.measures[0];
+    }
+
+    function getDefaultSeriesForMeasure(preferredSeriesKey) {
+      const preferredSeries =
+        preferredSeriesKey && state.seriesList.find((item) => item.key === preferredSeriesKey);
+      if (preferredSeries) {
+        return preferredSeries;
+      }
+
+      const measureDefaultSeries =
+        state.currentMeasure
+        && state.currentMeasure.defaultSeriesKey
+        && state.seriesList.find((item) => item.key === state.currentMeasure.defaultSeriesKey);
+      if (measureDefaultSeries) {
+        return measureDefaultSeries;
+      }
+
+      return state.seriesList.length > 0 ? state.seriesList[0] : null;
+    }
+
     async function loadSeriesForMeasure(measureKey, preferredSeriesKey, preferredStrata) {
       state.seriesList = await api.fetchSeries({
         measureKey,
@@ -1260,9 +1313,7 @@
       });
       populateSeries(state.seriesList);
 
-      const preferredSeries =
-        preferredSeriesKey && state.seriesList.find((item) => item.key === preferredSeriesKey);
-      state.currentSeries = preferredSeries || (state.seriesList.length > 0 ? state.seriesList[0] : null);
+      state.currentSeries = getDefaultSeriesForMeasure(preferredSeriesKey);
 
       if (!state.currentSeries) {
         strataControls.selectAll("*").remove();
@@ -1312,9 +1363,7 @@
       }
 
       state.currentStrataSelections = { ...initialDefaults.strata };
-      const preferredMeasure =
-        initialDefaults.measureKey && state.measures.find((item) => item.key === initialDefaults.measureKey);
-      state.currentMeasure = preferredMeasure || state.measures[0];
+      state.currentMeasure = getDefaultMeasure();
       measureDropdown.property("value", state.currentMeasure.key);
       await loadSeriesForMeasure(state.currentMeasure.key, initialDefaults.seriesKey);
     }
@@ -1417,6 +1466,7 @@
     async function initialize() {
       applyQueryDefaults();
       state.measures = await api.fetchMeasures(config.collectionKey);
+      await ensureCurrentCollection();
       populateMeasures(state.measures);
       if (state.measures.length === 0) {
         updateHeader(null);
@@ -1425,9 +1475,7 @@
         return;
       }
 
-      const preferredMeasure =
-        initialDefaults.measureKey && state.measures.find((item) => item.key === initialDefaults.measureKey);
-      state.currentMeasure = preferredMeasure || state.measures[0];
+      state.currentMeasure = getDefaultMeasure();
 
       measureDropdown.property("value", state.currentMeasure.key);
       await loadSeriesForMeasure(state.currentMeasure.key, initialDefaults.seriesKey);
