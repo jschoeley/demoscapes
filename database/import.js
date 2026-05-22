@@ -15,6 +15,7 @@ const lexisDataDir = path.join(__dirname, 'import', 'lexisdata');
 const metadataDir = path.join(__dirname, 'import', 'metadata');
 const sourcesPath = path.join(metadataDir, 'sources.yml');
 const measuresPath = path.join(metadataDir, 'measures.yml');
+const measureCategoriesPath = path.join(metadataDir, 'measure-category.yml');
 const collectionsPath = path.join(metadataDir, 'collections.yml');
 const seriesPath = path.join(metadataDir, 'series.yml');
 const strataDir = path.join(metadataDir, 'strata');
@@ -131,6 +132,30 @@ function normalizeDefaultMeasureKey(value, collectionKey) {
   return trimmed;
 }
 
+function normalizeMeasureCategoryKey(value, measureKey) {
+  if (typeof value !== 'string') {
+    throw new Error(`category for measure '${measureKey}' must be a string`);
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    throw new Error(`category for measure '${measureKey}' must not be empty`);
+  }
+  return trimmed;
+}
+
+function normalizeMeasureCategoryOrder(value, categoryKey) {
+  if (value === undefined || value === null || value === '') {
+    throw new Error(`Missing required field: measureCategories.order for ${categoryKey}`);
+  }
+
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) {
+    throw new Error(`measureCategories.order for '${categoryKey}' must be numeric`);
+  }
+  return parsed;
+}
+
 function normalizeDefaultStrata(definition, strataKeys) {
   const defaultStrata = definition.defaultStrata || {};
   if (defaultStrata === null || Array.isArray(defaultStrata) || typeof defaultStrata !== 'object') {
@@ -179,25 +204,64 @@ function validateDefaultStrataValues(definition, defaultStrata, valuesByKey, str
 async function runImport() {
   const sourcesDoc = yaml.load(fs.readFileSync(sourcesPath, 'utf8'));
   const measuresDoc = yaml.load(fs.readFileSync(measuresPath, 'utf8'));
+  const measureCategoriesDoc = yaml.load(fs.readFileSync(measureCategoriesPath, 'utf8'));
   const collectionsDoc = yaml.load(fs.readFileSync(collectionsPath, 'utf8'));
   const seriesDoc = yaml.load(fs.readFileSync(seriesPath, 'utf8'));
 
   const sourcesSeed = sourcesDoc && sourcesDoc.sources ? sourcesDoc.sources : [];
   const measuresSeed = measuresDoc && measuresDoc.measures ? measuresDoc.measures : [];
+  const measureCategoriesSeed =
+    measureCategoriesDoc && measureCategoriesDoc.measureCategories
+      ? measureCategoriesDoc.measureCategories
+      : [];
   const collectionsSeed = collectionsDoc && collectionsDoc.collections
     ? collectionsDoc.collections
     : [];
   const seriesSeed = seriesDoc && seriesDoc.series ? seriesDoc.series : [];
   const strataSeed = loadStrataSeed();
-  const normalizedMeasures = measuresSeed.map((entry) => {
+  const normalizedMeasureCategories = measureCategoriesSeed.map((entry) => {
+    requireField(entry && entry.key, 'measureCategories.key');
+    requireField(entry && entry.label, `measureCategories.label for ${entry.key}`);
+    return {
+      key: String(entry.key).trim(),
+      label: String(entry.label).trim(),
+      order: normalizeMeasureCategoryOrder(entry.order, entry.key),
+    };
+  });
+
+  const uniqueMeasureCategoryKeys = new Set(
+    normalizedMeasureCategories.map((entry) => entry.key),
+  );
+  if (uniqueMeasureCategoryKeys.size !== normalizedMeasureCategories.length) {
+    throw new Error('Duplicate measure category key found in measure-category.yml');
+  }
+
+  const measureCategoriesByKey = new Map(
+    normalizedMeasureCategories.map((entry) => [entry.key, entry]),
+  );
+
+  const normalizedMeasures = measuresSeed.map((entry, index) => {
     requireField(entry && entry.key, 'measures.key');
     requireField(entry && entry.name, `measures.name for ${entry.key}`);
     requireField(entry && entry.unit, `measures.unit for ${entry.key}`);
     requireField(entry && entry.statType, `measures.statType for ${entry.key}`);
     requireField(entry && entry.axes, `measures.axes for ${entry.key}`);
+    requireField(entry && entry.category, `measures.category for ${entry.key}`);
+
+    const measureCategoryKey = normalizeMeasureCategoryKey(entry.category, entry.key);
+    const measureCategory = measureCategoriesByKey.get(measureCategoryKey);
+    if (!measureCategory) {
+      throw new Error(
+        `Unknown category '${measureCategoryKey}' in measure '${entry.key}'`,
+      );
+    }
 
     return {
       ...entry,
+      measureCategoryKey,
+      measureCategoryLabel: measureCategory.label,
+      measureCategoryOrder: measureCategory.order,
+      measureOrder: index,
       defaultSeriesKey: normalizeDefaultSeriesKey(entry.defaultSeriesKey, entry.key),
     };
   });

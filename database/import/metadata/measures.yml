@@ -1,5 +1,6 @@
 measures:
   - key: deathratesexratio
+    category: mortality
     name: Deathrate sex ratio (male/female)
     unit: Male deaths per 100 female deaths
     statType: ratio
@@ -47,6 +48,7 @@ measures:
         suffix: " male deaths per 100 female deaths"
         precision: 0
   - key: deathcountsexdifference
+    category: mortality
     name: Death count sex difference (male - female)
     unit: deaths
     statType: count
@@ -93,6 +95,7 @@ measures:
       tooltip:
         suffix: " deaths (male - female)"
   - key: deathrate
+    category: mortality
     name: Death rate
     unit: Deaths per 10,000 person-years
     statType: rate
@@ -136,6 +139,7 @@ measures:
         suffix: " deaths per 10,000 person-years"
         precision: 0
   - key: birthcount
+    category: fertility
     name: Births
     unit: Births
     statType: count
@@ -179,6 +183,7 @@ measures:
         suffix: " births"
         precision: 0
   - key: fertilityrate
+    category: fertility
     name: Fertility rate
     unit: Births per 1,000 women
     statType: rate
@@ -222,6 +227,7 @@ measures:
         suffix: " births per 1,000 female person-years"
         precision: 0
   - key: numberofkin 
+    category: family
     name: Number of kin
     unit: Kin
     statType: count
@@ -265,6 +271,7 @@ measures:
         suffix: " kin"
         precision: 0
   - key: modalcodcontributiontoprematuremalemortality
+    category: mortality
     name: Primary cause for male premature mortality
     unit: " "
     statType: categorical
@@ -307,6 +314,7 @@ measures:
         suffix: ""
         precision:
   - key: cohabitiontomarriagerate
+    category: family 
     name: Rate of marriage among cohabiting partners
     unit: Marriages per 1,000 person-years lived in cohabition
     statType: rate
@@ -350,6 +358,7 @@ measures:
         suffix: " marriages per 1,000 person-years"
         precision: 0
   - key: percentannualmortalitychange 
+    category: mortality
     name: Annual percentage change in mortality rate
     unit: "%"
     statType: difference
@@ -397,6 +406,7 @@ measures:
         suffix: "%"
         precision: 2
   - key: malefertilityrate
+    category: fertility
     name: Male fertility rate
     unit: Births per 1,000 men
     statType: rate
@@ -440,6 +450,7 @@ measures:
         suffix: " births per 1,000 male person-years"
         precision: 0
   - key: fertilityratesexratio
+    category: fertility
     name: Fertility rate sex ratio (male/female)
     unit: Children born to fathers per 100 children born to mothers
     statType: ratio

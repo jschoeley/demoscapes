@@ -10,6 +10,10 @@ const sourceSchema = new Schema({
 
 const measureSchema = new Schema({
   key: { type: String, required: true, unique: true },
+  measureCategoryKey: { type: String, required: true },
+  measureCategoryLabel: { type: String, required: true },
+  measureCategoryOrder: { type: Number, required: true },
+  measureOrder: { type: Number, required: true },
   name: { type: String, required: true },
   unit: { type: String, required: true },
   statType: { type: String, required: true },

@@ -968,14 +968,53 @@
     }
 
     function populateMeasures(measures) {
-      measureDropdown.selectAll("option").remove();
-      measureDropdown
-        .selectAll("option")
-        .data(measures)
+      measureDropdown.selectAll("*").remove();
+
+      const groupedMeasures = measures.reduce((groups, measure) => {
+        const categoryKey = measure.measureCategoryKey || "uncategorized";
+        const categoryLabel = measure.measureCategoryLabel || categoryKey;
+
+        if (!groups.has(categoryKey)) {
+          groups.set(categoryKey, {
+            label: categoryLabel,
+            measures: [],
+          });
+        }
+
+        groups.get(categoryKey).measures.push(measure);
+        return groups;
+      }, new Map());
+
+      const groups = Array.from(groupedMeasures.values());
+      const shouldUseOptgroups = groups.length > 1;
+
+      if (!shouldUseOptgroups) {
+        measureDropdown
+          .selectAll("option")
+          .data(measures)
+          .enter()
+          .append("option")
+          .text((d) => d.name)
+          .attr("value", (d) => d.key);
+        return;
+      }
+
+      const optgroups = measureDropdown
+        .selectAll("optgroup")
+        .data(groups)
         .enter()
-        .append("option")
-        .text((d) => d.name)
-        .attr("value", (d) => d.key);
+        .append("optgroup")
+        .attr("label", (d) => d.label);
+
+      optgroups.each(function (group) {
+        d3.select(this)
+          .selectAll("option")
+          .data(group.measures)
+          .enter()
+          .append("option")
+          .text((d) => d.name)
+          .attr("value", (d) => d.key);
+      });
     }
 
     function populateSeries(seriesOptions) {

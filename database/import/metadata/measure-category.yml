@@ -1,0 +1,13 @@
+measureCategories:
+  - key: mortality
+    label: Mortality
+    order: 10
+  - key: fertility
+    label: Fertility
+    order: 20
+  - key: migration
+    label: Migration
+    order: 30
+  - key: family 
+    label: Family
+    order: 40

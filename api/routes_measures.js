@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
     const measures = await Measure.find(query)
       .select('-__v -_id')
-      .sort({ key: 1 });
+      .sort({ measureCategoryOrder: 1, measureOrder: 1, key: 1 });
     res.json(measures);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
