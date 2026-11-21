@@ -46,7 +46,7 @@ series_output <-
   mutate(Alpha_2 = case_when(
     .default = Alpha_2,
     # it's actually England and Wales
-    region == "England" ~ "UK-EAW",
+    region == "England" ~ "GB-EAW",
     region == "Germanyeast" ~ "DE-E",
     region == "Germanywest" ~ "DE-W",
     region == "Taiwan" ~ "TW",
