@@ -7,3 +7,5 @@
       name: "Female"
     - key: "Male"
       name: "Male"
+    - key: "Total"
+      name: "Total"
