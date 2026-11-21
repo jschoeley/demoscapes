@@ -1,7 +1,7 @@
 # Global constants and functions
 #
-# Shared helpers for series creation scripts. Scripts are run with the
-# dataprep/ folder as working directory. The demoscapes import metadata
+# Shared helpers for series creation scripts. Scripts set the dataprep/
+# folder as working directory with here::i_am(). The demoscapes import metadata
 # (series.yml, measures.yml, strata/*.yml) is the single source of truth for
 # series keys, measures, and strata; series scripts only name their series key.
 #
@@ -348,8 +348,24 @@ ExportLexisdata <- function (lexisdata, path) {
   dir.create(path, showWarnings = FALSE, recursive = TRUE)
   file <- file.path(path, paste0(attr(lexisdata, 'series_key'), '.csv'))
 
+  # write 100000 instead of 1e+05
+  old_options <- options(scipen = 100)
+  on.exit(options(old_options))
+
+  # quote text only where needed, i.e. if it contains commas, quotes, or
+  # line breaks
+  out <- as.data.frame(lexisdata)
+  for (column in names(out)) {
+    if (is.character(out[[column]])) {
+      values <- out[[column]]
+      needs_quotes <- !is.na(values) & grepl('[",\r\n]', values)
+      values[needs_quotes] <- paste0('"', gsub('"', '""', values[needs_quotes], fixed = TRUE), '"')
+      out[[column]] <- values
+    }
+  }
+
   write.table(
-    lexisdata, file = file,
+    out, file = file, quote = FALSE,
     sep = ',', eol = '\n', na = '.', dec = '.',
     row.names = FALSE, col.names = TRUE, fileEncoding = 'UTF-8'
   )
@@ -382,6 +398,10 @@ ConstructValidateExportLexisdata <- function (
 
 # Utilities ---------------------------------------------------------------
 
+# Round to 6 significant digits; whole numbers (e.g. counts) are kept as is.
 RoundFloat <- function (x) {
-  signif(x, digits = 6)
+  rounded <- signif(x, digits = 6)
+  whole <- is.finite(x) & x == trunc(x)
+  rounded[whole] <- x[whole]
+  rounded
 }
