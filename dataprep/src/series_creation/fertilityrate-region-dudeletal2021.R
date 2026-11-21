@@ -1,37 +1,34 @@
-# Create Series
+# Create series fertilityrate-region-dudeletal2021
+#
+# Female fertility rates by region from Dudel et al. (2021).
 
 # Init --------------------------------------------------------------------
 
-library(yaml)
+here::i_am('src/series_creation/fertilityrate-region-dudeletal2021.R'); setwd(here::here())
+
 library(qs2)
-library(readr)
 library(dplyr)
 library(tidyr)
 library(ISOcodes)
+
+source('src/_global_objects.R')
 
 # Constants ---------------------------------------------------------------
 
 # constants specific to this analysis
 cnst <- within(list(), {
-  source_key = "dudeletal2021"
+  series_key = 'fertilityrate-region-dudeletal2021'
+  source_key = 'dudeletal2021'
 })
 
 # input and output paths
 paths <- list()
 paths$input <- list(
-  series_input.qs =
-    paste0("./dat/", cnst$source_key, "/dudeletal2021.qs")
+  series_input.qs = file.path('dat', cnst$source_key, 'dudeletal2021.qs')
 )
 paths$output <- list(
-  series_output.csv =
-    "./out/series_creation/fertilityrate-region-dudeletal2021.csv"
+  series_output_dir = 'out/series_creation'
 )
-
-# Functions ---------------------------------------------------------------
-
-RoundFloat <- function (x) {
-  signif(x, digits = 6)
-}
 
 # Load series input -------------------------------------------------------
 
@@ -41,9 +38,7 @@ series_input <- qs_read(paths$input$series_input.qs)
 
 series_output <-
   series_input |>
-  filter(
-    sex == "f"
-  ) |>
+  filter(sex == "f") |>
   left_join(ISO_3166_1, by = c(region = "Name")) |>
   mutate(Alpha_2 = case_when(
     .default = Alpha_2,
@@ -54,26 +49,19 @@ series_output <-
     region == "Taiwan" ~ "TW",
     region == "USA" ~ "US"
   )) |>
-  mutate(
-    wx = 1, wy = 1
-  ) |>
+  mutate(wx = 1, wy = 1) |>
   select(
     z = ASFR,
     x = Year,
     y = Age,
-    wx = wx,
-    wy = wy,
+    wx, wy,
     region = Alpha_2
-  ) |>
-  mutate(across(where(is.factor), as.character)) |>
-  mutate(across(c(x, y, wx, wy), as.integer)) |>
-  mutate(across(c(z), RoundFloat))
+  )
 
-# Export ------------------------------------------------------------------
+# Construct, validate, and export -----------------------------------------
 
-# export results of analysis
-write_csv(
-  x = series_output,
-  file = paths$output$series_output.csv,
-  na = "."
+ConstructValidateExportLexisdata(
+  series_output,
+  series_key = cnst$series_key,
+  path = paths$output$series_output_dir
 )

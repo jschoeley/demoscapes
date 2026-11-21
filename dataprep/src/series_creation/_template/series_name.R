@@ -1,36 +1,37 @@
-# Create Series
+# Create series <series_key>
+#
+# Copy this file to src/series_creation/<series_key>.R, where <series_key> is
+# the key of the series in database/import/metadata/series.yml, e.g.
+# deathrate-region_sex_subpopulation-hmd. The measure, source, and strata of
+# the series are looked up in series.yml by the shared helpers in
+# src/_global_objects.R, which also validate the output against the metadata.
 
 # Init --------------------------------------------------------------------
 
-library(yaml)
+here::i_am('src/series_creation/_template/series_name.R'); setwd(here::here())
+
 library(qs2)
-library(readr)
 library(dplyr)
 library(tidyr)
+
+source('src/_global_objects.R')
 
 # Constants ---------------------------------------------------------------
 
 # constants specific to this analysis
 cnst <- within(list(), {
-  source_key = ""
+  series_key = '<measure>-<strata>-<source>'
+  source_key = '<source>'
 })
 
 # input and output paths
 paths <- list()
 paths$input <- list(
-  series_input.qs =
-    paste0("./dat/", cnst$source_key, "/series_input.qs")
+  series_input.qs = file.path('dat', cnst$source_key, 'series_input.qs')
 )
 paths$output <- list(
-  series_output.csv =
-    "./out/series_creation/series_name.csv"
+  series_output_dir = 'out/series_creation'
 )
-
-# Functions ---------------------------------------------------------------
-
-RoundFloat <- function (x) {
-  signif(x, digits = 6)
-}
 
 # Load series input -------------------------------------------------------
 
@@ -38,25 +39,27 @@ series_input <- qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
+# Produce one row per lexis cell with the columns
+#   z         cell value (numeric, or character for categorical measures)
+#   x, y      lower left corner of the cell (e.g. year and age)
+#   wx, wy    width of the cell along x and y
+#   <strata>  one column per strata key of the series, holding codebook keys
+# Rounding, type conversion, and sorting are done by the helpers below.
 series_output <-
   series_input |>
+  mutate(wx = 1, wy = 1) |>
   select(
-    z = z,
-    x = x,
-    y = y,
-    wx,
-    wy,
-    stratum1 = stratum1
-  ) |>
-  mutate(across(where(is.factor), as.character)) |>
-  mutate(across(c(x, y, wx, wy), as.integer)) |>
-  mutate(across(c(z), RoundFloat))
+    z = value,
+    x = year,
+    y = age,
+    wx, wy,
+    region = region
+  )
 
-# Export ------------------------------------------------------------------
+# Construct, validate, and export -----------------------------------------
 
-# export results of analysis
-write_csv(
-  x = series_name,
-  file = paths$output$series_name.csv,
-  na = "."
+ConstructValidateExportLexisdata(
+  series_output,
+  series_key = cnst$series_key,
+  path = paths$output$series_output_dir
 )

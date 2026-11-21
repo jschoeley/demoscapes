@@ -1,35 +1,37 @@
-# Create Series
+# Create series cohabitiontomarriagerate-region_sex_model-carollo2025
+#
+# Rate of transition from cohabitation to marriage by region, sex, and model
+# from Carollo (2025).
 
 # Init --------------------------------------------------------------------
 
-library(yaml)
+here::i_am('src/series_creation/cohabitiontomarriagerate-region_sex_model-carollo2026.R'); setwd(here::here())
+
 library(qs2)
-library(readr)
 library(dplyr)
 library(tidyr)
+
+source('src/_global_objects.R')
 
 # Constants ---------------------------------------------------------------
 
 # constants specific to this analysis
 cnst <- within(list(), {
-  measure_key = "cohabitiontomarriagerate"
-  strata_keys = c("region", "sex", "modelcarollo2025")
-  source_key = "carollo2025"
+  series_key = 'cohabitiontomarriagerate-region_sex_model-carollo2025'
+  source_key = 'carollo2025'
 })
 
 # input and output paths
 paths <- list()
 paths$input <- list(
-  global_objects.R = 'src/_global_objects.R',
-  series_input.qs =
-    paste0("./dat/", cnst$source_key, "/cohabitiontomarriagerate_by_region_sex_model_age_duration.qs")
+  series_input.qs = file.path(
+    'dat', cnst$source_key,
+    'cohabitiontomarriagerate_by_region_sex_model_age_duration.qs'
+  )
 )
 paths$output <- list(
-  series_output_path =
-    "./out/series_creation/"
+  series_output_dir = 'out/series_creation'
 )
-
-source(paths$input$global_objects.R)
 
 # Load series input -------------------------------------------------------
 
@@ -39,40 +41,32 @@ series_input <- qs_read(paths$input$series_input.qs)
 
 series_output <-
   series_input |>
-  select(
-    z = z,
-    x = x,
-    y = y,
-    wx,
-    wy,
-    region = region,
-    sex = sex,
-    modelcarollo2025 = model
-  ) |>
   mutate(
     wx = round(wx, 1),
     wy = round(wy, 1),
     sex = case_when(
       sex == "men" ~ "Male",
-      sex == "wowen" ~ "Female",
-      .default = NA
-    )
-  ) |>
-  mutate(
+      sex == "wowen" ~ "Female"
+    ),
     region = case_when(
       region == "east" ~ "DE-E",
-      region == "west" ~ "DE-W",
-      .default = NA
+      region == "west" ~ "DE-W"
     )
+  ) |>
+  select(
+    z = z,
+    x = x,
+    y = y,
+    wx, wy,
+    region = region,
+    sex = sex,
+    modelcarollo2025 = model
   )
 
-# Export ------------------------------------------------------------------
+# Construct, validate, and export -----------------------------------------
 
 ConstructValidateExportLexisdata(
   series_output,
-  z = 'z', x = 'x', y = 'y', wx = 'wx', wy = 'wy',
-  strata = cnst$strata_keys,
-  measure = cnst$measure_key,
-  source = cnst$source_key,
-  path = paths$output$series_output_path
+  series_key = cnst$series_key,
+  path = paths$output$series_output_dir
 )
