@@ -12,25 +12,24 @@ library(tidyr)
 
 # constants specific to this analysis
 cnst <- within(list(), {
+  measure_key = "cohabitiontomarriagerate"
+  strata_keys = c("region", "sex", "modelcarollo2025")
   source_key = "carollo2025"
 })
 
 # input and output paths
 paths <- list()
 paths$input <- list(
+  global_objects.R = 'src/_global_objects.R',
   series_input.qs =
     paste0("./dat/", cnst$source_key, "/cohabitiontomarriagerate_by_region_sex_model_age_duration.qs")
 )
 paths$output <- list(
-  series_output.csv =
-    "./out/series_creation/cohabitiontomarriagerate-region_sex_model-carollo2025.csv"
+  series_output_path =
+    "./out/series_creation/"
 )
 
-# Functions ---------------------------------------------------------------
-
-RoundFloat <- function (x) {
-  signif(x, digits = 6)
-}
+source(paths$input$global_objects.R)
 
 # Load series input -------------------------------------------------------
 
@@ -51,6 +50,8 @@ series_output <-
     modelcarollo2025 = model
   ) |>
   mutate(
+    wx = round(wx, 1),
+    wy = round(wy, 1),
     sex = case_when(
       sex == "men" ~ "Male",
       sex == "wowen" ~ "Female",
@@ -63,16 +64,15 @@ series_output <-
       region == "west" ~ "DE-W",
       .default = NA
     )
-  ) |>
-  mutate(across(where(is.factor), as.character)) |>
-  mutate(across(c(x, y, wx, wy), RoundFloat)) |>
-  mutate(across(c(z), RoundFloat))
+  )
 
 # Export ------------------------------------------------------------------
 
-# export results of analysis
-write_csv(
-  x = series_output,
-  file = paths$output$series_output.csv,
-  na = "."
+ConstructValidateExportLexisdata(
+  series_output,
+  z = 'z', x = 'x', y = 'y', wx = 'wx', wy = 'wy',
+  strata = cnst$strata_keys,
+  measure = cnst$measure_key,
+  source = cnst$source_key,
+  path = paths$output$series_output_path
 )
