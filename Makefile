@@ -23,6 +23,9 @@ ACQUISITION_SOURCES := $(sort $(basename $(notdir $(wildcard $(DATAPREP_DIR)/src
 SERIES_KEYS := $(sort $(basename $(notdir $(wildcard $(DATAPREP_DIR)/src/series_creation/*.R))))
 SOURCES ?= $(ACQUISITION_SOURCES)
 SERIES ?= $(SERIES_KEYS)
+SERIES_OUTPUT_DIR := $(DATAPREP_DIR)/out/series_creation
+LEXISDATA_DIR := database/import/lexisdata
+SERIES_METADATA := database/import/metadata/series.yml
 
 # Run the R scripts named in $(1) from directory $(2) inside dataprep/. Every
 # script runs even if an earlier one fails; failures are listed at the end.
@@ -39,7 +42,7 @@ done; \
 if [ -n "$$failed" ]; then printf 'Failed:%s\n' "$$failed" >&2; exit 1; fi
 endef
 
-.PHONY: help build run smoke-website dev-api dev-website data-acquisition series-creation dataprep deploy-sync deploy update stop clean guard-deploy-host
+.PHONY: help build run smoke-website dev-api dev-website data-acquisition series-creation series-sync dataprep deploy-sync deploy update stop clean guard-deploy-host
 
 help:
 	@printf "Available targets:\n"
@@ -50,6 +53,7 @@ help:
 	@printf "  make dev-website  Start the local website dev server with live reload and /api proxy\n"
 	@printf "  make data-acquisition [SOURCES=\"hmd hfd\"]  Download and preformat source data into dataprep/dat (all sources by default)\n"
 	@printf "  make series-creation [SERIES=<series key>]  Create, validate, and export series into dataprep/out/series_creation (all series by default)\n"
+	@printf "  make series-sync [SERIES=<series key>]  Copy series CSVs from dataprep/out/series_creation to database/import/lexisdata/<measureKey>/ (all series by default)\n"
 	@printf "  make dataprep  Run data-acquisition, then series-creation\n"
 	@printf "  make deploy-sync DEPLOY_HOST=<host>  Rsync the deployment tree, including database/import data, to the server\n"
 	@printf "  make deploy DEPLOY_HOST=<host>  Sync code and perform a fresh production rollout on the server\n"
@@ -79,6 +83,28 @@ data-acquisition:
 
 series-creation:
 	$(call run_r_scripts,$(SERIES),series_creation)
+
+# Series keys follow <measureKey>-<strata>-<sourceKey>, and measure keys
+# contain no dashes, so the measure key is the part before the first dash.
+series-sync:
+	@failed=''; \
+	for name in $(SERIES); do \
+		src="$(SERIES_OUTPUT_DIR)/$$name.csv"; \
+		measure="$${name%%-*}"; \
+		dest_dir="$(LEXISDATA_DIR)/$$measure"; \
+		if ! grep -qF "key: \"$$name\"" $(SERIES_METADATA); then \
+			printf '== %s: not defined in %s\n' "$$name" "$(SERIES_METADATA)" >&2; failed="$$failed $$name"; \
+		elif [ ! -f "$$src" ]; then \
+			printf '== %s: no output %s, run make series-creation first\n' "$$name" "$$src" >&2; failed="$$failed $$name"; \
+		elif [ ! -d "$$dest_dir" ]; then \
+			printf '== %s: no directory %s for measure %s\n' "$$name" "$$dest_dir" "$$measure" >&2; failed="$$failed $$name"; \
+		elif cmp -s "$$src" "$$dest_dir/$$name.csv"; then \
+			printf '== %s: unchanged\n' "$$name"; \
+		else \
+			cp "$$src" "$$dest_dir/$$name.csv" && printf '== %s: copied to %s/\n' "$$name" "$$dest_dir" || failed="$$failed $$name"; \
+		fi; \
+	done; \
+	if [ -n "$$failed" ]; then printf 'Failed:%s\n' "$$failed" >&2; exit 1; fi
 
 dataprep:
 	$(MAKE) data-acquisition
