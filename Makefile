@@ -17,8 +17,29 @@ DEPLOY_RSYNC := rsync -az --delete \
 	--exclude 'pvt/'
 COMPOSE_BASE := docker compose -f docker-compose.yml
 COMPOSE_DEV_API := docker compose -f docker-compose.yml -f docker-compose.dev.yml
+RSCRIPT ?= Rscript
+DATAPREP_DIR := dataprep
+ACQUISITION_SOURCES := $(sort $(basename $(notdir $(wildcard $(DATAPREP_DIR)/src/data_acquisition/*.R))))
+SERIES_KEYS := $(sort $(basename $(notdir $(wildcard $(DATAPREP_DIR)/src/series_creation/*.R))))
+SOURCES ?= $(ACQUISITION_SOURCES)
+SERIES ?= $(SERIES_KEYS)
 
-.PHONY: help build run smoke-website dev-api dev-website deploy-sync deploy update stop clean guard-deploy-host
+# Run the R scripts named in $(1) from directory $(2) inside dataprep/. Every
+# script runs even if an earlier one fails; failures are listed at the end.
+define run_r_scripts
+@failed=''; \
+for name in $(1); do \
+	script="src/$(2)/$$name.R"; \
+	if [ ! -f "$(DATAPREP_DIR)/$$script" ]; then \
+		printf '== %s: no such script %s\n' "$$name" "$$script" >&2; failed="$$failed $$name"; continue; \
+	fi; \
+	printf '== %s\n' "$$name"; \
+	(cd $(DATAPREP_DIR) && $(RSCRIPT) "$$script") || failed="$$failed $$name"; \
+done; \
+if [ -n "$$failed" ]; then printf 'Failed:%s\n' "$$failed" >&2; exit 1; fi
+endef
+
+.PHONY: help build run smoke-website dev-api dev-website data-acquisition series-creation dataprep deploy-sync deploy update stop clean guard-deploy-host
 
 help:
 	@printf "Available targets:\n"
@@ -27,6 +48,9 @@ help:
 	@printf "  make smoke-website  Start the full stack locally with the production-style Caddy website using the default Compose ports\n"
 	@printf "  make dev-api  Start database, db-init, and api with the dev override that publishes the API on 127.0.0.1:3000\n"
 	@printf "  make dev-website  Start the local website dev server with live reload and /api proxy\n"
+	@printf "  make data-acquisition [SOURCES=\"hmd hfd\"]  Download and preformat source data into dataprep/dat (all sources by default)\n"
+	@printf "  make series-creation [SERIES=<series key>]  Create, validate, and export series into dataprep/out/series_creation (all series by default)\n"
+	@printf "  make dataprep  Run data-acquisition, then series-creation\n"
 	@printf "  make deploy-sync DEPLOY_HOST=<host>  Rsync the deployment tree, including database/import data, to the server\n"
 	@printf "  make deploy DEPLOY_HOST=<host>  Sync code and perform a fresh production rollout on the server\n"
 	@printf "  make update DEPLOY_HOST=<host>  Alias for deploy; updates also resync database/import data and recreate the stack\n"
@@ -49,6 +73,16 @@ dev-api:
 
 dev-website:
 	WEBSITE_API_PROXY_TARGET=$(WEBSITE_API_PROXY_TARGET) WEBSITE_DEV_PORT=$(WEBSITE_DEV_PORT) npm run dev:website
+
+data-acquisition:
+	$(call run_r_scripts,$(SOURCES),data_acquisition)
+
+series-creation:
+	$(call run_r_scripts,$(SERIES),series_creation)
+
+dataprep:
+	$(MAKE) data-acquisition
+	$(MAKE) series-creation
 
 guard-deploy-host:
 	@test -n "$(DEPLOY_HOST)" || (printf "DEPLOY_HOST is required, for example: make deploy DEPLOY_HOST=demoscapes.org\n" >&2; exit 1)
