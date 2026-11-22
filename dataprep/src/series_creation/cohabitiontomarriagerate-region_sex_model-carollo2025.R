@@ -5,7 +5,7 @@
 
 # Init --------------------------------------------------------------------
 
-here::i_am('src/series_creation/cohabitiontomarriagerate-region_sex_model-carollo2026.R'); setwd(here::here())
+here::i_am('src/series_creation/cohabitiontomarriagerate-region_sex_model-carollo2025.R'); setwd(here::here())
 
 library(qs2)
 library(dplyr)
