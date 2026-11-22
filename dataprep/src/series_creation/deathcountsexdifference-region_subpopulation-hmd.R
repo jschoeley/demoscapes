@@ -24,7 +24,7 @@ cnst <- within(list(), {
 # input and output paths
 paths <- list()
 paths$input <- list(
-  series_input.qs = file.path('dat', 'hmd-mortality', 'deaths_period_by_age.qs')
+  series_input.qs = file.path('dat', cnst$source_key, 'deaths_period_by_age.qs')
 )
 paths$output <- list(
   series_output_dir = 'out/series_creation'
