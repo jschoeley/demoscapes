@@ -2,7 +2,6 @@ pvt
 node_modules
 .env
 .Rproj.user
-*.Rproj
 .Rhistory
 .Rapp.history
 website/dist
