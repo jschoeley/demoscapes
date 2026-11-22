@@ -1,34 +1,34 @@
-# Create Series of deathrate sex ratios by region, and subpopulation
+# Create series deathratesexratio-region_subpopulation-hmd
+#
+# Ratio of male to female death rates by region and subpopulation from the
+# Human Mortality Database.
 
 # Init --------------------------------------------------------------------
 
-library(yaml)
+here::i_am('src/series_creation/deathratesexratio-region_subpopulation-hmd.R'); setwd(here::here())
+
 library(qs2)
 library(dplyr)
 library(tidyr)
-library(readr)
+
+source('src/_global_objects.R')
 
 # Constants ---------------------------------------------------------------
 
+# constants specific to this analysis
+cnst <- within(list(), {
+  series_key = 'deathratesexratio-region_subpopulation-hmd'
+  source_key = 'hmd'
+})
+
 # input and output paths
-setwd(".")
 paths <- list()
 paths$input <- list(
-  series_input.qs = "./dat/hmd-mortality/deathrates_period_by_age.qs"
+  series_input.qs = file.path('dat', cnst$source_key, 'deathrates_period_by_age.qs')
 )
 paths$output <- list(
-  series_output.csv =
-    "./out/series_creation/deathratesexratio-region_subpopulation-hmd.csv"
+  series_output_dir = 'out/series_creation'
 )
-
-# constants specific to this analysis
-cnst <- within(list(), {})
-
-# Functions ---------------------------------------------------------------
-
-RoundFloat <- function (x) {
-  signif(x, digits = 6)
-}
 
 # Load series input -------------------------------------------------------
 
@@ -49,16 +49,12 @@ series_output <-
     wx, wy,
     region = isocode,
     subpopulation = subpopulation
-  ) |>
-  mutate(across(where(is.factor), as.character)) |>
-  mutate(across(c(x, y, wx, wy), as.integer)) |>
-  mutate(across(c(z), RoundFloat))
+  )
 
-# Export ------------------------------------------------------------------
+# Construct, validate, and export -----------------------------------------
 
-# export results of analysis
-write_csv(
-  x = series_output,
-  file = paths$output$series_output.csv,
-  na = "."
+ConstructValidateExportLexisdata(
+  series_output,
+  series_key = cnst$series_key,
+  path = paths$output$series_output_dir
 )

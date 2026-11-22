@@ -1,47 +1,50 @@
-# Create Series of modalcodcontributiontoprematuremalemortality by region,
-# across period and age
+# Create series modalcodcontributiontoprematuremalemortality-region-kashnitskyetal2019
+#
+# Cause of death with the largest contribution to premature male mortality
+# by Mexican state from Kashnitsky et al. (2019).
 
 # Init --------------------------------------------------------------------
 
-library(yaml)
+here::i_am('src/series_creation/modalcodcontributiontoprematuremalemortality-region-kashnitskyetal2019.R'); setwd(here::here())
+
 library(qs2)
 library(dplyr)
 library(tidyr)
-library(readr)
 library(ISOcodes)
+
+source('src/_global_objects.R')
 
 # Constants ---------------------------------------------------------------
 
+# constants specific to this analysis
+cnst <- within(list(), {
+  series_key = 'modalcodcontributiontoprematuremalemortality-region-kashnitskyetal2019'
+  source_key = 'kashnitskyetal2019'
+})
+
 # input and output paths
-setwd(".")
 paths <- list()
 paths$input <- list(
-  series_input.qs =
-    "./dat/kashnitskyetal2019/modalcodcontributiontoprematuremalemortality_by_state_period_age.qs"
+  series_input.qs = file.path('dat', cnst$source_key, 'modalcodcontributiontoprematuremalemortality_by_state_period_age.qs')
 )
 paths$output <- list(
-  series_output.csv =
-    "./out/series_creation/modalcodcontributiontoprematuremalemortality-region-kashnitskyetal2019.csv"
+  series_output_dir = 'out/series_creation'
 )
 
-# constants specific to this analysis
-cnst <- within(list(), {})
+# Load series input -------------------------------------------------------
 
-# Load data ---------------------------------------------------------------
-
-series_input <-
-  qs_read(paths$input$series_input.qs)
+series_input <- qs_read(paths$input$series_input.qs)
 
 # Create series -----------------------------------------------------------
 
 series_output <-
   series_input |>
-  mutate(across(c(year, age), as.integer)) |>
   mutate(across(c(state, cause_name), as.character)) |>
+  # year is stored as text
+  mutate(year = as.integer(year)) |>
   mutate(
-    cause_name = stringr::str_replace_all(cause_name, "\n", " ")
-  ) |>
-  mutate(
+    cause_name = gsub('\n', ' ', cause_name, fixed = TRUE),
+    # match state names to ISO 3166-2
     state = case_when(
       state == "Coahuila" ~ "Coahuila de Zaragoza",
       state == "Michoacán" ~ "Michoacán de Ocampo",
@@ -51,12 +54,7 @@ series_output <-
     )
   ) |>
   left_join(ISO_3166_2, by = c("state" = "Name")) |>
-  mutate(
-    # year intervals are: from start up to end
-    wx = 1L,
-    # age intervals are from start up to and including end
-    wy = 1L
-  ) |>
+  mutate(wx = 1, wy = 1) |>
   select(
     z = cause_name,
     x = year,
@@ -64,14 +62,12 @@ series_output <-
     wx, wy,
     region = Code
   ) |>
-  filter(!is.na(region), !is.na(wx), !is.na(wy), !is.na(x), !is.na(y)) |>
-  arrange(region, x, y)
+  filter(!is.na(region), !is.na(x), !is.na(y))
 
-# Export ------------------------------------------------------------------
+# Construct, validate, and export -----------------------------------------
 
-# export results of analysis
-write_csv(
-  x = series_output,
-  file = paths$output$series_output.csv,
-  na = "."
+ConstructValidateExportLexisdata(
+  series_output,
+  series_key = cnst$series_key,
+  path = paths$output$series_output_dir
 )

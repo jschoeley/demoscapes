@@ -6,6 +6,7 @@ packages <- list(
   cran = list(
     url = "https://cloud.r-project.org/",
     packages = c(
+      "pak",
       "ISOcodes",
       "yaml",
       "dplyr",
@@ -15,14 +16,22 @@ packages <- list(
       "osfr",
       "readr",
       "stringr",
-      "HMDHFDplus",
-      "DemoKin"
+      "HMDHFDplus"
     )
+  ),
+  github = list(
+    url = "https://github.com",
+    packages = "IvanWilli/DemoKin"
   )
 )
 
 # install/update packages
-lapply(packages, function(X) install.packages(X$packages, repos = X$url))
+lapply(packages, function(X) {
+  if (X$url == "https://github.com") {
+    pak::pak(X$packages)
+  } else {
+    install.packages(X$packages, repos = X$url)}
+})
 
 # write out list of dependencies and currently used versions
 versions <- installed.packages()[

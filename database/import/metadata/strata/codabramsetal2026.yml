@@ -5,6 +5,8 @@
   codebook:
     - key: All
       name: All deaths
+    - key: External
+      name: All external causes
     - key: Accidents
       name: Accidents
     - key: Suicides
