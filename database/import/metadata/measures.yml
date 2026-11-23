@@ -497,3 +497,47 @@ measures:
       tooltip:
         suffix: " children born to fathers per 100 children born to mothers"
         precision: 0
+  - key: population
+    category: population
+    name: Population
+    unit: Persons
+    statType: count
+    description: The number of persons alive on 1 January.
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 10
+        - 100
+        - 1000
+        - 10000
+        - 100000
+        - 500000
+        - 1000000
+        - 10000000
+        - 100000000
+      colorRange:
+        - "#ffffd9"
+        - "#edf8b1"
+        - "#c7e9b4"
+        - "#7fcdbb"
+        - "#41b6c4"
+        - "#1d91c0"
+        - "#225ea8"
+        - "#253494"
+        - "#081d58"
+      labelmultiplier: 1
+      labelprecision: 0
+      legend:
+        left: ""
+        right: "Persons"
+      tooltip:
+        suffix: " persons"
+        precision: 0

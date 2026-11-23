@@ -11,3 +11,6 @@ measureCategories:
   - key: family 
     label: Family
     order: 40
+  - key: population
+    label: Population structure
+    order: 50

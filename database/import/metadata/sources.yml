@@ -34,3 +34,8 @@ sources:
     url: https://osf.io/en6fk
     citation: "C. Dudel & S. Klüsener. Male–Female Fertility Differentials Across 17 High-Income Countries: Insights From A New Data Resource. Eur. J. Population (2021)."
     license: CC BY-NC 4.0
+  - key: wpp2024
+    name: United Nations World Population Prospects 2024
+    url: https://population.un.org/wpp/
+    citation: "United Nations, Department of Economic and Social Affairs, Population Division (2024). World Population Prospects 2024. Data downloaded on November 23 2026."
+    license: CC BY 3.0 IGO
