@@ -73,6 +73,12 @@ extra_regions <- list(
     key = "DE-E",
     parentKey = "DE",
     name = "Germany (East)"
+  ),
+  # user-assigned code, not part of ISO 3166-1; used by WPP
+  CreateEntry(
+    key = "XK",
+    parentKey = "none",
+    name = "Kosovo (under UNSC res. 1244)"
   )
 )
 

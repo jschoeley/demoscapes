@@ -171,3 +171,16 @@ series:
       - "region"
     defaultStrata:
       region: "DK"
+  - key: "population-region_sex-wpp2024"
+    label: "by region and sex (WPP 2024)"
+    measureKey: "population"
+    sourceKeys:
+      - "wpp2024"
+    collectionKeys:
+      - "wpp2024"
+    strataKeys:
+      - "region"
+      - "sex"
+    defaultStrata:
+      region: "DE"
+      sex: "Total"
