@@ -62,6 +62,7 @@ collections:
     defaultMeasureKey: "fertilityratesexratio"
   - key: "wpp2024"
     name: "World Population Prospects 2024"
+    defaultMeasureKey: "population"
     description: "The United Nations World Population Prospects 2024"
     order: 20
     isPublic: true

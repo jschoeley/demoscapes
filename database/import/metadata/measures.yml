@@ -497,6 +497,58 @@ measures:
       tooltip:
         suffix: " children born to fathers per 100 children born to mothers"
         precision: 0
+  - key: populationagestructure
+    category: population
+    name: Population age structure
+    unit: Share of population in given age on total population
+    statType: proportion
+    description: Share of the population at each age in a given year.
+    defaultSeriesKey: populationagestructure-region_sex-wpp2024
+    axes:
+      x:
+        name: period
+        unit: year
+      y:
+        name: age
+        unit: year
+    display:
+      colorScale: sequential
+      colorDomain:
+        - 0
+        - 0.001
+        - 0.002
+        - 0.004
+        - 0.006
+        - 0.008
+        - 0.01
+        - 0.012
+        - 0.014
+        - 0.016
+        - 0.02
+        - 0.03
+        - 1
+      colorRange:
+        - "#fff7fb"
+        - "#efe6f2"
+        - "#dbd8ea"
+        - "#bdc9e1"
+        - "#98b9d9"
+        - "#6faed1"
+        - "#459bc7"
+        - "#2289b5"
+        - "#038189"
+        - "#017561"
+        - "#015c4b"
+        - "#014636"
+      labelmultiplier: 100
+      labelprecision: 1
+      legend:
+        left: ""
+        right: "% of population"
+      tooltip:
+        suffix: "% of population"
+        multiplier: 100
+        precision: 2
   - key: population
     category: population
     name: Population
