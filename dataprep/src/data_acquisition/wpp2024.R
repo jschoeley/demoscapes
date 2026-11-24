@@ -72,11 +72,10 @@ DownloadIfMissing(paths$input$projections.csv.gz, paths$output$projections.csv.g
 
 # Preformat ---------------------------------------------------------------
 
-# Only empty fields are missing: Namibia's ISO code is the string "NA".
 ReadWPP <- function (file) {
   read_csv(
     file,
-    na = '',
+    na = '', # Only empty fields are missing: Namibia's ISO code is the string "NA".
     col_select = c(
       ISO2_code, LocTypeName, Time, AgeGrpStart,
       PopMale, PopFemale, PopTotal

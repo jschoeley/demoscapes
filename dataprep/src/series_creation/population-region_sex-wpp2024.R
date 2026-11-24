@@ -58,7 +58,7 @@ series_output <-
     names_to = 'sex',
     values_to = 'z'
   ) |>
-  # whole persons, which also removes floating point noise from the scaling
+  # whole persons
   mutate(z = round(z * cnst$persons_per_unit), wx = 1, wy = 1) |>
   select(z, x, y, wx, wy, region, sex)
 

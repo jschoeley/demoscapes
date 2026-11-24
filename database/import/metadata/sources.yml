@@ -37,5 +37,5 @@ sources:
   - key: wpp2024
     name: United Nations World Population Prospects 2024
     url: https://population.un.org/wpp/
-    citation: "United Nations, Department of Economic and Social Affairs, Population Division (2024). World Population Prospects 2024. Data downloaded on November 23 2026."
+    citation: "United Nations, Department of Economic and Social Affairs, Population Division (2024). World Population Prospects 2024."
     license: CC BY 3.0 IGO
