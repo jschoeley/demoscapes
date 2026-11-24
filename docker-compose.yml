@@ -28,6 +28,7 @@ services:
       dockerfile: Dockerfile.api
     command: ["npm", "run", "init:database"]
     environment:
+      NODE_OPTIONS: "--max-old-space-size=${DB_INIT_HEAP_MB:-4096}"
       MONGO_HOST: ${MONGO_HOST:?MONGO_HOST is required}
       MONGO_PORT: ${MONGO_PORT:?MONGO_PORT is required}
       MONGO_APP_DATABASE: ${MONGO_APP_DATABASE:?MONGO_APP_DATABASE is required}
