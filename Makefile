@@ -118,7 +118,7 @@ deploy-sync: guard-deploy-host
 	$(DEPLOY_RSYNC) ./ $(DEPLOY_SSH_TARGET):$(DEPLOY_APP_DIR)/
 
 deploy: guard-deploy-host deploy-sync
-	$(DEPLOY_SSH) "bash -lc 'cd $(DEPLOY_APP_DIR) && set -a && . $(DEPLOY_ENV_FILE) && set +a && docker compose down --remove-orphans && docker compose build && docker compose up -d --remove-orphans && docker compose ps'"
+	$(DEPLOY_SSH) "bash -lc 'cd $(DEPLOY_APP_DIR) && set -a && . $(DEPLOY_ENV_FILE) && set +a && docker compose down --remove-orphans && docker compose build && docker compose up -d --wait database && docker compose up --no-deps --exit-code-from db-init db-init && docker compose up -d --remove-orphans && docker compose ps'"
 
 update: deploy
 

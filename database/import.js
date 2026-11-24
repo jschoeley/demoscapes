@@ -389,7 +389,11 @@ async function runImport() {
     await Series.insertMany(seriesDocs);
   }
 
+  let importedSurfaces = 0;
+  console.log(`Surfaces imported: ${importedSurfaces}`);
+
   for (const definition of seriesSeed) {
+    console.log(`Surfaces imported: ${importedSurfaces}; importing ${definition.key}`);
     const csvPath = path.join(lexisDataDir, definition.measureKey, `${definition.key}.csv`);
     if (!fs.existsSync(csvPath)) {
       console.error(`Missing CSV for series ${definition.key}: ${csvPath}`);
@@ -405,11 +409,55 @@ async function runImport() {
       valuesByKey[key] = new Set();
     });
     const combosSet = new Set();
-    const surfacesByCombo = new Map();
+    const completedCombos = new Set();
+    let currentComboKey;
+    let surface;
+    let surfaceCount = 0;
 
-    await csv()
-      .fromFile(csvPath)
-      .subscribe((row) => {
+    async function flushSurface() {
+      if (!surface) return;
+
+      const xValues = Array.from(surface.xSet).sort((a, b) => a - b);
+      const yValues = Array.from(surface.ySet).sort((a, b) => a - b);
+      const wxValues = [];
+      const wyValues = [];
+      const zValues = [];
+
+      yValues.forEach((y) => {
+        xValues.forEach((x) => {
+          const cell = surface.cellsByPosition.get(`${x}|${y}`);
+          zValues.push(cell ? cell.z : null);
+          wxValues.push(cell ? cell.wx : null);
+          wyValues.push(cell ? cell.wy : null);
+        });
+      });
+
+      // Await each write so neither parsed rows nor pending writes accumulate.
+      await Surface.insertMany([{
+        seriesKey: definition.key,
+        strata: surface.strata,
+        xValues,
+        yValues,
+        wxValues,
+        wyValues,
+        zValues,
+        zEncoding: 'row-major-y',
+      }]);
+      completedCombos.add(currentComboKey);
+      surface = undefined;
+      surfaceCount += 1;
+      importedSurfaces += 1;
+      console.log(`Surfaces imported: ${importedSurfaces}; ${definition.key}: ${surfaceCount}`);
+    }
+
+    // The exporter groups rows by strata. Do not retain a second copy of the CSV.
+    // Listen for errors directly: csvtojson can emit completion before its
+    // deferred promise rejection when an asynchronous subscriber fails.
+    await new Promise((resolve, reject) => {
+      csv({ needEmitAll: false })
+        .fromFile(csvPath)
+        .on('error', reject)
+        .subscribe(async (row) => {
         const strata = {};
         strataKeys.forEach((key) => {
           const value = row[key];
@@ -430,16 +478,22 @@ async function runImport() {
         }
 
         const comboKey = JSON.stringify(strataKeys.map((key) => strata[key]));
-        if (!surfacesByCombo.has(comboKey)) {
-          surfacesByCombo.set(comboKey, {
+        if (comboKey !== currentComboKey) {
+          if (completedCombos.has(comboKey)) {
+            throw new Error(
+              `Non-contiguous strata combination in ${definition.key}: ${comboKey}. Sort CSV rows by strata before importing.`,
+            );
+          }
+          await flushSurface();
+          currentComboKey = comboKey;
+          surface = {
             strata: { ...strata },
             xSet: new Set(),
             ySet: new Set(),
             cellsByPosition: new Map(),
-          });
+          };
         }
 
-        const surface = surfacesByCombo.get(comboKey);
         surface.xSet.add(x);
         surface.ySet.add(y);
         surface.cellsByPosition.set(`${x}|${y}`, {
@@ -459,36 +513,10 @@ async function runImport() {
           });
           combosSet.add(JSON.stringify(combo));
         }
-      });
+        }, reject, resolve);
+    });
 
-    const surfaceDocs = [];
-    for (const surface of surfacesByCombo.values()) {
-      const xValues = Array.from(surface.xSet).sort((a, b) => a - b);
-      const yValues = Array.from(surface.ySet).sort((a, b) => a - b);
-      const wxValues = [];
-      const wyValues = [];
-      const zValues = [];
-
-      yValues.forEach((y) => {
-        xValues.forEach((x) => {
-          const cell = surface.cellsByPosition.get(`${x}|${y}`);
-          zValues.push(cell ? cell.z : null);
-          wxValues.push(cell ? cell.wx : null);
-          wyValues.push(cell ? cell.wy : null);
-        });
-      });
-
-      surfaceDocs.push({
-        seriesKey: definition.key,
-        strata: surface.strata,
-        xValues,
-        yValues,
-        wxValues,
-        wyValues,
-        zValues,
-        zEncoding: 'row-major-y',
-      });
-    }
+    await flushSurface();
 
     const strataValues = {};
     Object.keys(valuesByKey).forEach((key) => {
@@ -502,17 +530,14 @@ async function runImport() {
     const defaultStrata = normalizeDefaultStrata(definition, strataKeys);
     validateDefaultStrataValues(definition, defaultStrata, valuesByKey, strataCombos);
 
-    if (surfaceDocs.length > 0) {
-      await Surface.insertMany(surfaceDocs);
-    }
-
     await Series.updateOne(
       { key: definition.key },
       { $set: { defaultStrata, strataValues, strataCombos } },
     );
+    console.log(`Surfaces imported: ${importedSurfaces}; completed ${definition.key} (${surfaceCount} surfaces)`);
   }
 
-  console.log('Import complete.');
+  console.log(`Import complete. Surfaces imported: ${importedSurfaces}.`);
 }
 
 module.exports = {
